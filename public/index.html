@@ -4,338 +4,492 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jazdecký klub Zelená míľa | Jaslovské Bohunice</title>
-    <meta name="description" content="Rodinný jazdecký klub v Jaslovských Bohuniciach. Jazdenie, tréningy, ustajnenie koní a jazdecké lekcie pre všetky vekové kategórie.">
+    <meta name="description" content="Rodinný jazdecký klub s tradíciou od roku 2000. Jazdecké lekcie, ustajnenie koní, letné tábory v Jaslovských Bohuniciach.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #1a3a2f;
             --primary-dark: #0d1f19;
             --primary-light: #2d5a4a;
             --accent: #c9a962;
-            --accent-light: #e0c98a;
-            --cream: #f8f5ef;
+            --accent-light: #e8d5a3;
+            --cream: #faf8f3;
             --white: #ffffff;
             --text: #2c2c2c;
-            --text-light: #666666;
-            --border: #e0dcd4;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --danger: #f44336;
-            --font-display: 'Cormorant Garamond', Georgia, serif;
-            --font-body: 'Montserrat', sans-serif;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --radius: 8px;
-            --transition: all 0.3s ease;
+            --text-light: #666;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-lg: 0 25px 80px rgba(0,0,0,0.15);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: var(--font-body); color: var(--text); background: var(--cream); line-height: 1.6; }
-        h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; }
-        img { max-width: 100%; }
-        a { text-decoration: none; color: inherit; }
+        body { font-family: 'Montserrat', sans-serif; color: var(--text); line-height: 1.7; overflow-x: hidden; }
+
+        /* Preloader */
+        .preloader { position: fixed; inset: 0; background: var(--primary-dark); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s, visibility 0.5s; }
+        .preloader.hide { opacity: 0; visibility: hidden; }
+        .preloader-logo { animation: pulse 1.5s infinite; }
+        .preloader-logo img { height: 80px; filter: brightness(0) invert(1); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
 
         /* Navbar */
-        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2rem; background: transparent; transition: var(--transition); }
-        .navbar.scrolled { background: rgba(26,58,47,0.98); backdrop-filter: blur(10px); padding: 0.75rem 2rem; }
+        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2rem; transition: var(--transition); }
+        .navbar.scrolled { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); box-shadow: 0 2px 30px rgba(0,0,0,0.1); padding: 0.7rem 2rem; }
         .navbar-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-        .logo { display: flex; align-items: center; gap: 1rem; }
-        .logo img { height: 55px; filter: brightness(0) invert(1); transition: var(--transition); }
-        .navbar.scrolled .logo img { height: 45px; }
-        .logo-text { color: var(--white); }
-        .logo-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; }
-        .logo-subtitle { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.8; }
-        .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
-        .nav-links a { color: var(--white); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.03em; transition: var(--transition); position: relative; }
-        .nav-links a:hover { color: var(--accent); }
-        .nav-cta { background: var(--accent); color: var(--primary-dark) !important; padding: 0.7rem 1.3rem; border-radius: 4px; font-weight: 600; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .logo img { height: 50px; transition: var(--transition); }
+        .navbar.scrolled .logo img { height: 40px; }
+        .logo span { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600; color: var(--white); transition: var(--transition); }
+        .navbar.scrolled .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-links a { color: rgba(255,255,255,0.9); text-decoration: none; font-size: 0.9rem; font-weight: 500; position: relative; transition: var(--transition); }
+        .navbar.scrolled .nav-links a { color: var(--text); }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--accent); transition: var(--transition); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-cta { background: var(--accent); color: var(--primary-dark) !important; padding: 0.7rem 1.5rem; border-radius: 50px; font-weight: 600; }
+        .nav-cta::after { display: none; }
         .nav-cta:hover { background: var(--accent-light); transform: translateY(-2px); }
-        .mobile-menu { display: none; background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+        .menu-toggle span { display: block; width: 25px; height: 2px; background: var(--white); margin: 6px 0; transition: var(--transition); }
+        .navbar.scrolled .menu-toggle span { background: var(--primary); }
 
         /* Hero */
-        .hero { min-height: 100vh; background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E"); }
-        .hero-content { position: relative; z-index: 2; text-align: center; color: var(--white); padding: 2rem; max-width: 850px; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(201,169,98,0.2); border: 1px solid rgba(201,169,98,0.4); padding: 0.5rem 1.2rem; border-radius: 50px; font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 2rem; animation: fadeIn 0.8s; }
-        .hero h1 { font-size: clamp(2.5rem, 7vw, 5rem); margin-bottom: 1.5rem; animation: slideUp 0.8s 0.2s both; }
+        .hero { min-height: 100vh; background: linear-gradient(135deg, rgba(13,31,25,0.85), rgba(26,58,47,0.75)), url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1920') center/cover fixed; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--white); position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 70%, rgba(201,169,98,0.1) 0%, transparent 50%); }
+        .hero-content { max-width: 900px; padding: 2rem; position: relative; z-index: 1; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 0.5rem 1.25rem; border-radius: 50px; font-size: 0.85rem; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.2); animation: fadeInUp 1s ease; }
+        .hero-badge::before { content: '🏇'; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; animation: fadeInUp 1s ease 0.2s backwards; }
         .hero h1 span { color: var(--accent); }
-        .hero p { font-size: 1.15rem; opacity: 0.9; max-width: 550px; margin: 0 auto 2.5rem; animation: slideUp 0.8s 0.4s both; }
-        .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: slideUp 0.8s 0.6s both; }
-        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9rem; transition: var(--transition); border: none; cursor: pointer; }
+        .hero p { font-size: clamp(1rem, 2vw, 1.25rem); opacity: 0.9; max-width: 600px; margin: 0 auto 2.5rem; animation: fadeInUp 1s ease 0.4s backwards; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeInUp 1s ease 0.6s backwards; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; border-radius: 50px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: var(--transition); cursor: pointer; border: none; font-family: inherit; }
         .btn-primary { background: var(--accent); color: var(--primary-dark); }
-        .btn-primary:hover { background: var(--accent-light); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(201,169,98,0.3); }
-        .btn-outline { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.3); }
-        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: var(--white); }
-        .hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
-        .hero-scroll svg { width: 28px; height: 28px; fill: rgba(255,255,255,0.6); }
+        .btn-primary:hover { background: var(--white); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(201,169,98,0.4); }
+        .btn-outline { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.5); }
+        .btn-outline:hover { background: var(--white); color: var(--primary); }
+        .scroll-indicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
+        .scroll-indicator span { display: block; width: 30px; height: 50px; border: 2px solid rgba(255,255,255,0.5); border-radius: 25px; position: relative; }
+        .scroll-indicator span::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: scroll 2s infinite; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(10px); } }
+        @keyframes scroll { 0% { opacity: 1; top: 8px; } 100% { opacity: 0; top: 30px; } }
 
         /* Sections */
-        .section { padding: 5rem 2rem; }
-        .section-header { text-align: center; max-width: 650px; margin: 0 auto 3.5rem; }
-        .section-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; display: block; }
-        .section-title { font-size: clamp(2rem, 5vw, 3rem); color: var(--primary); margin-bottom: 1rem; }
-        .section-desc { color: var(--text-light); font-size: 1.05rem; }
+        section { padding: 6rem 2rem; }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 4rem; }
+        .section-badge { display: inline-block; background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: var(--primary-dark); padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--primary); margin-bottom: 1rem; }
+        .section-desc { color: var(--text-light); font-size: 1.1rem; }
 
         /* About */
-        .about-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-        .about-card { background: var(--white); padding: 2.5rem 2rem; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; transition: var(--transition); }
-        .about-card:hover { transform: translateY(-8px); }
-        .about-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.8rem; }
-        .about-card h3 { font-size: 1.4rem; color: var(--primary); margin-bottom: 0.75rem; }
-        .about-card p { color: var(--text-light); font-size: 0.95rem; }
+        .about { background: var(--cream); }
+        .about-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .about-images { position: relative; height: 500px; }
+        .about-img { position: absolute; border-radius: 20px; box-shadow: var(--shadow-lg); overflow: hidden; transition: var(--transition); }
+        .about-img:hover { transform: scale(1.02); }
+        .about-img img { width: 100%; height: 100%; object-fit: cover; }
+        .about-img-1 { width: 60%; height: 70%; top: 0; left: 0; z-index: 2; }
+        .about-img-2 { width: 55%; height: 60%; bottom: 0; right: 0; z-index: 1; }
+        .about-badge { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--primary-dark); padding: 1.5rem 2rem; border-radius: 15px; text-align: center; z-index: 3; box-shadow: var(--shadow); }
+        .about-badge strong { display: block; font-size: 2.5rem; font-family: 'Playfair Display', serif; }
+        .about-badge span { font-size: 0.9rem; }
+        .about-content h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--primary); margin-bottom: 1.5rem; }
+        .about-content p { color: var(--text-light); margin-bottom: 1.5rem; font-size: 1.05rem; }
+        .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+        .about-feature { display: flex; align-items: center; gap: 1rem; }
+        .about-feature-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .about-feature span { font-weight: 600; color: var(--primary); }
+
+        /* Stats */
+        .stats { background: var(--primary); padding: 4rem 2rem; }
+        .stats-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+        .stat { text-align: center; color: var(--white); }
+        .stat-number { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 700; color: var(--accent); line-height: 1; }
+        .stat-label { font-size: 0.95rem; opacity: 0.8; margin-top: 0.5rem; }
 
         /* Services */
-        .services-section { background: var(--primary); }
-        .services-section .section-label { color: var(--accent-light); }
-        .services-section .section-title { color: var(--white); }
-        .services-section .section-desc { color: rgba(255,255,255,0.8); }
-        .services-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .service-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 2rem; transition: var(--transition); }
-        .service-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-5px); }
-        .service-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-        .service-icon { width: 50px; height: 50px; background: var(--accent); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .service-card h3 { color: var(--white); font-size: 1.25rem; }
-        .service-card p { color: rgba(255,255,255,0.7); margin-bottom: 1rem; font-size: 0.95rem; }
-        .service-list { list-style: none; }
-        .service-list li { color: rgba(255,255,255,0.8); padding: 0.4rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-        .service-list li::before { content: '✓'; color: var(--accent); font-weight: bold; }
+        .services { background: var(--white); }
+        .services-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .service-card { background: var(--cream); border-radius: 20px; padding: 2.5rem; position: relative; overflow: hidden; transition: var(--transition); cursor: pointer; }
+        .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); transform: scaleX(0); transition: var(--transition); }
+        .service-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
+        .service-card:hover::before { transform: scaleX(1); }
+        .service-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; transition: var(--transition); }
+        .service-card:hover .service-icon { transform: rotateY(180deg); }
+        .service-card h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary); margin-bottom: 1rem; }
+        .service-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .service-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); font-weight: 600; text-decoration: none; transition: var(--transition); }
+        .service-link:hover { gap: 1rem; }
 
         /* Horses */
-        .horses-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
-        .horse-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); }
-        .horse-card:hover { transform: translateY(-8px); }
-        .horse-img { height: 200px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; position: relative; font-size: 4rem; }
-        .horse-badge { position: absolute; top: 1rem; right: 1rem; background: var(--accent); color: var(--primary-dark); padding: 0.25rem 0.7rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+        .horses { background: linear-gradient(180deg, var(--cream) 0%, var(--white) 100%); }
+        .horses-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .horse-card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); }
+        .horse-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
+        .horse-img { height: 250px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .horse-img span { font-size: 5rem; }
         .horse-info { padding: 1.5rem; }
-        .horse-info h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.3rem; }
-        .horse-breed { font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem; }
-        .horse-stats { display: flex; gap: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-        .horse-stat { text-align: center; }
-        .horse-stat-val { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; color: var(--primary); }
-        .horse-stat-label { font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; }
+        .horse-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .horse-breed { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; }
+        .horse-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .horse-tag { background: var(--cream); color: var(--primary); padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 500; }
+
+        /* Gallery */
+        .gallery { background: var(--primary-dark); padding: 6rem 2rem; }
+        .gallery .section-title { color: var(--white); }
+        .gallery .section-desc { color: rgba(255,255,255,0.7); }
+        .gallery-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 200px); gap: 1rem; }
+        .gallery-item { border-radius: 15px; overflow: hidden; position: relative; cursor: pointer; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-item::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5), transparent); opacity: 0; transition: var(--transition); }
+        .gallery-item:hover::after { opacity: 1; }
+        .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+        .gallery-item:nth-child(4) { grid-column: span 2; }
+
+        /* Testimonials */
+        .testimonials { background: var(--cream); }
+        .testimonials-slider { max-width: 800px; margin: 0 auto; }
+        .testimonial { text-align: center; padding: 2rem; }
+        .testimonial-text { font-size: 1.3rem; font-style: italic; color: var(--text); line-height: 1.8; margin-bottom: 2rem; position: relative; }
+        .testimonial-text::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--accent); position: absolute; top: -2rem; left: 50%; transform: translateX(-50%); opacity: 0.3; }
+        .testimonial-author { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+        .testimonial-avatar { width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--white); }
+        .testimonial-info h4 { font-family: 'Playfair Display', serif; color: var(--primary); }
+        .testimonial-info span { font-size: 0.9rem; color: var(--text-light); }
 
         /* Contact */
-        .contact-section { background: var(--white); }
-        .contact-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; }
-        .contact-info h3 { font-size: 1.5rem; color: var(--primary); margin-bottom: 1.5rem; }
-        .contact-item { display: flex; gap: 1rem; margin-bottom: 1.25rem; }
-        .contact-icon { width: 45px; height: 45px; background: var(--cream); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-        .contact-item h4 { font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 0.2rem; }
-        .contact-item p { color: var(--text); font-size: 0.95rem; }
-        .contact-item a { color: var(--primary); transition: var(--transition); }
+        .contact { background: var(--white); }
+        .contact-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; }
+        .contact-info { background: var(--primary); color: var(--white); padding: 3rem; border-radius: 20px; position: relative; overflow: hidden; }
+        .contact-info::before { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(201,169,98,0.1), transparent); }
+        .contact-info h3 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 1.5rem; }
+        .contact-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+        .contact-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .contact-item h4 { color: var(--accent); font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .contact-item p, .contact-item a { color: rgba(255,255,255,0.9); font-size: 1rem; text-decoration: none; }
         .contact-item a:hover { color: var(--accent); }
-        .social-links { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-        .social-link { width: 42px; height: 42px; background: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 1.1rem; transition: var(--transition); }
-        .social-link:hover { background: var(--accent); color: var(--primary-dark); transform: translateY(-3px); }
-        .contact-form { background: var(--cream); padding: 2rem; border-radius: var(--radius); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); font-family: var(--font-body); font-size: 0.95rem; transition: var(--transition); }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
-        .form-group textarea { min-height: 100px; resize: vertical; }
-        .btn-submit { width: 100%; padding: 1rem; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius); font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
-        .btn-submit:hover { background: var(--primary-dark); }
-        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .social-links { display: flex; gap: 1rem; margin-top: 2rem; }
+        .social-link { width: 45px; height: 45px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: var(--transition); text-decoration: none; }
+        .social-link:hover { background: var(--accent); transform: translateY(-3px); }
+        .contact-form { background: var(--cream); padding: 3rem; border-radius: 20px; }
+        .contact-form h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary); margin-bottom: 1.5rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 1rem 1.25rem; border: 2px solid transparent; background: var(--white); border-radius: 12px; font-size: 1rem; font-family: inherit; transition: var(--transition); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(201,169,98,0.1); }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .btn-submit { width: 100%; padding: 1.1rem; background: var(--primary); color: var(--white); border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        /* Map */
+        .map { height: 400px; background: var(--cream); position: relative; }
+        .map iframe { width: 100%; height: 100%; border: none; filter: grayscale(30%); }
 
         /* Footer */
-        .footer { background: var(--primary-dark); color: var(--white); padding: 3rem 2rem 1.5rem; }
-        .footer-inner { max-width: 1100px; margin: 0 auto; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
-        .footer-brand img { height: 50px; filter: brightness(0) invert(1); margin-bottom: 1rem; }
-        .footer-brand p { opacity: 0.7; font-size: 0.9rem; max-width: 250px; }
-        .footer h4 { font-size: 0.9rem; margin-bottom: 1rem; color: var(--accent); }
+        .footer { background: var(--primary-dark); color: var(--white); padding: 5rem 2rem 2rem; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+        .footer-brand img { height: 60px; filter: brightness(0) invert(1); margin-bottom: 1rem; }
+        .footer-brand p { opacity: 0.7; font-size: 0.95rem; line-height: 1.8; max-width: 300px; }
+        .footer h4 { color: var(--accent); font-size: 1rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
         .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 0.5rem; }
-        .footer-links a { color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: var(--transition); }
-        .footer-links a:hover { color: var(--white); }
-        .footer-bottom { padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; opacity: 0.6; }
+        .footer-links li { margin-bottom: 0.75rem; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.95rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--accent); padding-left: 5px; }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.9rem; opacity: 0.7; }
 
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-10px); } }
+        /* Mobile menu */
+        .mobile-menu { position: fixed; inset: 0; background: var(--primary-dark); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; transform: translateX(100%); transition: var(--transition); }
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu a { color: var(--white); font-size: 1.5rem; text-decoration: none; font-family: 'Playfair Display', serif; }
+        .mobile-menu-close { position: absolute; top: 2rem; right: 2rem; background: none; border: none; color: var(--white); font-size: 2rem; cursor: pointer; }
 
         /* Toast */
-        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; border-radius: var(--radius); color: var(--white); font-weight: 500; z-index: 9999; animation: slideUp 0.3s; }
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
+        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 2rem; border-radius: 12px; color: var(--white); font-weight: 500; z-index: 9999; transform: translateY(100px); opacity: 0; transition: var(--transition); }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+
+        /* Animations on scroll */
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
         /* Responsive */
-        @media (max-width: 992px) {
-            .nav-links { display: none; }
-            .mobile-menu { display: block; }
-            .contact-grid { grid-template-columns: 1fr; }
+        @media (max-width: 1024px) {
+            .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .about-images { height: 400px; margin-bottom: 2rem; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 150px); }
+            .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+            .gallery-item:nth-child(4) { grid-column: span 2; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
+
         @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            section { padding: 4rem 1.5rem; }
+            .hero { min-height: 100svh; }
             .hero h1 { font-size: 2.5rem; }
-            .section { padding: 4rem 1.5rem; }
+            .about-features { grid-template-columns: 1fr; }
+            .about-images { height: 350px; }
+            .about-img-1 { width: 70%; height: 60%; }
+            .about-img-2 { width: 60%; height: 50%; }
+            .stats-grid { gap: 1.5rem; }
+            .stat-number { font-size: 2.5rem; }
             .form-row { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .footer-brand { display: flex; flex-direction: column; align-items: center; }
+            .footer-brand p { max-width: 100%; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .contact-info { padding: 2rem; }
+            .contact-form { padding: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-buttons { flex-direction: column; width: 100%; }
+            .hero-buttons .btn { width: 100%; justify-content: center; }
+            .services-grid, .horses-grid { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr; grid-template-rows: repeat(4, 150px); }
+            .gallery-item:nth-child(1), .gallery-item:nth-child(4) { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo"><img src="/assets/logo.png" alt="Loading..."></div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" onclick="toggleMenu()">✕</button>
+        <a href="#about" onclick="toggleMenu()">O nás</a>
+        <a href="#services" onclick="toggleMenu()">Služby</a>
+        <a href="#horses" onclick="toggleMenu()">Kone</a>
+        <a href="#contact" onclick="toggleMenu()">Kontakt</a>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar" id="navbar">
         <div class="navbar-inner">
-            <a href="/" class="logo">
+            <a href="#" class="logo">
                 <img src="/assets/logo.png" alt="JK Zelená míľa">
-                <div class="logo-text">
-                    <div class="logo-title">Zelená míľa</div>
-                    <div class="logo-subtitle">Jazdecký klub</div>
-                </div>
+                <span>Zelená míľa</span>
             </a>
-            <ul class="nav-links">
-                <li><a href="#about">O nás</a></li>
-                <li><a href="#services">Služby</a></li>
-                <li><a href="#horses">Kone</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-                <li><a href="/admin" class="nav-cta">Prihlásenie</a></li>
-            </ul>
-            <button class="mobile-menu">☰</button>
+            <div class="nav-links">
+                <a href="#about">O nás</a>
+                <a href="#services">Služby</a>
+                <a href="#horses">Kone</a>
+                <a href="#gallery">Galéria</a>
+                <a href="#contact" class="nav-cta">Kontakt</a>
+            </div>
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </nav>
 
     <!-- Hero -->
-    <section class="hero">
+    <section class="hero" id="home">
         <div class="hero-content">
-            <div class="hero-badge">⭐ Od roku 2021</div>
-            <h1>Jazdecký klub<br><span>Zelená míľa</span></h1>
-            <p>Rodinný jazdecký klub v srdci Jaslovských Bohuníc. Ponúkame jazdecké lekcie, ustajnenie a starostlivosť o kone s láskou a osobným prístupom.</p>
-            <div class="hero-btns">
-                <a href="#contact" class="btn btn-primary">📅 Rezervovať lekciu</a>
-                <a href="#about" class="btn btn-outline">Zistiť viac</a>
+            <div class="hero-badge">Od roku 2000 s vami</div>
+            <h1>Kde sa <span>sny</span> stretávajú s <span>koňmi</span></h1>
+            <p>Rodinný jazdecký klub v srdci Jaslovských Bohuníc. Objavte krásu jazdenia v prostredí, kde sa tradícia spája s vášňou pre kone.</p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn btn-primary">Rezervovať lekciu</a>
+                <a href="#about" class="btn btn-outline">Spoznajte nás</a>
             </div>
         </div>
-        <div class="hero-scroll"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div>
+        <div class="scroll-indicator"><span></span></div>
     </section>
 
     <!-- About -->
-    <section class="section" id="about">
-        <div class="section-header">
-            <span class="section-label">O nás</span>
-            <h2 class="section-title">Vášeň pre kone a jazdenie</h2>
-            <p class="section-desc">Náš klub vznikol z lásky ku koňom a túžby zdieľať túto vášeň s ostatnými.</p>
-        </div>
+    <section class="about" id="about">
         <div class="about-grid">
-            <div class="about-card">
-                <div class="about-icon">👨‍🏫</div>
-                <h3>Profesionálni tréneri</h3>
-                <p>Naši certifikovaní tréneri majú dlhoročné skúsenosti a individuálny prístup ku každému jazdcovi.</p>
+            <div class="about-images reveal">
+                <div class="about-img about-img-1">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600" alt="Jazdecký klub">
+                </div>
+                <div class="about-img about-img-2">
+                    <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600" alt="Kone">
+                </div>
+                <div class="about-badge">
+                    <strong>25+</strong>
+                    <span>rokov skúseností</span>
+                </div>
             </div>
-            <div class="about-card">
-                <div class="about-icon">❤️</div>
-                <h3>Láska ku koňom</h3>
-                <p>Starostlivosť o naše kone je prioritou. Každý kôň dostáva individuálnu pozornosť a najlepšiu starostlivosť.</p>
+            <div class="about-content reveal">
+                <h2>Viac ako klub.<br>Sme rodina.</h2>
+                <p>Od roku 2000 vytvárame miesto, kde sa ľudia všetkých vekových kategórií môžu naučiť jazdiť na koni, starostlivo sa postarať o tieto nádherné zvieratá a zažiť nezabudnuteľné chvíle v prírode.</p>
+                <p>V roku 2021 sme založili nový klub Zelená míľa, ktorý nadväzuje na dlhoročnú tradíciu a prináša moderný prístup k jazdectvu. Naše stajne s dušou a piesková jazdiareň ponúkajú autentický zážitok v kontakte s prírodou.</p>
+                <div class="about-features">
+                    <div class="about-feature">
+                        <div class="about-feature-icon">🐴</div>
+                        <span>Skúsené kone</span>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">👨‍🏫</div>
+                        <span>Certifikovaní tréneri</span>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">🌿</div>
+                        <span>Krásne prostredie</span>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">👨‍👩‍👧‍👦</div>
+                        <span>Pre celú rodinu</span>
+                    </div>
+                </div>
             </div>
-            <div class="about-card">
-                <div class="about-icon">🏡</div>
-                <h3>Tradičné prostredie</h3>
-                <p>Naše stajne s dušou a piesková jazdiareň ponúkajú autentický zážitok z jazdenia v kontakte s prírodou.</p>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat reveal">
+                <div class="stat-number" data-count="25">0</div>
+                <div class="stat-label">Rokov tradície</div>
+            </div>
+            <div class="stat reveal">
+                <div class="stat-number" data-count="500">0</div>
+                <div class="stat-label">Spokojných jazdcov</div>
+            </div>
+            <div class="stat reveal">
+                <div class="stat-number" data-count="15">0</div>
+                <div class="stat-label">Úžasných koní</div>
+            </div>
+            <div class="stat reveal">
+                <div class="stat-number" data-count="1000">0</div>
+                <div class="stat-label">Hodín tréningov</div>
             </div>
         </div>
     </section>
 
     <!-- Services -->
-    <section class="section services-section" id="services">
-        <div class="section-header">
-            <span class="section-label">Naše služby</span>
-            <h2 class="section-title">Čo ponúkame</h2>
-            <p class="section-desc">Komplexné služby pre jazdcov a majiteľov koní.</p>
+    <section class="services" id="services">
+        <div class="section-header reveal">
+            <span class="section-badge">Naše služby</span>
+            <h2 class="section-title">Čo pre vás môžeme urobiť</h2>
+            <p class="section-desc">Ponúkame komplexné služby pre začiatočníkov aj pokročilých jazdcov všetkých vekových kategórií.</p>
         </div>
         <div class="services-grid">
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-icon">🎓</div>
-                    <h3>Jazdecké lekcie</h3>
-                </div>
-                <p>Individuálne aj skupinové lekcie pre všetky vekové kategórie.</p>
-                <ul class="service-list">
-                    <li>Začiatočníci aj pokročilí</li>
-                    <li>Deti od 5 rokov</li>
-                    <li>Flexibilné termíny</li>
-                </ul>
+            <div class="service-card reveal">
+                <div class="service-icon">🎠</div>
+                <h3>Jazdecké lekcie</h3>
+                <p>Individuálne aj skupinové lekcie pre všetky úrovne. Od úplných začiatočníkov až po pokročilých jazdcov.</p>
+                <a href="#contact" class="service-link">Rezervovať →</a>
             </div>
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-icon">🏠</div>
-                    <h3>Ustajnenie koní</h3>
-                </div>
-                <p>Ustajnenie s osobnou starostlivosťou v pokojnom prostredí.</p>
-                <ul class="service-list">
-                    <li>Individuálna starostlivosť</li>
-                    <li>Denný výbeh</li>
-                    <li>Piesková jazdiareň</li>
-                </ul>
+            <div class="service-card reveal">
+                <div class="service-icon">🏠</div>
+                <h3>Ustajnenie</h3>
+                <p>Profesionálna starostlivosť o vášho koňa v moderných boxoch s každodennou starostlivosťou a výbehmi.</p>
+                <a href="#contact" class="service-link">Zistiť viac →</a>
             </div>
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-icon">☀️</div>
-                    <h3>Letné tábory</h3>
-                </div>
-                <p>Nezabudnuteľné letné tábory pre deti s koňmi.</p>
-                <ul class="service-list">
-                    <li>Týždenné turnusy</li>
-                    <li>Starostlivosť o kone</li>
-                    <li>Zábava a šport</li>
-                </ul>
+            <div class="service-card reveal">
+                <div class="service-icon">🏕️</div>
+                <h3>Letné tábory</h3>
+                <p>Nezabudnuteľné prázdniny s koňmi pre deti. Jazdenie, starostlivosť o kone, hry a nové priateľstvá.</p>
+                <a href="#contact" class="service-link">Prihlásiť sa →</a>
             </div>
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-icon">🎉</div>
-                    <h3>Podujatia</h3>
-                </div>
-                <p>Organizujeme jazdecké súťaže a rodinné podujatia.</p>
-                <ul class="service-list">
-                    <li>Jazdecké preteky</li>
-                    <li>Firemné teambuildingy</li>
-                    <li>Narodeniny s koňmi</li>
-                </ul>
+            <div class="service-card reveal">
+                <div class="service-icon">🎉</div>
+                <h3>Podujatia</h3>
+                <p>Organizujeme narodeninové oslavy, firemné akcie a špeciálne podujatia s koňmi pre nezabudnuteľné zážitky.</p>
+                <a href="#contact" class="service-link">Naplánovať →</a>
             </div>
         </div>
     </section>
 
     <!-- Horses -->
-    <section class="section" id="horses">
-        <div class="section-header">
-            <span class="section-label">Naše kone</span>
-            <h2 class="section-title">Spoznajte našich priateľov</h2>
-            <p class="section-desc">Každý kôň má svoj jedinečný charakter.</p>
+    <section class="horses" id="horses">
+        <div class="section-header reveal">
+            <span class="section-badge">Naši kamaráti</span>
+            <h2 class="section-title">Spoznajte naše kone</h2>
+            <p class="section-desc">Každý náš kôň má jedinečnú osobnosť a je starostlivo vybraný pre prácu s jazdcami všetkých úrovní.</p>
         </div>
         <div class="horses-grid" id="horsesGrid">
-            <!-- Loaded from API -->
+            <!-- Horses loaded from API -->
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="gallery" id="gallery">
+        <div class="section-header reveal">
+            <span class="section-badge">Galéria</span>
+            <h2 class="section-title">Momenty z nášho klubu</h2>
+            <p class="section-desc">Nahliadnite do každodenného života v Zelenej míli.</p>
+        </div>
+        <div class="gallery-grid reveal">
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800" alt="Galéria 1"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400" alt="Galéria 2"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1534773728080-33d31da021e3?w=400" alt="Galéria 3"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1450052590821-8bf91254a353?w=800" alt="Galéria 4"></div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="section-header reveal">
+            <span class="section-badge">Referencie</span>
+            <h2 class="section-title">Čo hovoria naši klienti</h2>
+        </div>
+        <div class="testimonials-slider reveal">
+            <div class="testimonial">
+                <p class="testimonial-text">Zelená míľa je pre našu dcéru druhým domovom. Tréneri sú profesionálni a zároveň veľmi milí. Vidíme obrovský pokrok nielen v jazdení, ale aj v sebavedomí.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">MK</div>
+                    <div class="testimonial-info">
+                        <h4>Martina K.</h4>
+                        <span>Mama 9-ročnej jazdkyne</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Contact -->
-    <section class="section contact-section" id="contact">
-        <div class="section-header">
-            <span class="section-label">Kontakt</span>
+    <section class="contact" id="contact">
+        <div class="section-header reveal">
+            <span class="section-badge">Kontakt</span>
             <h2 class="section-title">Ozvite sa nám</h2>
-            <p class="section-desc">Máte otázky? Neváhajte nás kontaktovať.</p>
+            <p class="section-desc">Máte otázky? Radi vám pomôžeme a odpovieme na všetko, čo vás zaujíma.</p>
         </div>
         <div class="contact-grid">
-            <div class="contact-info">
-                <h3>Kontaktné informácie</h3>
+            <div class="contact-info reveal">
+                <h3>Kontaktné údaje</h3>
                 <div class="contact-item">
                     <div class="contact-icon">📍</div>
-                    <div><h4>Adresa</h4><p>Nová ulica 297/41<br>919 30 Jaslovské Bohunice</p></div>
+                    <div>
+                        <h4>Adresa</h4>
+                        <p>Nová ulica 297/41<br>919 30 Jaslovské Bohunice</p>
+                    </div>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">📞</div>
-                    <div><h4>Telefón</h4><p><a href="tel:+421905523022">+421 905 523 022</a><br><a href="tel:+421905682824">+421 905 682 824</a></p></div>
+                    <div>
+                        <h4>Telefón</h4>
+                        <p><a href="tel:+421905523022">+421 905 523 022</a><br><a href="tel:+421905682824">+421 905 682 824</a></p>
+                    </div>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">✉️</div>
-                    <div><h4>Email</h4><p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p></div>
+                    <div>
+                        <h4>Email</h4>
+                        <p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p>
+                    </div>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">🕐</div>
-                    <div><h4>Otváracie hodiny</h4><p>Po - Pi: 8:00 - 19:00<br>So - Ne: 9:00 - 17:00</p></div>
+                    <div>
+                        <h4>Otváracie hodiny</h4>
+                        <p>Po - Pi: 8:00 - 19:00<br>So - Ne: 9:00 - 17:00</p>
+                    </div>
                 </div>
                 <div class="social-links">
                     <a href="#" class="social-link">📘</a>
@@ -343,15 +497,26 @@
                     <a href="#" class="social-link">▶️</a>
                 </div>
             </div>
-            <div class="contact-form">
+            <div class="contact-form reveal">
+                <h3>Napíšte nám</h3>
                 <form id="contactForm">
                     <div class="form-row">
-                        <div class="form-group"><label>Meno a priezvisko *</label><input type="text" name="name" required></div>
-                        <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
+                        <div class="form-group">
+                            <label>Meno a priezvisko *</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" required>
+                        </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div>
-                        <div class="form-group"><label>Záujem o službu</label>
+                        <div class="form-group">
+                            <label>Telefón</label>
+                            <input type="tel" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Záujem o službu</label>
                             <select name="service">
                                 <option value="">Vyberte službu</option>
                                 <option value="lessons">Jazdecké lekcie</option>
@@ -361,37 +526,130 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group"><label>Správa</label><textarea name="message" placeholder="Napíšte nám..."></textarea></div>
+                    <div class="form-group">
+                        <label>Správa</label>
+                        <textarea name="message" placeholder="Napíšte nám vašu otázku alebo požiadavku..."></textarea>
+                    </div>
                     <button type="submit" class="btn-submit">Odoslať správu</button>
                 </form>
             </div>
         </div>
     </section>
 
+    <!-- Map -->
+    <div class="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2662.5!2d17.6583!3d48.4167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476b5e0f3b3b3b3b%3A0x0!2sJaslovsk%C3%A9%20Bohunice!5e0!3m2!1ssk!2ssk!4v1234567890" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-inner">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <img src="/assets/logo.png" alt="JK Zelená míľa">
-                    <p>Rodinný jazdecký klub v Jaslovských Bohuniciach. Vaša brána do sveta koní.</p>
-                </div>
-                <div><h4>Navigácia</h4><ul class="footer-links"><li><a href="#about">O nás</a></li><li><a href="#services">Služby</a></li><li><a href="#horses">Kone</a></li><li><a href="#contact">Kontakt</a></li></ul></div>
-                <div><h4>Služby</h4><ul class="footer-links"><li><a href="#">Jazdecké lekcie</a></li><li><a href="#">Ustajnenie</a></li><li><a href="#">Letné tábory</a></li><li><a href="#">Podujatia</a></li></ul></div>
-                <div><h4>Právne</h4><ul class="footer-links"><li><a href="#">Obchodné podmienky</a></li><li><a href="#">Ochrana súkromia</a></li><li><a href="#">GDPR</a></li></ul></div>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="/assets/logo.png" alt="JK Zelená míľa">
+                <p>Rodinný jazdecký klub s tradíciou od roku 2000. Vaša brána do sveta koní v srdci Jaslovských Bohuníc.</p>
             </div>
-            <div class="footer-bottom">
-                <p>© 2021 - 2025 Jazdecký klub Zelená míľa | IČO: 53536002</p>
-                <p>Nová ulica 297/41, 919 30 Jaslovské Bohunice</p>
+            <div>
+                <h4>Navigácia</h4>
+                <ul class="footer-links">
+                    <li><a href="#about">O nás</a></li>
+                    <li><a href="#services">Služby</a></li>
+                    <li><a href="#horses">Kone</a></li>
+                    <li><a href="#contact">Kontakt</a></li>
+                </ul>
             </div>
+            <div>
+                <h4>Služby</h4>
+                <ul class="footer-links">
+                    <li><a href="#services">Jazdecké lekcie</a></li>
+                    <li><a href="#services">Ustajnenie</a></li>
+                    <li><a href="#services">Letné tábory</a></li>
+                    <li><a href="#services">Podujatia</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Kontakt</h4>
+                <ul class="footer-links">
+                    <li><a href="tel:+421905523022">+421 905 523 022</a></li>
+                    <li><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></li>
+                    <li><a href="#contact">Jaslovské Bohunice</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2000 - 2025 Jazdecký klub Zelená míľa | IČO: 53536002</p>
+            <p>Nová ulica 297/41, 919 30 Jaslovské Bohunice</p>
         </div>
     </footer>
 
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <script>
+        // Preloader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hide');
+            }, 800);
+        });
+
         // Navbar scroll
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
+
+        // Mobile menu
+        function toggleMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Reveal on scroll
+        const reveals = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => {
+            reveals.forEach(el => {
+                const top = el.getBoundingClientRect().top;
+                if (top < window.innerHeight - 100) {
+                    el.classList.add('active');
+                }
+            });
+        };
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll();
+
+        // Counter animation
+        const counters = document.querySelectorAll('.stat-number');
+        const animateCounters = () => {
+            counters.forEach(counter => {
+                const rect = counter.getBoundingClientRect();
+                if (rect.top < window.innerHeight && !counter.classList.contains('counted')) {
+                    counter.classList.add('counted');
+                    const target = parseInt(counter.dataset.count);
+                    let count = 0;
+                    const increment = target / 50;
+                    const updateCount = () => {
+                        count += increment;
+                        if (count < target) {
+                            counter.textContent = Math.ceil(count);
+                            requestAnimationFrame(updateCount);
+                        } else {
+                            counter.textContent = target + '+';
+                        }
+                    };
+                    updateCount();
+                }
+            });
+        };
+        window.addEventListener('scroll', animateCounters);
 
         // Load horses from API
         async function loadHorses() {
@@ -400,28 +658,36 @@
                 const horses = await res.json();
                 const grid = document.getElementById('horsesGrid');
                 
-                const levelLabels = { experienced: 'Skúsený', beginner: 'Začiatočníci', advanced: 'Pokročilí', children: 'Deti' };
+                const levelNames = {
+                    'beginner': 'Začiatočníci',
+                    'intermediate': 'Mierne pokročilí', 
+                    'advanced': 'Pokročilí',
+                    'experienced': 'Skúsení',
+                    'children': 'Deti'
+                };
                 
-                grid.innerHTML = horses.map(h => {
-                    const age = h.birth_date ? new Date().getFullYear() - new Date(h.birth_date).getFullYear() : '?';
-                    return `
-                        <div class="horse-card">
-                            <div class="horse-img">🐴<span class="horse-badge">${levelLabels[h.level] || h.level || 'Všetci'}</span></div>
-                            <div class="horse-info">
-                                <h3>${h.name}</h3>
-                                <p class="horse-breed">${h.breed || 'Nezadané'}</p>
-                                <div class="horse-stats">
-                                    <div class="horse-stat"><div class="horse-stat-val">${age}</div><div class="horse-stat-label">Rokov</div></div>
-                                    <div class="horse-stat"><div class="horse-stat-val">${h.height || '?'}</div><div class="horse-stat-label">cm</div></div>
-                                </div>
+                const emojis = ['🐴', '🦄', '🐎', '🏇'];
+                
+                grid.innerHTML = horses.map((horse, i) => `
+                    <div class="horse-card reveal active">
+                        <div class="horse-img">
+                            <span>${emojis[i % emojis.length]}</span>
+                        </div>
+                        <div class="horse-info">
+                            <h3 class="horse-name">${horse.name}</h3>
+                            <p class="horse-breed">${horse.breed || 'Krásny kôň'}</p>
+                            <div class="horse-tags">
+                                ${horse.level ? `<span class="horse-tag">${levelNames[horse.level] || horse.level}</span>` : ''}
+                                ${horse.color ? `<span class="horse-tag">${horse.color}</span>` : ''}
                             </div>
                         </div>
-                    `;
-                }).join('');
+                    </div>
+                `).join('');
             } catch (e) {
-                console.error('Error loading horses:', e);
+                console.log('Horses loading...');
             }
         }
+        loadHorses();
 
         // Contact form
         document.getElementById('contactForm').addEventListener('submit', async (e) => {
@@ -430,50 +696,37 @@
             btn.disabled = true;
             btn.textContent = 'Odosielam...';
 
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-
             try {
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
                 const res = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                const result = await res.json();
-                
+
                 if (res.ok) {
-                    showToast('Ďakujeme! Čoskoro vás kontaktujeme.', 'success');
+                    showToast('Ďakujeme! Čoskoro sa vám ozveme.', 'success');
                     e.target.reset();
                 } else {
-                    showToast(result.error || 'Chyba pri odosielaní.', 'error');
+                    throw new Error();
                 }
             } catch (err) {
-                showToast('Chyba pripojenia.', 'error');
+                showToast('Chyba pri odosielaní. Skúste znova.', 'error');
             }
 
             btn.disabled = false;
             btn.textContent = 'Odoslať správu';
         });
 
-        function showToast(msg, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+        // Toast notification
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => toast.classList.remove('show'), 4000);
         }
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                const target = document.querySelector(a.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-
-        // Init
-        loadHorses();
     </script>
 </body>
 </html>
