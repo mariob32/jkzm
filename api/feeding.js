@@ -1,0 +1,35 @@
+const { createClient } = require('@supabase/supabase-js');
+const jwt = require('jsonwebtoken');
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
+
+function verifyToken(req) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return null;
+    try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
+}
+
+module.exports = async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+
+    if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
+
+    try {
+        const { data: schedules, error } = await supabase.from('feeding_schedules')
+            .select('*, horses:horse_id (name)')
+            .order('feed_time');
+        if (error) throw error;
+
+        const result = await Promise.all(schedules.map(async (s) => {
+            const { data: items } = await supabase.from('feeding_items').select('*').eq('schedule_id', s.id);
+            return { ...s, horse_name: s.horses?.name, items: items || [] };
+        }));
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+};

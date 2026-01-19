@@ -1,0 +1,22 @@
+{
+  "functions": {
+    "api/*.js": {
+      "memory": 256,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/api/auth/login", "destination": "/api/auth-login" },
+    { "source": "/api/dashboard/stats", "destination": "/api/dashboard-stats" },
+    { "source": "/api/dashboard/today", "destination": "/api/dashboard-today" },
+    { "source": "/api/dashboard/activity", "destination": "/api/dashboard-activity" },
+    { "source": "/api/horses/:id", "destination": "/api/horses-id?id=:id" },
+    { "source": "/api/riders/:id", "destination": "/api/riders-id?id=:id" },
+    { "source": "/api/contact/:id/status", "destination": "/api/contact-id?id=:id" },
+    { "source": "/api/contact/:id", "destination": "/api/contact-id?id=:id" },
+    { "source": "/api/bookings/:id/status", "destination": "/api/bookings-id?id=:id" },
+    { "source": "/api/bookings/:id", "destination": "/api/bookings-id?id=:id" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/(.*)", "destination": "/admin/index.html" }
+  ]
+}
