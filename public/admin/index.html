@@ -1302,7 +1302,7 @@
     }
     
     async function loadSjfClubs(search, region, activeOnly) {
-        let url = `${API}/sjf-clubs?`;
+        let url = `/api/sjf-clubs?`;
         if (search) url += `search=${encodeURIComponent(search)}&`;
         if (region) url += `region=${region}&`;
         if (activeOnly) url += `status=Aktívny&`;
@@ -1359,7 +1359,7 @@
             licenseField = 'trainer_license';
         }
         
-        let url = `${API}/sjf-persons?role=${role}&`;
+        let url = `/api/sjf-persons?role=${role}&`;
         if (search) url += `search=${encodeURIComponent(search)}&`;
         if (region) url += `region=${region}&`;
         if (activeOnly) url += `status=Aktívny&`;
