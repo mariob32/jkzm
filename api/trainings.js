@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
         if (req.method === 'GET') {
             const { data, error } = await supabase.from('trainings')
                 .select('*, riders:rider_id (first_name, last_name), horses:horse_id (name), trainers:trainer_id (first_name, last_name)')
-                .order('scheduled_date', { ascending: false });
+                .order('date', { ascending: false });
             if (error) throw error;
             const formatted = data.map(t => ({
                 ...t,
@@ -33,17 +33,39 @@ module.exports = async (req, res) => {
             return res.status(200).json(formatted);
         }
         if (req.method === 'POST') {
-            const { rider_id, horse_id, trainer_id, scheduled_date, scheduled_time, duration, type, price, notes } = req.body;
+            const { rider_id, horse_id, trainer_id, date, start_time, end_time, duration_minutes, training_type, price, notes } = req.body;
             const { data, error } = await supabase.from('trainings')
-                .insert([{ rider_id: rider_id || null, horse_id: horse_id || null, trainer_id: trainer_id || null, scheduled_date, scheduled_time, duration: duration || 60, type: type || 'individual', price: price || 0, notes, status: 'scheduled' }])
+                .insert([{ 
+                    rider_id: rider_id || null, 
+                    horse_id: horse_id || null, 
+                    trainer_id: trainer_id || null, 
+                    date: date || req.body.scheduled_date, 
+                    start_time: start_time || req.body.scheduled_time, 
+                    end_time,
+                    duration_minutes: duration_minutes || req.body.duration || 60, 
+                    training_type: training_type || req.body.type || 'individual', 
+                    price: price || 0, 
+                    trainer_notes: notes, 
+                    status: 'scheduled' 
+                }])
                 .select().single();
             if (error) throw error;
             return res.status(201).json(data);
         }
         if (req.method === 'PUT') {
-            const { id, rider_id, horse_id, trainer_id, scheduled_date, scheduled_time, duration, type, price, notes, status } = req.body;
+            const { id, rider_id, horse_id, trainer_id, date, start_time, end_time, duration_minutes, training_type, price, notes, status } = req.body;
             const { data, error } = await supabase.from('trainings')
-                .update({ rider_id, horse_id, trainer_id, scheduled_date, scheduled_time, duration, type, price, notes, status })
+                .update({ 
+                    rider_id, horse_id, trainer_id, 
+                    date: date || req.body.scheduled_date, 
+                    start_time: start_time || req.body.scheduled_time, 
+                    end_time,
+                    duration_minutes: duration_minutes || req.body.duration, 
+                    training_type: training_type || req.body.type, 
+                    price, 
+                    trainer_notes: notes, 
+                    status 
+                })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);

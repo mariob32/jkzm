@@ -29,9 +29,17 @@ module.exports = async (req, res) => {
         }
 
         if (req.method === 'PUT') {
-            const { rider_id, horse_id, trainer_id, scheduled_date, scheduled_time, duration, price, status } = req.body;
+            const { rider_id, horse_id, trainer_id, date, start_time, end_time, duration_minutes, training_type, price, status } = req.body;
             const { data, error } = await supabase.from('trainings')
-                .update({ rider_id, horse_id, trainer_id, scheduled_date, scheduled_time, duration, price, status })
+                .update({ 
+                    rider_id, horse_id, trainer_id, 
+                    date: date || req.body.scheduled_date, 
+                    start_time: start_time || req.body.scheduled_time,
+                    end_time,
+                    duration_minutes: duration_minutes || req.body.duration,
+                    training_type: training_type || req.body.type,
+                    price, status 
+                })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);

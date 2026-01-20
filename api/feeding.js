@@ -20,53 +20,48 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            const { data: schedules, error } = await supabase.from('feeding_schedules')
-                .select('*, horses:horse_id (name)')
-                .order('feed_time');
+            const { data, error } = await supabase.from('feeding')
+                .select('*, horses:horse_id (name), employees:employee_id (first_name, last_name)')
+                .order('date', { ascending: false });
             if (error) throw error;
 
-            const result = await Promise.all(schedules.map(async (s) => {
-                const { data: items } = await supabase.from('feeding_items').select('*').eq('schedule_id', s.id);
-                return { ...s, horse_name: s.horses?.name, items: items || [] };
+            const result = data.map(f => ({
+                ...f,
+                horse_name: f.horses?.name,
+                fed_by_name: f.employees ? `${f.employees.first_name} ${f.employees.last_name}` : null
             }));
             return res.status(200).json(result);
         }
 
         if (req.method === 'POST') {
-            const { horse_id, time_of_day, feed_time, items } = req.body;
+            const { horse_id, employee_id, date, time_slot, notes } = req.body;
             if (!horse_id) return res.status(400).json({ error: 'horse_id required' });
             
-            const { data: schedule, error } = await supabase.from('feeding_schedules')
-                .insert([{ horse_id, time_of_day, feed_time }])
+            const { data, error } = await supabase.from('feeding')
+                .insert([{ 
+                    horse_id, 
+                    employee_id: employee_id || req.body.fed_by || null, 
+                    date: date || new Date().toISOString().split('T')[0], 
+                    time_slot: time_slot || req.body.feeding_time || 'morning',
+                    notes 
+                }])
                 .select().single();
             if (error) throw error;
-
-            if (items && items.length > 0) {
-                const feedItems = items.map(i => ({ schedule_id: schedule.id, feed_type: i.feed_type, amount: i.amount, unit: i.unit }));
-                await supabase.from('feeding_items').insert(feedItems);
-            }
-            return res.status(201).json(schedule);
+            return res.status(201).json(data);
         }
 
         if (req.method === 'PUT') {
-            const { id, horse_id, time_of_day, feed_time, items } = req.body;
-            const { data, error } = await supabase.from('feeding_schedules')
-                .update({ horse_id, time_of_day, feed_time })
+            const { id, horse_id, employee_id, date, time_slot, notes } = req.body;
+            const { data, error } = await supabase.from('feeding')
+                .update({ horse_id, employee_id, date, time_slot, notes })
                 .eq('id', id).select().single();
             if (error) throw error;
-
-            await supabase.from('feeding_items').delete().eq('schedule_id', id);
-            if (items && items.length > 0) {
-                const feedItems = items.map(i => ({ schedule_id: id, feed_type: i.feed_type, amount: i.amount, unit: i.unit }));
-                await supabase.from('feeding_items').insert(feedItems);
-            }
             return res.status(200).json(data);
         }
 
         if (req.method === 'DELETE') {
             const { id } = req.body;
-            await supabase.from('feeding_items').delete().eq('schedule_id', id);
-            await supabase.from('feeding_schedules').delete().eq('id', id);
+            await supabase.from('feeding').delete().eq('id', id);
             return res.status(200).json({ message: 'Deleted' });
         }
 

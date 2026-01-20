@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
                 *,
                 horses (id, name)
             `)
-            .order('date', { ascending: false });
+            .order('record_date', { ascending: false });
         
         if (horse_id) query = query.eq('horse_id', horse_id);
         if (record_type) query = query.eq('record_type', record_type);
@@ -38,16 +38,15 @@ module.exports = async (req, res) => {
         const {
             horse_id,
             record_type,
-            date,
+            record_date,
             next_due_date,
-            veterinarian,
+            vet_name,
             vet_license,
-            clinic,
+            vet_clinic,
             vaccine_name,
             vaccine_batch,
             vaccine_manufacturer,
             diagnosis,
-            treatment_description,
             medication,
             dosage,
             withdrawal_period_days,
@@ -63,16 +62,15 @@ module.exports = async (req, res) => {
             .insert([{
                 horse_id,
                 record_type,
-                date,
+                record_date: record_date || req.body.date,
                 next_due_date,
-                veterinarian,
+                vet_name: vet_name || req.body.veterinarian,
                 vet_license,
-                clinic,
+                vet_clinic: vet_clinic || req.body.clinic,
                 vaccine_name,
                 vaccine_batch,
                 vaccine_manufacturer,
                 diagnosis,
-                treatment_description,
                 medication,
                 dosage,
                 withdrawal_period_days,

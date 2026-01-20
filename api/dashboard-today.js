@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
         const today = new Date().toISOString().split('T')[0];
         const { data, error } = await supabase.from('trainings')
             .select('*, riders:rider_id (first_name, last_name), horses:horse_id (name), trainers:trainer_id (first_name, last_name)')
-            .eq('scheduled_date', today).order('scheduled_time');
+            .eq('date', today).order('start_time');
         if (error) throw error;
         const formatted = data.map(t => ({
             ...t,
