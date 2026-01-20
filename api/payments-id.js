@@ -12,45 +12,40 @@ function verifyToken(req) {
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
+
+    const id = req.query.id;
+    if (!id) return res.status(400).json({ error: 'ID required' });
 
     if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
 
     try {
         if (req.method === 'GET') {
-            const { data, error } = await supabase.from('payments')
-                .select('*, riders:rider_id (first_name, last_name)')
-                .order('payment_date', { ascending: false });
-            if (error) throw error;
-            const formatted = data.map(p => ({ ...p, rider_name: p.riders ? `${p.riders.first_name} ${p.riders.last_name}` : null }));
-            return res.status(200).json(formatted);
+            const { data, error } = await supabase.from('payments').select('*').eq('id', id).single();
+            if (error || !data) return res.status(404).json({ error: 'Not found' });
+            return res.status(200).json(data);
         }
-        if (req.method === 'POST') {
-            const { rider_id, training_id, amount, payment_date, payment_method, description } = req.body;
-            const { data, error } = await supabase.from('payments')
-                .insert([{ rider_id: rider_id || null, training_id: training_id || null, amount, payment_date, payment_method: payment_method || 'cash', description }])
-                .select().single();
-            if (error) throw error;
-            return res.status(201).json(data);
-        }
+
         if (req.method === 'PUT') {
-            const { id, rider_id, training_id, amount, payment_date, payment_method, description } = req.body;
+            const { rider_id, amount, payment_date, payment_method, description } = req.body;
             const { data, error } = await supabase.from('payments')
-                .update({ rider_id, training_id, amount, payment_date, payment_method, description })
+                .update({ rider_id, amount, payment_date, payment_method, description })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);
         }
+
         if (req.method === 'DELETE') {
-            const { id } = req.body;
             const { error } = await supabase.from('payments').delete().eq('id', id);
             if (error) throw error;
             return res.status(200).json({ message: 'Deleted' });
         }
+
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
+        console.error('Payments error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };
