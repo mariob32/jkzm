@@ -17,6 +17,7 @@ module.exports = async (req, res) => {
       .select('*')
       .order('surname');
     
+    // Filter podľa role (voliteľný)
     if (role === 'judge') {
       query = query.not('judge_license', 'is', null);
     } else if (role === 'trainer') {
@@ -29,7 +30,10 @@ module.exports = async (req, res) => {
     
     if (region) query = query.eq('region', region);
     if (status) query = query.eq('sjf_license_status', status);
-    if (search) query = query.or(`surname.ilike.%${search}%,first_name.ilike.%${search}%`);
+    if (search) query = query.or(`surname.ilike.%${search}%,first_name.ilike.%${search}%,club_name.ilike.%${search}%`);
+    
+    // Limit výsledkov
+    query = query.limit(500);
     
     const { data, error } = await query;
     

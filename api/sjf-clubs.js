@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     if (status) query = query.eq('status', status);
     if (region) query = query.eq('region', region);
     if (school === 'true') query = query.eq('is_riding_school', true);
-    if (search) query = query.ilike('name', `%${search}%`);
+    if (search) query = query.or(`name.ilike.%${search}%,city.ilike.%${search}%,contact_person.ilike.%${search}%`);
     
     const { data, error } = await query;
     
