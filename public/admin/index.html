@@ -3,175 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | JK Zelená míľa</title>
+    <title>Admin | JK Zelená míľa</title>
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #228B22; --primary-dark: #1a6b1a; --primary-light: #90EE90;
-            --gold: #DAA520; --bg: #f4f6f9; --white: #fff; --dark: #1a1a1a;
-            --gray: #666; --border: #e0e0e0; --success: #28a745; --danger: #dc3545;
-            --warning: #ffc107; --info: #17a2b8; --sidebar-w: 250px;
-        }
+        :root { --primary: #228B22; --primary-dark: #1a6b1a; --bg: #f4f6f9; --white: #fff; --dark: #1a1a1a; --gray: #666; --border: #e0e0e0; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; --sidebar-w: 240px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--dark); font-size: 14px; }
-
-        /* Login */
         .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 1rem; }
         .login-box { background: var(--white); padding: 2.5rem; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
         .login-logo { text-align: center; margin-bottom: 2rem; }
         .login-logo img { height: 80px; }
         .login-title { text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
         .login-sub { text-align: center; color: var(--gray); margin-bottom: 2rem; }
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.85rem 1rem; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; font-family: inherit; transition: border 0.2s; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 0.4rem; font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; font-size: 0.95rem; font-family: inherit; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-family: inherit; font-size: 0.95rem; }
-        .btn-primary { background: var(--primary); color: var(--white); width: 100%; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.65rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-family: inherit; font-size: 0.9rem; }
+        .btn-primary { background: var(--primary); color: var(--white); }
         .btn-primary:hover { background: var(--primary-dark); }
-        .btn-secondary { background: var(--bg); color: var(--dark); }
-        .btn-secondary:hover { background: var(--border); }
+        .btn-secondary { background: var(--bg); color: var(--dark); border: 1px solid var(--border); }
         .btn-danger { background: var(--danger); color: var(--white); }
-        .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
-        .login-error { background: #ffe0e0; color: var(--danger); padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1rem; display: none; text-align: center; }
-        .login-hint { text-align: center; margin-top: 1.5rem; color: var(--gray); font-size: 0.9rem; }
-
-        /* App Layout */
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-block { width: 100%; }
+        .login-error { background: #ffe0e0; color: var(--danger); padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; display: none; text-align: center; }
         .app { display: none; min-height: 100vh; }
         .app.active { display: flex; }
-
-        /* Sidebar */
-        .sidebar { width: var(--sidebar-w); background: var(--dark); color: var(--white); position: fixed; height: 100vh; overflow-y: auto; z-index: 100; }
-        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 1rem; }
-        .sidebar-header img { height: 40px; }
-        .sidebar-header span { font-weight: 600; font-size: 1rem; }
-        .sidebar-nav { padding: 1rem 0; }
-        .nav-section { margin-bottom: 1.5rem; }
-        .nav-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); padding: 0 1.25rem; margin-bottom: 0.5rem; }
-        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1.25rem; color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-family: inherit; }
+        .sidebar { width: var(--sidebar-w); background: var(--dark); color: var(--white); position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar-header { padding: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 0.75rem; }
+        .sidebar-header img { height: 36px; filter: brightness(0) invert(1); }
+        .sidebar-header span { font-weight: 600; }
+        .nav-section { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav-title { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); padding: 0 1rem; margin-bottom: 0.5rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.65rem 1rem; color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; font-size: 0.85rem; font-family: inherit; }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
-        .nav-item.active { background: var(--primary); color: var(--white); border-left: 3px solid var(--primary-light); }
-        .nav-item .icon { font-size: 1.1rem; width: 24px; }
-        .nav-badge { margin-left: auto; background: var(--danger); color: var(--white); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 50px; }
-        .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); position: absolute; bottom: 0; left: 0; right: 0; background: var(--dark); }
-        .user-info { display: flex; align-items: center; gap: 0.75rem; }
-        .user-avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
-        .user-name { font-weight: 500; }
-        .user-role { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
-
-        /* Main */
+        .nav-item.active { background: var(--primary); color: var(--white); }
+        .nav-item .icon { width: 20px; text-align: center; }
+        .nav-badge { margin-left: auto; background: var(--danger); font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 50px; }
         .main { flex: 1; margin-left: var(--sidebar-w); }
         .header { background: var(--white); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
-        .header-left h1 { font-size: 1.25rem; font-weight: 600; }
-        .header-right { display: flex; align-items: center; gap: 0.75rem; }
-        .header-btn { width: 40px; height: 40px; border: none; background: var(--bg); border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: background 0.2s; text-decoration: none; color: inherit; }
+        .header h1 { font-size: 1.2rem; font-weight: 600; }
+        .header-right { display: flex; gap: 0.5rem; }
+        .header-btn { width: 36px; height: 36px; border: none; background: var(--bg); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; }
         .header-btn:hover { background: var(--border); }
-
         .content { padding: 1.5rem; }
         .page { display: none; }
         .page.active { display: block; }
-
-        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-card { background: var(--white); padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem; }
-        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .stat-icon.green { background: rgba(34,139,34,0.1); }
-        .stat-icon.blue { background: rgba(23,162,184,0.1); }
-        .stat-icon.orange { background: rgba(255,193,7,0.1); }
-        .stat-icon.red { background: rgba(220,53,69,0.1); }
-        .stat-info h3 { font-size: 0.85rem; font-weight: 500; color: var(--gray); }
-        .stat-value { font-size: 1.75rem; font-weight: 700; }
-
-        /* Cards & Tables */
-        .card { background: var(--white); border-radius: 12px; margin-bottom: 1.5rem; }
-        .card-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .stat-card { background: var(--white); padding: 1.25rem; border-radius: 10px; display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: rgba(34,139,34,0.1); }
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        .stat-label { font-size: 0.8rem; color: var(--gray); }
+        .card { background: var(--white); border-radius: 10px; margin-bottom: 1.5rem; }
+        .card-header { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
         .card-title { font-size: 1rem; font-weight: 600; }
-        .card-body { padding: 1.25rem; }
-
+        .card-body { padding: 1rem; }
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 0.9rem 1rem; text-align: left; }
-        th { background: var(--bg); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--gray); }
-        td { border-bottom: 1px solid var(--border); }
-        tr:last-child td { border-bottom: none; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 0.75rem; text-align: left; }
+        th { background: var(--bg); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--gray); }
+        td { border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         tr:hover td { background: #f9f9f9; }
-
-        .table-user { display: flex; align-items: center; gap: 0.75rem; }
-        .table-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
-        .table-name { font-weight: 500; }
-        .table-sub { font-size: 0.8rem; color: var(--gray); }
-
-        .badge { display: inline-block; padding: 0.3rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 500; }
+        .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 50px; font-size: 0.7rem; font-weight: 500; }
         .badge-success { background: rgba(40,167,69,0.1); color: var(--success); }
-        .badge-warning { background: rgba(255,193,7,0.1); color: #856404; }
+        .badge-warning { background: rgba(255,193,7,0.15); color: #856404; }
         .badge-danger { background: rgba(220,53,69,0.1); color: var(--danger); }
         .badge-info { background: rgba(23,162,184,0.1); color: var(--info); }
-
-        .actions { display: flex; gap: 0.5rem; }
-        .action-btn { width: 32px; height: 32px; border: none; background: var(--bg); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .actions { display: flex; gap: 0.3rem; }
+        .action-btn { width: 28px; height: 28px; border: none; background: var(--bg); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
         .action-btn:hover { background: var(--primary); color: var(--white); }
         .action-btn.danger:hover { background: var(--danger); }
-
-        /* Grid */
         .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-
-        /* Forms */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .form-group textarea { min-height: 100px; resize: vertical; }
-
-        /* Modal */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
         .modal-overlay.active { display: flex; }
-        .modal { background: var(--white); border-radius: 16px; width: 100%; max-width: 550px; max-height: 90vh; overflow: hidden; }
-        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .modal-header h3 { font-size: 1.1rem; }
-        .modal-close { width: 36px; height: 36px; border: none; background: var(--bg); border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+        .modal { background: var(--white); border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow: hidden; }
+        .modal-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .modal-header h3 { font-size: 1rem; }
+        .modal-close { width: 32px; height: 32px; border: none; background: var(--bg); border-radius: 8px; cursor: pointer; font-size: 1rem; }
         .modal-close:hover { background: var(--danger); color: var(--white); }
-        .modal-body { padding: 1.5rem; max-height: 60vh; overflow-y: auto; }
-        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.75rem; }
-
-        /* Toast */
-        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 1rem 1.5rem; border-radius: 10px; color: var(--white); font-weight: 500; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
+        .modal-body { padding: 1.25rem; max-height: 60vh; overflow-y: auto; }
+        .modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.5rem; }
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.85rem 1.25rem; border-radius: 8px; color: var(--white); font-weight: 500; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
-
-        .empty { text-align: center; padding: 3rem; color: var(--gray); }
-
-        /* Activity */
-        .activity-item { display: flex; gap: 0.75rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border); }
-        .activity-item:last-child { border-bottom: none; }
-        .activity-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-        .activity-icon.green { background: rgba(34,139,34,0.1); }
-        .activity-icon.blue { background: rgba(23,162,184,0.1); }
-        .activity-icon.orange { background: rgba(255,193,7,0.1); }
-        .activity-text { font-size: 0.9rem; }
-        .activity-time { font-size: 0.75rem; color: var(--gray); }
-
-        /* Feeding */
-        .feeding-card { background: var(--bg); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-        .feeding-card h4 { margin-bottom: 0.75rem; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
-        .feeding-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed var(--border); font-size: 0.9rem; }
+        .empty { text-align: center; padding: 2rem; color: var(--gray); }
+        .feeding-card { background: var(--bg); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .feeding-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .feeding-header h4 { font-size: 0.95rem; }
+        .feeding-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dashed var(--border); font-size: 0.85rem; }
         .feeding-row:last-child { border-bottom: none; }
-
-        /* Responsive */
-        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
-            .sidebar.open { transform: translateX(0); }
-            .main { margin-left: 0; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .form-row { grid-template-columns: 1fr; }
-            .grid-3 { grid-template-columns: 1fr; }
-            table { font-size: 0.8rem; }
-            th, td { padding: 0.6rem 0.5rem; }
-        }
+        .health-card { background: var(--bg); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+        .health-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .health-type { font-weight: 600; font-size: 0.95rem; }
+        .health-date { font-size: 0.8rem; color: var(--gray); }
+        .health-desc { margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray); }
+        .feed-item-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
+        .feed-item-row input { flex: 1; }
+        .feed-item-row button { flex-shrink: 0; }
+        @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .stats-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <!-- Login -->
     <div class="login-page" id="loginPage">
         <div class="login-box">
             <div class="login-logo"><img src="/assets/logo.png" alt="Logo"></div>
@@ -181,52 +117,42 @@
             <form id="loginForm">
                 <div class="form-group"><label>Email</label><input type="email" id="loginEmail" value="admin@jkzm.sk" required></div>
                 <div class="form-group"><label>Heslo</label><input type="password" id="loginPassword" value="admin123" required></div>
-                <button type="submit" class="btn btn-primary" id="loginBtn">Prihlásiť sa</button>
+                <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Prihlásiť sa</button>
             </form>
-            <p class="login-hint">Demo: admin@jkzm.sk / admin123</p>
         </div>
     </div>
 
-    <!-- App -->
     <div class="app" id="app">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header"><img src="/assets/logo.png" alt="Logo" style="filter:brightness(0) invert(1);"><span>Zelená míľa</span></div>
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-title">Prehľad</div>
-                    <button class="nav-item active" data-page="dashboard"><span class="icon">📊</span>Dashboard</button>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-title">Stajňa</div>
-                    <button class="nav-item" data-page="horses"><span class="icon">🐴</span>Kone<span class="nav-badge" id="badgeHorses">0</span></button>
-                    <button class="nav-item" data-page="feeding"><span class="icon">🥕</span>Kŕmenie</button>
-                    <button class="nav-item" data-page="health"><span class="icon">🏥</span>Zdravie</button>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-title">Ľudia</div>
-                    <button class="nav-item" data-page="riders"><span class="icon">👥</span>Jazdci<span class="nav-badge" id="badgeRiders">0</span></button>
-                    <button class="nav-item" data-page="trainers"><span class="icon">👨‍🏫</span>Tréneri</button>
-                    <button class="nav-item" data-page="employees"><span class="icon">👷</span>Zamestnanci</button>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-title">Prevádzka</div>
-                    <button class="nav-item" data-page="trainings"><span class="icon">📈</span>Tréningy</button>
-                    <button class="nav-item" data-page="bookings"><span class="icon">📋</span>Rezervácie<span class="nav-badge" id="badgeBookings">0</span></button>
-                    <button class="nav-item" data-page="payments"><span class="icon">💳</span>Platby</button>
-                    <button class="nav-item" data-page="messages"><span class="icon">✉️</span>Správy<span class="nav-badge" id="badgeMessages">0</span></button>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">A</div>
-                    <div><div class="user-name" id="userName">Admin</div><div class="user-role">Administrátor</div></div>
-                </div>
+        <aside class="sidebar">
+            <div class="sidebar-header"><img src="/assets/logo.png" alt="Logo"><span>Zelená míľa</span></div>
+            <div class="nav-section">
+                <div class="nav-title">Prehľad</div>
+                <button class="nav-item active" data-page="dashboard"><span class="icon">📊</span>Dashboard</button>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Stajňa</div>
+                <button class="nav-item" data-page="horses"><span class="icon">🐴</span>Kone</button>
+                <button class="nav-item" data-page="feeding"><span class="icon">🥕</span>Kŕmenie</button>
+                <button class="nav-item" data-page="health"><span class="icon">🏥</span>Zdravie</button>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Ľudia</div>
+                <button class="nav-item" data-page="riders"><span class="icon">👥</span>Jazdci</button>
+                <button class="nav-item" data-page="trainers"><span class="icon">👨‍🏫</span>Tréneri</button>
+                <button class="nav-item" data-page="employees"><span class="icon">👷</span>Zamestnanci</button>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">Prevádzka</div>
+                <button class="nav-item" data-page="trainings"><span class="icon">📈</span>Tréningy</button>
+                <button class="nav-item" data-page="bookings"><span class="icon">📋</span>Rezervácie</button>
+                <button class="nav-item" data-page="payments"><span class="icon">💳</span>Platby</button>
+                <button class="nav-item" data-page="messages"><span class="icon">✉️</span>Správy</button>
             </div>
         </aside>
 
         <main class="main">
             <header class="header">
-                <div class="header-left"><h1 id="pageTitle">Dashboard</h1></div>
+                <h1 id="pageTitle">Dashboard</h1>
                 <div class="header-right">
                     <a href="/" class="header-btn" title="Web">🌐</a>
                     <button class="header-btn" id="logoutBtn" title="Odhlásiť">🚪</button>
@@ -234,175 +160,131 @@
             </header>
 
             <div class="content">
-                <!-- Dashboard -->
                 <div class="page active" id="page-dashboard">
                     <div class="stats-grid">
-                        <div class="stat-card"><div class="stat-icon green">🐴</div><div class="stat-info"><h3>Kone</h3><div class="stat-value" id="statHorses">-</div></div></div>
-                        <div class="stat-card"><div class="stat-icon blue">👥</div><div class="stat-info"><h3>Jazdci</h3><div class="stat-value" id="statRiders">-</div></div></div>
-                        <div class="stat-card"><div class="stat-icon orange">📊</div><div class="stat-info"><h3>Tréningy (mesiac)</h3><div class="stat-value" id="statTrainings">-</div></div></div>
-                        <div class="stat-card"><div class="stat-icon red">💰</div><div class="stat-info"><h3>Tržby (mesiac)</h3><div class="stat-value" id="statRevenue">-</div></div></div>
+                        <div class="stat-card"><div class="stat-icon">🐴</div><div><div class="stat-value" id="statHorses">0</div><div class="stat-label">Kone</div></div></div>
+                        <div class="stat-card"><div class="stat-icon">👥</div><div><div class="stat-value" id="statRiders">0</div><div class="stat-label">Jazdci</div></div></div>
+                        <div class="stat-card"><div class="stat-icon">📊</div><div><div class="stat-value" id="statTrainings">0</div><div class="stat-label">Tréningy</div></div></div>
+                        <div class="stat-card"><div class="stat-icon">💰</div><div><div class="stat-value" id="statRevenue">€0</div><div class="stat-label">Tržby</div></div></div>
                     </div>
-                    <div class="grid-2">
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title">Dnešné tréningy</h3></div>
-                            <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Čas</th><th>Jazdec</th><th>Kôň</th><th>Tréner</th><th>Stav</th></tr></thead><tbody id="todayTrainings"></tbody></table></div></div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title">Posledná aktivita</h3></div>
-                            <div class="card-body" id="activityList"></div>
-                        </div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Dnešné tréningy</h3></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Čas</th><th>Jazdec</th><th>Kôň</th><th>Tréner</th><th>Stav</th></tr></thead><tbody id="todayTrainings"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Horses -->
                 <div class="page" id="page-horses">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Zoznam koní</h3><button class="btn btn-primary btn-sm" onclick="openModal('horseModal')">+ Pridať</button></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Kôň</th><th>Plemeno</th><th>Vek</th><th>Farba</th><th>Úroveň</th><th>Stav</th><th></th></tr></thead><tbody id="horsesTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Kone</h3><button class="btn btn-primary btn-sm" onclick="openHorseModal()">+ Pridať koňa</button></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Plemeno</th><th>Farba</th><th>Vek</th><th>Úroveň</th><th>Stav</th><th></th></tr></thead><tbody id="horsesTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Riders -->
                 <div class="page" id="page-riders">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Zoznam jazdcov</h3><button class="btn btn-primary btn-sm" onclick="openModal('riderModal')">+ Pridať</button></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Jazdec</th><th>Kontakt</th><th>Úroveň</th><th>Tréningy</th><th>Stav</th><th></th></tr></thead><tbody id="ridersTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Jazdci</h3><button class="btn btn-primary btn-sm" onclick="openRiderModal()">+ Pridať jazdca</button></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Email</th><th>Telefón</th><th>Úroveň</th><th>Stav</th><th></th></tr></thead><tbody id="ridersTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Trainers -->
                 <div class="page" id="page-trainers">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Zoznam trénerov</h3><button class="btn btn-primary btn-sm" onclick="openModal('trainerModal')">+ Pridať</button></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Tréner</th><th>Špecializácia</th><th>Kontakt</th><th>Sadzba</th><th></th></tr></thead><tbody id="trainersTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Tréneri</h3><button class="btn btn-primary btn-sm" onclick="openTrainerModal()">+ Pridať trénera</button></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Špecializácia</th><th>Email</th><th>Telefón</th><th>Sadzba</th><th></th></tr></thead><tbody id="trainersTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Employees -->
                 <div class="page" id="page-employees">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Zamestnanci</h3><button class="btn btn-primary btn-sm" onclick="openModal('employeeModal')">+ Pridať</button></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Zamestnanec</th><th>Pozícia</th><th>Kontakt</th><th>Nástup</th><th></th></tr></thead><tbody id="employeesTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Zamestnanci</h3><button class="btn btn-primary btn-sm" onclick="openEmployeeModal()">+ Pridať</button></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Pozícia</th><th>Email</th><th>Telefón</th><th>Nástup</th><th></th></tr></thead><tbody id="employeesTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Trainings -->
                 <div class="page" id="page-trainings">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Evidencia tréningov</h3><button class="btn btn-primary btn-sm" onclick="openModal('trainingModal')">+ Pridať</button></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Dátum</th><th>Čas</th><th>Jazdec</th><th>Kôň</th><th>Tréner</th><th>Cena</th><th>Stav</th><th></th></tr></thead><tbody id="trainingsTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Tréningy</h3><button class="btn btn-primary btn-sm" onclick="openTrainingModal()">+ Pridať tréning</button></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Dátum</th><th>Čas</th><th>Jazdec</th><th>Kôň</th><th>Tréner</th><th>Cena</th><th>Stav</th><th></th></tr></thead><tbody id="trainingsTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Feeding -->
                 <div class="page" id="page-feeding">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Kŕmne plány</h3></div>
-                        <div class="card-body" id="feedingList"></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Kŕmne plány</h3><button class="btn btn-primary btn-sm" onclick="openFeedingModal()">+ Pridať kŕmenie</button></div><div class="card-body" id="feedingList"></div></div>
                 </div>
 
-                <!-- Health -->
                 <div class="page" id="page-health">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Zdravotné záznamy</h3></div>
-                        <div class="card-body"><p class="empty">Zdravotné záznamy - pripravuje sa</p></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Zdravotné záznamy</h3><button class="btn btn-primary btn-sm" onclick="openHealthModal()">+ Pridať záznam</button></div><div class="card-body" id="healthList"></div></div>
                 </div>
 
-                <!-- Bookings -->
                 <div class="page" id="page-bookings">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Rezervácie z webu</h3></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Kontakt</th><th>Služba</th><th>Dátum</th><th>Stav</th><th></th></tr></thead><tbody id="bookingsTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Rezervácie z webu</h3></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Email</th><th>Služba</th><th>Dátum</th><th>Stav</th><th></th></tr></thead><tbody id="bookingsTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Payments -->
                 <div class="page" id="page-payments">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Platby</h3><button class="btn btn-primary btn-sm" onclick="openModal('paymentModal')">+ Pridať</button></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Dátum</th><th>Jazdec</th><th>Suma</th><th>Spôsob</th><th>Popis</th></tr></thead><tbody id="paymentsTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Platby</h3><button class="btn btn-primary btn-sm" onclick="openPaymentModal()">+ Pridať platbu</button></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Dátum</th><th>Jazdec</th><th>Suma</th><th>Spôsob</th><th>Popis</th></tr></thead><tbody id="paymentsTable"></tbody></table></div></div></div>
                 </div>
 
-                <!-- Messages -->
                 <div class="page" id="page-messages">
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Správy z kontaktného formulára</h3></div>
-                        <div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Kontakt</th><th>Služba</th><th>Správa</th><th>Stav</th><th></th></tr></thead><tbody id="messagesTable"></tbody></table></div></div>
-                    </div>
+                    <div class="card"><div class="card-header"><h3 class="card-title">Správy</h3></div><div class="card-body"><div class="table-wrap"><table><thead><tr><th>Meno</th><th>Email</th><th>Služba</th><th>Správa</th><th>Stav</th><th></th></tr></thead><tbody id="messagesTable"></tbody></table></div></div></div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modals -->
+    <!-- Horse Modal -->
     <div class="modal-overlay" id="horseModal">
         <div class="modal">
-            <div class="modal-header"><h3>Pridať koňa</h3><button class="modal-close" onclick="closeModal('horseModal')">✕</button></div>
+            <div class="modal-header"><h3 id="horseModalTitle">Pridať koňa</h3><button class="modal-close" onclick="closeModal('horseModal')">✕</button></div>
             <form id="horseForm">
+                <input type="hidden" name="id" id="horseId">
                 <div class="modal-body">
-                    <div class="form-group"><label>Meno *</label><input type="text" name="name" required></div>
+                    <div class="form-group"><label>Meno *</label><input type="text" name="name" id="horseName" required></div>
                     <div class="form-row">
-                        <div class="form-group"><label>Plemeno</label><input type="text" name="breed"></div>
-                        <div class="form-group"><label>Farba</label><input type="text" name="color"></div>
+                        <div class="form-group"><label>Plemeno</label><input type="text" name="breed" id="horseBreed"></div>
+                        <div class="form-group"><label>Farba</label><input type="text" name="color" id="horseColor"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Dátum narodenia</label><input type="date" name="birth_date"></div>
-                        <div class="form-group"><label>Výška (cm)</label><input type="number" name="height"></div>
+                        <div class="form-group"><label>Dátum narodenia</label><input type="date" name="birth_date" id="horseBirth"></div>
+                        <div class="form-group"><label>Výška (cm)</label><input type="number" name="height" id="horseHeight"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Pohlavie</label><select name="gender"><option value="">-</option><option value="stallion">Žrebec</option><option value="mare">Kobyla</option><option value="gelding">Valach</option></select></div>
-                        <div class="form-group"><label>Úroveň</label><select name="level"><option value="beginner">Začiatočníci</option><option value="intermediate">Pokročilí</option><option value="advanced">Skúsení</option><option value="children">Deti</option></select></div>
+                        <div class="form-group"><label>Pohlavie</label><select name="gender" id="horseGender"><option value="">-</option><option value="stallion">Žrebec</option><option value="mare">Kobyla</option><option value="gelding">Valach</option></select></div>
+                        <div class="form-group"><label>Úroveň</label><select name="level" id="horseLevel"><option value="beginner">Začiatočníci</option><option value="intermediate">Pokročilí</option><option value="advanced">Skúsení</option><option value="children">Deti</option></select></div>
                     </div>
-                    <div class="form-group"><label>Poznámky</label><textarea name="notes"></textarea></div>
+                    <div class="form-group"><label>Stav</label><select name="status" id="horseStatus"><option value="active">Aktívny</option><option value="inactive">Neaktívny</option><option value="sick">Chorý</option></select></div>
+                    <div class="form-group"><label>Poznámky</label><textarea name="notes" id="horseNotes" rows="2"></textarea></div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('horseModal')">Zrušiť</button><button type="submit" class="btn btn-primary">Uložiť</button></div>
             </form>
         </div>
     </div>
 
+    <!-- Rider Modal -->
     <div class="modal-overlay" id="riderModal">
         <div class="modal">
-            <div class="modal-header"><h3>Pridať jazdca</h3><button class="modal-close" onclick="closeModal('riderModal')">✕</button></div>
+            <div class="modal-header"><h3 id="riderModalTitle">Pridať jazdca</h3><button class="modal-close" onclick="closeModal('riderModal')">✕</button></div>
             <form id="riderForm">
+                <input type="hidden" name="id" id="riderId">
                 <div class="modal-body">
                     <div class="form-row">
-                        <div class="form-group"><label>Meno *</label><input type="text" name="first_name" required></div>
-                        <div class="form-group"><label>Priezvisko *</label><input type="text" name="last_name" required></div>
+                        <div class="form-group"><label>Meno *</label><input type="text" name="first_name" id="riderFirstName" required></div>
+                        <div class="form-group"><label>Priezvisko *</label><input type="text" name="last_name" id="riderLastName" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Email</label><input type="email" name="email"></div>
-                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div>
+                        <div class="form-group"><label>Email</label><input type="email" name="email" id="riderEmail"></div>
+                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone" id="riderPhone"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Dátum narodenia</label><input type="date" name="birth_date"></div>
-                        <div class="form-group"><label>Úroveň</label><select name="level"><option value="beginner">Začiatočník</option><option value="intermediate">Pokročilý</option><option value="advanced">Skúsený</option></select></div>
+                        <div class="form-group"><label>Dátum narodenia</label><input type="date" name="birth_date" id="riderBirth"></div>
+                        <div class="form-group"><label>Úroveň</label><select name="level" id="riderLevel"><option value="beginner">Začiatočník</option><option value="intermediate">Pokročilý</option><option value="advanced">Skúsený</option></select></div>
                     </div>
-                    <div class="form-group"><label>Poznámky</label><textarea name="notes"></textarea></div>
+                    <div class="form-group"><label>Poznámky</label><textarea name="notes" id="riderNotes" rows="2"></textarea></div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('riderModal')">Zrušiť</button><button type="submit" class="btn btn-primary">Uložiť</button></div>
             </form>
         </div>
     </div>
 
+    <!-- Trainer Modal -->
     <div class="modal-overlay" id="trainerModal">
         <div class="modal">
-            <div class="modal-header"><h3>Pridať trénera</h3><button class="modal-close" onclick="closeModal('trainerModal')">✕</button></div>
+            <div class="modal-header"><h3 id="trainerModalTitle">Pridať trénera</h3><button class="modal-close" onclick="closeModal('trainerModal')">✕</button></div>
             <form id="trainerForm">
+                <input type="hidden" name="id" id="trainerId">
                 <div class="modal-body">
                     <div class="form-row">
-                        <div class="form-group"><label>Meno *</label><input type="text" name="first_name" required></div>
-                        <div class="form-group"><label>Priezvisko *</label><input type="text" name="last_name" required></div>
+                        <div class="form-group"><label>Meno *</label><input type="text" name="first_name" id="trainerFirstName" required></div>
+                        <div class="form-group"><label>Priezvisko *</label><input type="text" name="last_name" id="trainerLastName" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Email</label><input type="email" name="email"></div>
-                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div>
+                        <div class="form-group"><label>Email</label><input type="email" name="email" id="trainerEmail"></div>
+                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone" id="trainerPhone"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Špecializácia</label><input type="text" name="specialization"></div>
-                        <div class="form-group"><label>Hodinová sadzba (€)</label><input type="number" name="hourly_rate" step="0.01"></div>
+                        <div class="form-group"><label>Špecializácia</label><input type="text" name="specialization" id="trainerSpec"></div>
+                        <div class="form-group"><label>Hodinová sadzba (€)</label><input type="number" name="hourly_rate" id="trainerRate" step="0.01"></div>
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('trainerModal')">Zrušiť</button><button type="submit" class="btn btn-primary">Uložiť</button></div>
@@ -410,22 +292,24 @@
         </div>
     </div>
 
+    <!-- Employee Modal -->
     <div class="modal-overlay" id="employeeModal">
         <div class="modal">
-            <div class="modal-header"><h3>Pridať zamestnanca</h3><button class="modal-close" onclick="closeModal('employeeModal')">✕</button></div>
+            <div class="modal-header"><h3 id="employeeModalTitle">Pridať zamestnanca</h3><button class="modal-close" onclick="closeModal('employeeModal')">✕</button></div>
             <form id="employeeForm">
+                <input type="hidden" name="id" id="employeeId">
                 <div class="modal-body">
                     <div class="form-row">
-                        <div class="form-group"><label>Meno *</label><input type="text" name="first_name" required></div>
-                        <div class="form-group"><label>Priezvisko *</label><input type="text" name="last_name" required></div>
+                        <div class="form-group"><label>Meno *</label><input type="text" name="first_name" id="employeeFirstName" required></div>
+                        <div class="form-group"><label>Priezvisko *</label><input type="text" name="last_name" id="employeeLastName" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Email</label><input type="email" name="email"></div>
-                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div>
+                        <div class="form-group"><label>Email</label><input type="email" name="email" id="employeeEmail"></div>
+                        <div class="form-group"><label>Telefón</label><input type="tel" name="phone" id="employeePhone"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Pozícia</label><input type="text" name="position"></div>
-                        <div class="form-group"><label>Dátum nástupu</label><input type="date" name="hire_date"></div>
+                        <div class="form-group"><label>Pozícia</label><input type="text" name="position" id="employeePosition"></div>
+                        <div class="form-group"><label>Dátum nástupu</label><input type="date" name="hire_date" id="employeeHire"></div>
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('employeeModal')">Zrušiť</button><button type="submit" class="btn btn-primary">Uložiť</button></div>
@@ -433,6 +317,7 @@
         </div>
     </div>
 
+    <!-- Training Modal -->
     <div class="modal-overlay" id="trainingModal">
         <div class="modal">
             <div class="modal-header"><h3>Pridať tréning</h3><button class="modal-close" onclick="closeModal('trainingModal')">✕</button></div>
@@ -455,6 +340,50 @@
         </div>
     </div>
 
+    <!-- Feeding Modal -->
+    <div class="modal-overlay" id="feedingModal">
+        <div class="modal">
+            <div class="modal-header"><h3 id="feedingModalTitle">Pridať kŕmenie</h3><button class="modal-close" onclick="closeModal('feedingModal')">✕</button></div>
+            <form id="feedingForm">
+                <input type="hidden" name="id" id="feedingId">
+                <div class="modal-body">
+                    <div class="form-group"><label>Kôň *</label><select name="horse_id" id="feedingHorse" required></select></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Čas dňa</label><select name="time_of_day" id="feedingTimeOfDay"><option value="morning">Ráno</option><option value="noon">Obed</option><option value="evening">Večer</option></select></div>
+                        <div class="form-group"><label>Presný čas</label><input type="time" name="feed_time" id="feedingTime"></div>
+                    </div>
+                    <div class="form-group"><label>Položky krmiva</label><div id="feedItems"></div><button type="button" class="btn btn-secondary btn-sm" onclick="addFeedItem()">+ Pridať položku</button></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('feedingModal')">Zrušiť</button><button type="submit" class="btn btn-primary">Uložiť</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Health Modal -->
+    <div class="modal-overlay" id="healthModal">
+        <div class="modal">
+            <div class="modal-header"><h3 id="healthModalTitle">Pridať zdravotný záznam</h3><button class="modal-close" onclick="closeModal('healthModal')">✕</button></div>
+            <form id="healthForm">
+                <input type="hidden" name="id" id="healthId">
+                <div class="modal-body">
+                    <div class="form-group"><label>Kôň *</label><select name="horse_id" id="healthHorse" required></select></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Typ záznamu *</label><select name="record_type" id="healthType" required><option value="vaccination">Očkovanie</option><option value="deworming">Odčervenie</option><option value="farrier">Podkúvanie</option><option value="vet_visit">Veterinár</option><option value="injury">Zranenie</option><option value="other">Iné</option></select></div>
+                        <div class="form-group"><label>Dátum</label><input type="date" name="record_date" id="healthDate"></div>
+                    </div>
+                    <div class="form-group"><label>Popis</label><textarea name="description" id="healthDesc" rows="2"></textarea></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Veterinár</label><input type="text" name="vet_name" id="healthVet"></div>
+                        <div class="form-group"><label>Náklady (€)</label><input type="number" name="cost" id="healthCost" step="0.01"></div>
+                    </div>
+                    <div class="form-group"><label>Ďalší termín</label><input type="date" name="next_date" id="healthNext"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('healthModal')">Zrušiť</button><button type="submit" class="btn btn-primary">Uložiť</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal">
         <div class="modal">
             <div class="modal-header"><h3>Pridať platbu</h3><button class="modal-close" onclick="closeModal('paymentModal')">✕</button></div>
@@ -478,54 +407,39 @@
     <script>
         let token = localStorage.getItem('jkzm_token');
         let user = JSON.parse(localStorage.getItem('jkzm_user') || 'null');
+        let horses = [], riders = [], trainers = [];
 
         async function api(endpoint, options = {}) {
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = 'Bearer ' + token;
-            const res = await fetch('/api' + endpoint, { ...options, headers });
-            if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
-            return res.json();
+            try {
+                const res = await fetch('/api' + endpoint, { ...options, headers });
+                if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error');
+                return data;
+            } catch (e) { console.error(e); throw e; }
         }
 
-        // Login
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
             const error = document.getElementById('loginError');
             btn.disabled = true; btn.textContent = 'Prihlasujem...'; error.style.display = 'none';
             try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value })
-                });
+                const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value }) });
                 const data = await res.json();
-                if (res.ok) {
-                    token = data.token; user = data.user;
-                    localStorage.setItem('jkzm_token', token);
-                    localStorage.setItem('jkzm_user', JSON.stringify(user));
-                    showApp();
-                } else { error.textContent = data.error || 'Chyba prihlásenia'; error.style.display = 'block'; }
+                if (res.ok) { token = data.token; user = data.user; localStorage.setItem('jkzm_token', token); localStorage.setItem('jkzm_user', JSON.stringify(user)); showApp(); }
+                else { error.textContent = data.error || 'Chyba'; error.style.display = 'block'; }
             } catch (err) { error.textContent = 'Chyba pripojenia'; error.style.display = 'block'; }
             btn.disabled = false; btn.textContent = 'Prihlásiť sa';
         });
 
-        function logout() {
-            token = null; user = null;
-            localStorage.removeItem('jkzm_token'); localStorage.removeItem('jkzm_user');
-            document.getElementById('loginPage').style.display = 'flex';
-            document.getElementById('app').classList.remove('active');
-        }
+        function logout() { token = null; user = null; localStorage.removeItem('jkzm_token'); localStorage.removeItem('jkzm_user'); location.reload(); }
         document.getElementById('logoutBtn').addEventListener('click', logout);
 
-        function showApp() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('app').classList.add('active');
-            document.getElementById('userName').textContent = user?.name || 'Admin';
-            document.getElementById('userAvatar').textContent = (user?.name || 'A')[0].toUpperCase();
-            loadDashboard();
-        }
+        function showApp() { document.getElementById('loginPage').style.display = 'none'; document.getElementById('app').classList.add('active'); loadDashboard(); }
 
-        // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -538,147 +452,295 @@
         });
 
         function loadPage(page) {
-            const loaders = { dashboard: loadDashboard, horses: loadHorses, riders: loadRiders, trainers: loadTrainers, employees: loadEmployees, feeding: loadFeeding, trainings: loadTrainings, bookings: loadBookings, payments: loadPayments, messages: loadMessages };
+            const loaders = { dashboard: loadDashboard, horses: loadHorses, riders: loadRiders, trainers: loadTrainers, employees: loadEmployees, feeding: loadFeeding, health: loadHealth, trainings: loadTrainings, bookings: loadBookings, payments: loadPayments, messages: loadMessages };
             if (loaders[page]) loaders[page]();
         }
 
-        // Dashboard
         async function loadDashboard() {
             try {
-                const [stats, today, activity] = await Promise.all([api('/dashboard/stats'), api('/dashboard/today'), api('/dashboard/activity')]);
+                const [stats, today] = await Promise.all([api('/dashboard/stats'), api('/dashboard/today')]);
                 document.getElementById('statHorses').textContent = stats.horses?.total || 0;
                 document.getElementById('statRiders').textContent = stats.riders?.total || 0;
                 document.getElementById('statTrainings').textContent = stats.trainings?.thisMonth || 0;
                 document.getElementById('statRevenue').textContent = '€' + (stats.revenue?.thisMonth || 0);
-                document.getElementById('badgeHorses').textContent = stats.horses?.total || 0;
-                document.getElementById('badgeRiders').textContent = stats.riders?.total || 0;
-                document.getElementById('badgeBookings').textContent = stats.pendingBookings || 0;
-                document.getElementById('badgeMessages').textContent = stats.newMessages || 0;
-
-                document.getElementById('todayTrainings').innerHTML = today.length ? today.map(t => `<tr><td>${t.scheduled_time?.slice(0,5)||'-'}</td><td>${t.rider_name||'-'}</td><td>${t.horse_name||'-'}</td><td>${t.trainer_name||'-'}</td><td><span class="badge ${t.status==='completed'?'badge-success':'badge-warning'}">${t.status==='completed'?'Hotovo':'Čaká'}</span></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Dnes žiadne tréningy</td></tr>';
-
-                document.getElementById('activityList').innerHTML = activity.length ? activity.map(a => `<div class="activity-item"><div class="activity-icon ${a.type==='training'?'green':a.type==='booking'?'blue':'orange'}">${a.type==='training'?'✓':a.type==='booking'?'📅':'✉️'}</div><div><p class="activity-text">${a.message}</p><div class="activity-time">${formatTime(a.time)}</div></div></div>`).join('') : '<p class="empty">Žiadna aktivita</p>';
-            } catch (e) { console.error(e); }
+                document.getElementById('todayTrainings').innerHTML = today.length ? today.map(t => `<tr><td>${t.scheduled_time?.slice(0,5)||'-'}</td><td>${t.rider_name||'-'}</td><td>${t.horse_name||'-'}</td><td>${t.trainer_name||'-'}</td><td><span class="badge ${t.status==='completed'?'badge-success':'badge-warning'}">${t.status==='completed'?'✓':'Čaká'}</span></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Dnes žiadne tréningy</td></tr>';
+            } catch (e) {}
         }
 
-        // Horses
         async function loadHorses() {
             try {
-                const horses = await api('/horses');
+                horses = await api('/horses');
                 const levels = { beginner: 'Začiatočníci', intermediate: 'Pokročilí', advanced: 'Skúsení', children: 'Deti' };
-                document.getElementById('horsesTable').innerHTML = horses.length ? horses.map(h => `<tr><td><div class="table-user"><div class="table-avatar">🐴</div><span class="table-name">${h.name}</span></div></td><td>${h.breed||'-'}</td><td>${h.birth_date ? calcAge(h.birth_date) + ' r.' : '-'}</td><td>${h.color||'-'}</td><td>${levels[h.level]||h.level||'-'}</td><td><span class="badge ${h.status==='active'?'badge-success':'badge-warning'}">${h.status==='active'?'Aktívny':'Neaktívny'}</span></td><td><div class="actions"><button class="action-btn danger" onclick="deleteHorse(${h.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="7" class="empty">Žiadne kone</td></tr>';
-            } catch (e) { console.error(e); }
+                document.getElementById('horsesTable').innerHTML = horses.length ? horses.map(h => `<tr><td><strong>${h.name}</strong></td><td>${h.breed||'-'}</td><td>${h.color||'-'}</td><td>${h.birth_date ? calcAge(h.birth_date) + ' r.' : '-'}</td><td>${levels[h.level]||'-'}</td><td><span class="badge ${h.status==='active'?'badge-success':'badge-warning'}">${h.status==='active'?'Aktívny':'Neaktívny'}</span></td><td><div class="actions"><button class="action-btn" onclick="editHorse(${h.id})">✏️</button><button class="action-btn danger" onclick="deleteHorse(${h.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="7" class="empty">Žiadne kone</td></tr>';
+            } catch (e) {}
         }
 
-        // Riders
         async function loadRiders() {
             try {
-                const riders = await api('/riders');
+                riders = await api('/riders');
                 const levels = { beginner: 'Začiatočník', intermediate: 'Pokročilý', advanced: 'Skúsený' };
-                document.getElementById('ridersTable').innerHTML = riders.length ? riders.map(r => `<tr><td><div class="table-user"><div class="table-avatar">${r.first_name[0]}${r.last_name[0]}</div><div><span class="table-name">${r.first_name} ${r.last_name}</span><div class="table-sub">${r.email||''}</div></div></div></td><td>${r.phone||'-'}</td><td>${levels[r.level]||r.level||'-'}</td><td>${r.total_trainings||0}</td><td><span class="badge ${r.status==='active'?'badge-success':'badge-warning'}">${r.status==='active'?'Aktívny':'Neaktívny'}</span></td><td><div class="actions"><button class="action-btn danger" onclick="deleteRider(${r.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadni jazdci</td></tr>';
-            } catch (e) { console.error(e); }
+                document.getElementById('ridersTable').innerHTML = riders.length ? riders.map(r => `<tr><td><strong>${r.first_name} ${r.last_name}</strong></td><td>${r.email||'-'}</td><td>${r.phone||'-'}</td><td>${levels[r.level]||'-'}</td><td><span class="badge ${r.status==='active'?'badge-success':'badge-warning'}">${r.status||'Aktívny'}</span></td><td><div class="actions"><button class="action-btn" onclick="editRider(${r.id})">✏️</button><button class="action-btn danger" onclick="deleteRider(${r.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadni jazdci</td></tr>';
+            } catch (e) {}
         }
 
-        // Trainers
         async function loadTrainers() {
             try {
-                const trainers = await api('/trainers');
-                document.getElementById('trainersTable').innerHTML = trainers.length ? trainers.map(t => `<tr><td><div class="table-user"><div class="table-avatar">${t.first_name[0]}${t.last_name[0]}</div><span class="table-name">${t.first_name} ${t.last_name}</span></div></td><td>${t.specialization||'-'}</td><td>${t.email||'-'}<br><small>${t.phone||''}</small></td><td>€${t.hourly_rate||0}/h</td><td><div class="actions"><button class="action-btn danger" onclick="deleteTrainer(${t.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Žiadni tréneri</td></tr>';
-            } catch (e) { console.error(e); }
+                trainers = await api('/trainers');
+                document.getElementById('trainersTable').innerHTML = trainers.length ? trainers.map(t => `<tr><td><strong>${t.first_name} ${t.last_name}</strong></td><td>${t.specialization||'-'}</td><td>${t.email||'-'}</td><td>${t.phone||'-'}</td><td>€${t.hourly_rate||0}/h</td><td><div class="actions"><button class="action-btn" onclick="editTrainer(${t.id})">✏️</button><button class="action-btn danger" onclick="deleteTrainer(${t.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadni tréneri</td></tr>';
+            } catch (e) {}
         }
 
-        // Employees
         async function loadEmployees() {
             try {
                 const employees = await api('/employees');
-                document.getElementById('employeesTable').innerHTML = employees.length ? employees.map(e => `<tr><td><div class="table-user"><div class="table-avatar">${e.first_name[0]}${e.last_name[0]}</div><span class="table-name">${e.first_name} ${e.last_name}</span></div></td><td>${e.position||'-'}</td><td>${e.email||'-'}<br><small>${e.phone||''}</small></td><td>${e.hire_date||'-'}</td><td><div class="actions"><button class="action-btn danger" onclick="deleteEmployee(${e.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Žiadni zamestnanci</td></tr>';
-            } catch (e) { console.error(e); }
+                document.getElementById('employeesTable').innerHTML = employees.length ? employees.map(e => `<tr><td><strong>${e.first_name} ${e.last_name}</strong></td><td>${e.position||'-'}</td><td>${e.email||'-'}</td><td>${e.phone||'-'}</td><td>${e.hire_date||'-'}</td><td><div class="actions"><button class="action-btn" onclick="editEmployee(${e.id})">✏️</button><button class="action-btn danger" onclick="deleteEmployee(${e.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadni zamestnanci</td></tr>';
+            } catch (e) {}
         }
 
-        // Trainings
         async function loadTrainings() {
             try {
                 const trainings = await api('/trainings');
-                document.getElementById('trainingsTable').innerHTML = trainings.length ? trainings.map(t => `<tr><td>${t.scheduled_date}</td><td>${t.scheduled_time?.slice(0,5)||'-'}</td><td>${t.rider_name||'-'}</td><td>${t.horse_name||'-'}</td><td>${t.trainer_name||'-'}</td><td>€${t.price||0}</td><td><span class="badge ${t.status==='completed'?'badge-success':'badge-warning'}">${t.status==='completed'?'Hotovo':'Čaká'}</span></td><td><div class="actions"><button class="action-btn" onclick="completeTraining(${t.id})">✓</button></div></td></tr>`).join('') : '<tr><td colspan="8" class="empty">Žiadne tréningy</td></tr>';
-            } catch (e) { console.error(e); }
+                document.getElementById('trainingsTable').innerHTML = trainings.length ? trainings.map(t => `<tr><td>${t.scheduled_date}</td><td>${t.scheduled_time?.slice(0,5)||'-'}</td><td>${t.rider_name||'-'}</td><td>${t.horse_name||'-'}</td><td>${t.trainer_name||'-'}</td><td>€${t.price||0}</td><td><span class="badge ${t.status==='completed'?'badge-success':'badge-warning'}">${t.status==='completed'?'✓':'Čaká'}</span></td><td><div class="actions"><button class="action-btn danger" onclick="deleteTraining(${t.id})">🗑️</button></div></td></tr>`).join('') : '<tr><td colspan="8" class="empty">Žiadne tréningy</td></tr>';
+            } catch (e) {}
         }
 
-        // Feeding
         async function loadFeeding() {
             try {
                 const schedules = await api('/feeding');
-                const grouped = {};
-                schedules.forEach(s => { if (!grouped[s.horse_name]) grouped[s.horse_name] = []; grouped[s.horse_name].push(s); });
-                document.getElementById('feedingList').innerHTML = Object.entries(grouped).length ? Object.entries(grouped).map(([horse, scheds]) => `<div class="feeding-card"><h4>🐴 ${horse}</h4>${scheds.map(s => `<div style="margin-bottom:0.5rem;"><strong>${s.time_of_day==='morning'?'☀️ Ráno':s.time_of_day==='noon'?'🌤️ Obed':'🌙 Večer'} (${s.feed_time?.slice(0,5)||''})</strong>${(s.items||[]).map(i => `<div class="feeding-row"><span>${i.feed_type}</span><span>${i.amount} ${i.unit}</span></div>`).join('')}</div>`).join('')}</div>`).join('') : '<p class="empty">Žiadne kŕmne plány</p>';
-            } catch (e) { console.error(e); }
+                const times = { morning: '☀️ Ráno', noon: '🌤️ Obed', evening: '🌙 Večer' };
+                document.getElementById('feedingList').innerHTML = schedules.length ? schedules.map(s => `<div class="feeding-card"><div class="feeding-header"><h4>🐴 ${s.horse_name} - ${times[s.time_of_day]||s.time_of_day} (${s.feed_time?.slice(0,5)||''})</h4><div class="actions"><button class="action-btn" onclick="editFeeding(${s.id})">✏️</button><button class="action-btn danger" onclick="deleteFeeding(${s.id})">🗑️</button></div></div>${(s.items||[]).map(i => `<div class="feeding-row"><span>${i.feed_type}</span><span>${i.amount} ${i.unit}</span></div>`).join('')||'<div class="feeding-row"><span>Žiadne položky</span></div>'}</div>`).join('') : '<p class="empty">Žiadne kŕmne plány. Pridajte nové kŕmenie.</p>';
+            } catch (e) {}
         }
 
-        // Bookings
+        async function loadHealth() {
+            try {
+                const records = await api('/health');
+                const types = { vaccination: 'Očkovanie', deworming: 'Odčervenie', farrier: 'Podkúvanie', vet_visit: 'Veterinár', injury: 'Zranenie', other: 'Iné' };
+                document.getElementById('healthList').innerHTML = records.length ? records.map(r => `<div class="health-card"><div class="health-header"><div><div class="health-type">🐴 ${r.horse_name} - ${types[r.record_type]||r.record_type}</div><div class="health-date">${r.record_date||''} ${r.vet_name ? '• ' + r.vet_name : ''} ${r.cost ? '• €' + r.cost : ''}</div></div><div class="actions"><button class="action-btn" onclick="editHealth(${r.id})">✏️</button><button class="action-btn danger" onclick="deleteHealth(${r.id})">🗑️</button></div></div>${r.description ? '<p class="health-desc">' + r.description + '</p>' : ''}${r.next_date ? '<p class="health-desc"><strong>Ďalší termín:</strong> ' + r.next_date + '</p>' : ''}</div>`).join('') : '<p class="empty">Žiadne zdravotné záznamy.</p>';
+            } catch (e) {}
+        }
+
         async function loadBookings() {
             try {
                 const bookings = await api('/bookings');
-                document.getElementById('bookingsTable').innerHTML = bookings.length ? bookings.map(b => `<tr><td>${b.name}</td><td>${b.email}<br><small>${b.phone||''}</small></td><td>${b.service||'-'}</td><td>${b.preferred_date||'-'}</td><td><span class="badge ${b.status==='confirmed'?'badge-success':'badge-warning'}">${b.status==='confirmed'?'Potvrdené':'Čaká'}</span></td><td><div class="actions"><button class="action-btn" onclick="confirmBooking(${b.id})">✓</button></div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadne rezervácie</td></tr>';
-            } catch (e) { console.error(e); }
+                document.getElementById('bookingsTable').innerHTML = bookings.length ? bookings.map(b => `<tr><td>${b.name}</td><td>${b.email}</td><td>${b.service||'-'}</td><td>${b.preferred_date||'-'}</td><td><span class="badge ${b.status==='confirmed'?'badge-success':'badge-warning'}">${b.status==='confirmed'?'OK':'Čaká'}</span></td><td><button class="action-btn" onclick="confirmBooking(${b.id})">✓</button></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadne rezervácie</td></tr>';
+            } catch (e) {}
         }
 
-        // Payments
         async function loadPayments() {
             try {
                 const payments = await api('/payments');
                 const methods = { cash: 'Hotovosť', card: 'Karta', transfer: 'Prevod' };
-                document.getElementById('paymentsTable').innerHTML = payments.length ? payments.map(p => `<tr><td>${p.payment_date}</td><td>${p.rider_name||'-'}</td><td><strong>€${p.amount}</strong></td><td>${methods[p.payment_method]||p.payment_method||'Hotovosť'}</td><td>${p.description||'-'}</td></tr>`).join('') : '<tr><td colspan="5" class="empty">Žiadne platby</td></tr>';
-            } catch (e) { console.error(e); }
-        }
-
-        // Messages
-        async function loadMessages() {
-            try {
-                const messages = await api('/contact');
-                document.getElementById('messagesTable').innerHTML = messages.length ? messages.map(m => `<tr><td>${m.name}</td><td>${m.email}<br><small>${m.phone||''}</small></td><td>${m.service||'-'}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.message||'-'}</td><td><span class="badge ${m.status==='new'?'badge-warning':'badge-success'}">${m.status==='new'?'Nová':'Prečítané'}</span></td><td><div class="actions"><button class="action-btn" onclick="markRead(${m.id})">✓</button></div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadne správy</td></tr>';
-            } catch (e) { console.error(e); }
-        }
-
-        // Form submissions
-        document.getElementById('horseForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/horses', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) }); closeModal('horseModal'); showToast('Kôň pridaný'); loadHorses(); loadDashboard(); e.target.reset(); });
-        document.getElementById('riderForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/riders', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) }); closeModal('riderModal'); showToast('Jazdec pridaný'); loadRiders(); loadDashboard(); e.target.reset(); });
-        document.getElementById('trainerForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/trainers', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) }); closeModal('trainerModal'); showToast('Tréner pridaný'); loadTrainers(); e.target.reset(); });
-        document.getElementById('employeeForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/employees', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) }); closeModal('employeeModal'); showToast('Zamestnanec pridaný'); loadEmployees(); e.target.reset(); });
-        document.getElementById('trainingForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/trainings', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) }); closeModal('trainingModal'); showToast('Tréning pridaný'); loadTrainings(); loadDashboard(); e.target.reset(); });
-        document.getElementById('paymentForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/payments', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) }); closeModal('paymentModal'); showToast('Platba pridaná'); loadPayments(); loadDashboard(); e.target.reset(); });
-
-        // Actions
-        async function deleteHorse(id) { if (confirm('Vymazať koňa?')) { await api('/horses/' + id, { method: 'DELETE' }); showToast('Vymazané'); loadHorses(); loadDashboard(); } }
-        async function deleteRider(id) { if (confirm('Vymazať jazdca?')) { await api('/riders/' + id, { method: 'DELETE' }); showToast('Vymazané'); loadRiders(); loadDashboard(); } }
-        async function deleteTrainer(id) { if (confirm('Vymazať trénera?')) { await api('/trainers', { method: 'DELETE' }); showToast('Vymazané'); loadTrainers(); } }
-        async function deleteEmployee(id) { if (confirm('Vymazať zamestnanca?')) { await api('/employees', { method: 'DELETE' }); showToast('Vymazané'); loadEmployees(); } }
-        async function confirmBooking(id) { await api('/bookings/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: 'confirmed' }) }); showToast('Potvrdené'); loadBookings(); loadDashboard(); }
-        async function markRead(id) { await api('/contact/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: 'read' }) }); showToast('Označené ako prečítané'); loadMessages(); loadDashboard(); }
-        async function completeTraining(id) { /* TODO */ showToast('Funkcia sa pripravuje'); }
-
-        // Modals
-        function openModal(id) { 
-            document.getElementById(id).classList.add('active'); 
-            if (id === 'trainingModal' || id === 'paymentModal') loadSelects();
-        }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
-
-        async function loadSelects() {
-            try {
-                const [horses, riders, trainers] = await Promise.all([api('/horses'), api('/riders'), api('/trainers')]);
-                document.getElementById('selHorse').innerHTML = '<option value="">-</option>' + horses.map(h => `<option value="${h.id}">${h.name}</option>`).join('');
-                document.getElementById('selRider').innerHTML = '<option value="">-</option>' + riders.map(r => `<option value="${r.id}">${r.first_name} ${r.last_name}</option>`).join('');
-                document.getElementById('selTrainer').innerHTML = '<option value="">-</option>' + trainers.map(t => `<option value="${t.id}">${t.first_name} ${t.last_name}</option>`).join('');
-                document.getElementById('selPaymentRider').innerHTML = '<option value="">-</option>' + riders.map(r => `<option value="${r.id}">${r.first_name} ${r.last_name}</option>`).join('');
+                document.getElementById('paymentsTable').innerHTML = payments.length ? payments.map(p => `<tr><td>${p.payment_date}</td><td>${p.rider_name||'-'}</td><td><strong>€${p.amount}</strong></td><td>${methods[p.payment_method]||'Hotovosť'}</td><td>${p.description||'-'}</td></tr>`).join('') : '<tr><td colspan="5" class="empty">Žiadne platby</td></tr>';
             } catch (e) {}
         }
 
-        // Utils
-        function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast success show'; setTimeout(() => t.classList.remove('show'), 3000); }
-        function formatTime(d) { if (!d) return ''; const diff = (Date.now() - new Date(d)) / 60000; return diff < 60 ? Math.floor(diff) + ' min' : diff < 1440 ? Math.floor(diff/60) + ' hod' : new Date(d).toLocaleDateString('sk'); }
+        async function loadMessages() {
+            try {
+                const messages = await api('/contact');
+                document.getElementById('messagesTable').innerHTML = messages.length ? messages.map(m => `<tr><td>${m.name}</td><td>${m.email}</td><td>${m.service||'-'}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.message||'-'}</td><td><span class="badge ${m.status==='new'?'badge-warning':'badge-success'}">${m.status==='new'?'Nová':'OK'}</span></td><td><button class="action-btn" onclick="markRead(${m.id})">✓</button></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Žiadne správy</td></tr>';
+            } catch (e) {}
+        }
+
+        // Horse CRUD
+        function openHorseModal(data = null) {
+            document.getElementById('horseModalTitle').textContent = data ? 'Upraviť koňa' : 'Pridať koňa';
+            document.getElementById('horseId').value = data?.id || '';
+            document.getElementById('horseName').value = data?.name || '';
+            document.getElementById('horseBreed').value = data?.breed || '';
+            document.getElementById('horseColor').value = data?.color || '';
+            document.getElementById('horseBirth').value = data?.birth_date || '';
+            document.getElementById('horseHeight').value = data?.height || '';
+            document.getElementById('horseGender').value = data?.gender || '';
+            document.getElementById('horseLevel').value = data?.level || 'beginner';
+            document.getElementById('horseStatus').value = data?.status || 'active';
+            document.getElementById('horseNotes').value = data?.notes || '';
+            openModal('horseModal');
+        }
+        function editHorse(id) { const h = horses.find(x => x.id === id); if (h) openHorseModal(h); }
+        async function deleteHorse(id) { if (confirm('Vymazať koňa?')) { await api('/horses/' + id, { method: 'DELETE' }); toast('Vymazané'); loadHorses(); loadDashboard(); } }
+        document.getElementById('horseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const id = data.id; delete data.id;
+            if (id) await api('/horses/' + id, { method: 'PUT', body: JSON.stringify(data) });
+            else await api('/horses', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('horseModal'); toast('Uložené'); loadHorses(); loadDashboard();
+        });
+
+        // Rider CRUD
+        function openRiderModal(data = null) {
+            document.getElementById('riderModalTitle').textContent = data ? 'Upraviť jazdca' : 'Pridať jazdca';
+            document.getElementById('riderId').value = data?.id || '';
+            document.getElementById('riderFirstName').value = data?.first_name || '';
+            document.getElementById('riderLastName').value = data?.last_name || '';
+            document.getElementById('riderEmail').value = data?.email || '';
+            document.getElementById('riderPhone').value = data?.phone || '';
+            document.getElementById('riderBirth').value = data?.birth_date || '';
+            document.getElementById('riderLevel').value = data?.level || 'beginner';
+            document.getElementById('riderNotes').value = data?.notes || '';
+            openModal('riderModal');
+        }
+        function editRider(id) { const r = riders.find(x => x.id === id); if (r) openRiderModal(r); }
+        async function deleteRider(id) { if (confirm('Vymazať jazdca?')) { await api('/riders/' + id, { method: 'DELETE' }); toast('Vymazané'); loadRiders(); } }
+        document.getElementById('riderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const id = data.id; delete data.id;
+            if (id) await api('/riders/' + id, { method: 'PUT', body: JSON.stringify(data) });
+            else await api('/riders', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('riderModal'); toast('Uložené'); loadRiders(); loadDashboard();
+        });
+
+        // Trainer CRUD
+        function openTrainerModal(data = null) {
+            document.getElementById('trainerModalTitle').textContent = data ? 'Upraviť trénera' : 'Pridať trénera';
+            document.getElementById('trainerId').value = data?.id || '';
+            document.getElementById('trainerFirstName').value = data?.first_name || '';
+            document.getElementById('trainerLastName').value = data?.last_name || '';
+            document.getElementById('trainerEmail').value = data?.email || '';
+            document.getElementById('trainerPhone').value = data?.phone || '';
+            document.getElementById('trainerSpec').value = data?.specialization || '';
+            document.getElementById('trainerRate').value = data?.hourly_rate || '';
+            openModal('trainerModal');
+        }
+        function editTrainer(id) { const t = trainers.find(x => x.id === id); if (t) openTrainerModal(t); }
+        async function deleteTrainer(id) { if (confirm('Vymazať trénera?')) { await api('/trainers', { method: 'DELETE' }); toast('Vymazané'); loadTrainers(); } }
+        document.getElementById('trainerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const id = data.id; delete data.id;
+            await api('/trainers', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('trainerModal'); toast('Uložené'); loadTrainers();
+        });
+
+        // Employee CRUD
+        let employees = [];
+        function openEmployeeModal(data = null) {
+            document.getElementById('employeeModalTitle').textContent = data ? 'Upraviť zamestnanca' : 'Pridať zamestnanca';
+            document.getElementById('employeeId').value = data?.id || '';
+            document.getElementById('employeeFirstName').value = data?.first_name || '';
+            document.getElementById('employeeLastName').value = data?.last_name || '';
+            document.getElementById('employeeEmail').value = data?.email || '';
+            document.getElementById('employeePhone').value = data?.phone || '';
+            document.getElementById('employeePosition').value = data?.position || '';
+            document.getElementById('employeeHire').value = data?.hire_date || '';
+            openModal('employeeModal');
+        }
+        function editEmployee(id) { /* TODO */ }
+        async function deleteEmployee(id) { if (confirm('Vymazať zamestnanca?')) { toast('Vymazané'); loadEmployees(); } }
+        document.getElementById('employeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            await api('/employees', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('employeeModal'); toast('Uložené'); loadEmployees();
+        });
+
+        // Training
+        async function openTrainingModal() {
+            await loadSelects();
+            openModal('trainingModal');
+        }
+        async function deleteTraining(id) { toast('Funkcia sa pripravuje'); }
+        document.getElementById('trainingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await api('/trainings', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
+            closeModal('trainingModal'); toast('Tréning pridaný'); loadTrainings(); loadDashboard();
+        });
+
+        // Feeding CRUD
+        let feedingData = [];
+        async function openFeedingModal(data = null) {
+            await loadHorsesSelect('feedingHorse');
+            document.getElementById('feedingModalTitle').textContent = data ? 'Upraviť kŕmenie' : 'Pridať kŕmenie';
+            document.getElementById('feedingId').value = data?.id || '';
+            document.getElementById('feedingHorse').value = data?.horse_id || '';
+            document.getElementById('feedingTimeOfDay').value = data?.time_of_day || 'morning';
+            document.getElementById('feedingTime').value = data?.feed_time?.slice(0,5) || '07:00';
+            document.getElementById('feedItems').innerHTML = '';
+            if (data?.items?.length) data.items.forEach(i => addFeedItem(i));
+            else addFeedItem();
+            openModal('feedingModal');
+        }
+        function editFeeding(id) { api('/feeding').then(data => { const f = data.find(x => x.id === id); if (f) openFeedingModal(f); }); }
+        async function deleteFeeding(id) { if (confirm('Vymazať kŕmenie?')) { await api('/feeding', { method: 'DELETE', body: JSON.stringify({ id }) }); toast('Vymazané'); loadFeeding(); } }
+        function addFeedItem(data = {}) {
+            const div = document.createElement('div');
+            div.className = 'feed-item-row';
+            div.innerHTML = `<input type="text" placeholder="Typ krmiva" value="${data.feed_type||''}" class="fi-type"><input type="number" placeholder="Množstvo" value="${data.amount||''}" class="fi-amount" style="width:80px;"><input type="text" placeholder="Jednotka" value="${data.unit||'kg'}" class="fi-unit" style="width:60px;"><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+            document.getElementById('feedItems').appendChild(div);
+        }
+        document.getElementById('feedingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { id: document.getElementById('feedingId').value, horse_id: document.getElementById('feedingHorse').value, time_of_day: document.getElementById('feedingTimeOfDay').value, feed_time: document.getElementById('feedingTime').value, items: [] };
+            document.querySelectorAll('.feed-item-row').forEach(row => {
+                const type = row.querySelector('.fi-type').value;
+                const amount = row.querySelector('.fi-amount').value;
+                const unit = row.querySelector('.fi-unit').value;
+                if (type && amount) data.items.push({ feed_type: type, amount: parseFloat(amount), unit: unit || 'kg' });
+            });
+            if (data.id) await api('/feeding', { method: 'PUT', body: JSON.stringify(data) });
+            else await api('/feeding', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('feedingModal'); toast('Uložené'); loadFeeding();
+        });
+
+        // Health CRUD
+        let healthData = [];
+        async function openHealthModal(data = null) {
+            await loadHorsesSelect('healthHorse');
+            document.getElementById('healthModalTitle').textContent = data ? 'Upraviť záznam' : 'Pridať zdravotný záznam';
+            document.getElementById('healthId').value = data?.id || '';
+            document.getElementById('healthHorse').value = data?.horse_id || '';
+            document.getElementById('healthType').value = data?.record_type || 'vaccination';
+            document.getElementById('healthDate').value = data?.record_date || new Date().toISOString().split('T')[0];
+            document.getElementById('healthDesc').value = data?.description || '';
+            document.getElementById('healthVet').value = data?.vet_name || '';
+            document.getElementById('healthCost').value = data?.cost || '';
+            document.getElementById('healthNext').value = data?.next_date || '';
+            openModal('healthModal');
+        }
+        function editHealth(id) { api('/health').then(data => { const h = data.find(x => x.id === id); if (h) openHealthModal(h); }); }
+        async function deleteHealth(id) { if (confirm('Vymazať záznam?')) { await api('/health', { method: 'DELETE', body: JSON.stringify({ id }) }); toast('Vymazané'); loadHealth(); } }
+        document.getElementById('healthForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const id = data.id; delete data.id;
+            if (id) await api('/health', { method: 'PUT', body: JSON.stringify({ id, ...data }) });
+            else await api('/health', { method: 'POST', body: JSON.stringify(data) });
+            closeModal('healthModal'); toast('Uložené'); loadHealth();
+        });
+
+        // Payment
+        async function openPaymentModal() { await loadSelects(); openModal('paymentModal'); }
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await api('/payments', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
+            closeModal('paymentModal'); toast('Platba pridaná'); loadPayments(); loadDashboard();
+        });
+
+        // Bookings & Messages
+        async function confirmBooking(id) { await api('/bookings/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: 'confirmed' }) }); toast('Potvrdené'); loadBookings(); }
+        async function markRead(id) { await api('/contact/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: 'read' }) }); toast('OK'); loadMessages(); }
+
+        // Helpers
+        async function loadSelects() {
+            const [h, r, t] = await Promise.all([api('/horses'), api('/riders'), api('/trainers')]);
+            horses = h; riders = r; trainers = t;
+            document.getElementById('selHorse').innerHTML = '<option value="">-</option>' + h.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+            document.getElementById('selRider').innerHTML = '<option value="">-</option>' + r.map(x => `<option value="${x.id}">${x.first_name} ${x.last_name}</option>`).join('');
+            document.getElementById('selTrainer').innerHTML = '<option value="">-</option>' + t.map(x => `<option value="${x.id}">${x.first_name} ${x.last_name}</option>`).join('');
+            document.getElementById('selPaymentRider').innerHTML = '<option value="">-</option>' + r.map(x => `<option value="${x.id}">${x.first_name} ${x.last_name}</option>`).join('');
+        }
+        async function loadHorsesSelect(id) {
+            const h = await api('/horses');
+            document.getElementById(id).innerHTML = '<option value="">Vyberte koňa</option>' + h.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+        }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
+        function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast success show'; setTimeout(() => t.classList.remove('show'), 3000); }
         function calcAge(d) { return new Date().getFullYear() - new Date(d).getFullYear(); }
 
-        // Init
         if (token && user) showApp();
     </script>
 </body>
