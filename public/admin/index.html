@@ -751,7 +751,7 @@
                 <td>${h.sjf_license_number ? `<span class="badge badge-success">SJF</span>` : ''}${h.fei_id ? ` <span class="badge badge-info">FEI</span>` : ''}</td>
                 <td>${h.vaccination_status || '<span class="badge badge-warning">Skontrolovať</span>'}</td>
                 <td><span class="badge badge-${h.status === 'active' ? 'success' : 'gray'}">${h.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editHorse(${h.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteHorse(${h.id})">🗑️</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="editHorse('${h.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteHorse('${h.id}')">🗑️</button></td>
             </tr>
         `).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne kone</td></tr>';
     }
@@ -769,7 +769,7 @@
                 <td>${levelLabels[r.level] || '-'}</td>
                 <td><span class="badge badge-${r.medical_certificate_valid ? 'success' : 'danger'}">${r.medical_certificate_valid ? 'Platné' : 'Neplatné'}</span></td>
                 <td><span class="badge badge-${r.status === 'active' ? 'success' : 'gray'}">${r.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editRider(${r.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteRider(${r.id})">🗑️</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="editRider('${r.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteRider('${r.id}')">🗑️</button></td>
             </tr>
         `).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadni jazdci</td></tr>';
     }
@@ -782,7 +782,7 @@
                 <td>${(t.specializations || []).join(', ') || '-'}</td>
                 <td>${t.employment_type || '-'}</td>
                 <td><span class="badge badge-${t.status === 'active' ? 'success' : 'gray'}">${t.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editTrainer(${t.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteTrainer(${t.id})">🗑️</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="editTrainer('${t.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteTrainer('${t.id}')">🗑️</button></td>
             </tr>
         `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadni tréneri</td></tr>';
     }
@@ -795,7 +795,7 @@
                 <td>${e.phone || '-'}</td>
                 <td>${e.employment_type || '-'}</td>
                 <td><span class="badge badge-${e.status === 'active' ? 'success' : 'gray'}">${e.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editEmployee(${e.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${e.id})">🗑️</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="editEmployee('${e.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteEmployee('${e.id}')">🗑️</button></td>
             </tr>
         `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadni zamestnanci</td></tr>';
     }
@@ -813,7 +813,7 @@
                 <td>${trainer ? `${trainer.first_name} ${trainer.last_name}` : '-'}</td>
                 <td>${typeLabels[t.training_type] || t.training_type || '-'}</td>
                 <td><span class="badge badge-${t.status === 'completed' ? 'success' : t.status === 'cancelled' ? 'danger' : 'info'}">${t.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editTraining(${t.id})">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteTraining(${t.id})">🗑️</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="editTraining('${t.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteTraining('${t.id}')">🗑️</button></td>
             </tr>`;
         }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Žiadne tréningy</td></tr>';
     }
@@ -829,7 +829,7 @@
                 <td>${p.description || '-'}</td>
                 <td><strong>${p.amount} €</strong></td>
                 <td><span class="badge badge-${p.status === 'paid' ? 'success' : p.status === 'overdue' ? 'danger' : 'warning'}">${p.status}</span></td>
-                <td><button class="btn btn-sm btn-danger" onclick="deletePayment(${p.id})">🗑️</button></td>
+                <td><button class="btn btn-sm btn-danger" onclick="deletePayment('${p.id}')">🗑️</button></td>
             </tr>`;
         }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Žiadne platby</td></tr>';
     }
@@ -842,7 +842,7 @@
                 <td>${b.service || '-'}</td>
                 <td>${b.preferred_date || '-'} ${b.preferred_time || ''}</td>
                 <td><span class="badge badge-${b.status === 'confirmed' ? 'success' : 'warning'}">${b.status}</span></td>
-                <td><button class="btn btn-sm btn-primary" onclick="confirmBooking(${b.id})">✓</button></td>
+                <td><button class="btn btn-sm btn-primary" onclick="confirmBooking('${b.id}')">✓</button></td>
             </tr>
         `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadne rezervácie</td></tr>';
     }
@@ -855,7 +855,7 @@
                 <td>${m.email}</td>
                 <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis">${m.message}</td>
                 <td><span class="badge badge-${m.status === 'read' ? 'gray' : 'warning'}">${m.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="markMessageRead(${m.id})">📖</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="markMessageRead('${m.id}')">📖</button></td>
             </tr>
         `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadne správy</td></tr>';
     }
@@ -1089,16 +1089,19 @@
     // CRUD - Trainings
     async function saveTraining() {
         const id = document.getElementById('trainingId').value;
+        const riderId = document.getElementById('trainingRider').value;
+        const horseId = document.getElementById('trainingHorse').value;
+        const trainerId = document.getElementById('trainingTrainer').value;
         const data = {
-            rider_id: parseInt(document.getElementById('trainingRider').value),
-            horse_id: parseInt(document.getElementById('trainingHorse').value),
-            trainer_id: parseInt(document.getElementById('trainingTrainer').value),
+            rider_id: riderId || null,
+            horse_id: horseId || null,
+            trainer_id: trainerId || null,
             date: document.getElementById('trainingDate').value,
             start_time: document.getElementById('trainingTime').value,
             training_type: document.getElementById('trainingType').value,
             duration_minutes: parseInt(document.getElementById('trainingDuration').value) || 60,
             price: document.getElementById('trainingPrice').value || null,
-            notes: document.getElementById('trainingNotes').value
+            trainer_notes: document.getElementById('trainingNotes').value
         };
         await api(id ? `trainings/${id}` : 'trainings', id ? 'PUT' : 'POST', data);
         closeModal('trainingModal');
@@ -1135,12 +1138,13 @@
 
     // CRUD - Payments
     async function savePayment() {
+        const riderId = document.getElementById('paymentRider').value;
         const data = {
-            rider_id: parseInt(document.getElementById('paymentRider').value),
+            rider_id: riderId || null,
             payment_type: document.getElementById('paymentType').value,
             amount: parseFloat(document.getElementById('paymentAmount').value),
             description: document.getElementById('paymentDescription').value,
-            due_date: document.getElementById('paymentDue').value || null,
+            payment_date: document.getElementById('paymentDue').value || null,
             status: document.getElementById('paymentStatus').value
         };
         await api('payments', 'POST', data);
@@ -1160,12 +1164,13 @@
 
     // CRUD - Vet Records
     async function saveVetRecord() {
+        const horseId = document.getElementById('vetHorse').value;
         const data = {
-            horse_id: parseInt(document.getElementById('vetHorse').value),
+            horse_id: horseId || null,
             record_type: document.getElementById('vetType').value,
-            date: document.getElementById('vetDate').value,
+            record_date: document.getElementById('vetDate').value,
             next_due_date: document.getElementById('vetNextDate').value || null,
-            veterinarian: document.getElementById('vetVeterinarian').value,
+            vet_name: document.getElementById('vetVeterinarian').value,
             vaccine_name: document.getElementById('vetVaccineName').value,
             vaccine_batch: document.getElementById('vetVaccineBatch').value,
             notes: document.getElementById('vetNotes').value,
@@ -1179,11 +1184,13 @@
 
     // CRUD - Feeding
     async function saveFeeding() {
+        const horseId = document.getElementById('feedHorse').value;
+        const employeeId = document.getElementById('feedBy').value;
         const data = {
-            horse_id: parseInt(document.getElementById('feedHorse').value),
+            horse_id: horseId || null,
             date: document.getElementById('feedDate').value,
-            feeding_time: document.getElementById('feedTime').value,
-            fed_by: document.getElementById('feedBy').value || null,
+            time_slot: document.getElementById('feedTime').value,
+            employee_id: employeeId || null,
             notes: document.getElementById('feedNotes').value
         };
         await api('feeding', 'POST', data);

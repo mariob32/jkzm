@@ -25,10 +25,28 @@ module.exports = async (req, res) => {
 
         if (req.method === 'POST') {
             if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
-            const { name, breed, birth_date, height, color, gender, level, status, notes } = req.body;
+            const { 
+                name, stable_name, breed, color, sex, birth_date, country_of_birth,
+                passport_number, life_number, microchip,
+                fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
+                sjf_license_number, sjf_license_valid_until, sjf_registration_date,
+                owner_name, owner_contact, owner_address,
+                height_cm, weight_kg, level, disciplines,
+                insurance_company, insurance_policy, insurance_valid_until, insurance_value,
+                status, photo_url, notes
+            } = req.body;
             if (!name) return res.status(400).json({ error: 'Meno je povinné' });
             const { data, error } = await supabase.from('horses')
-                .insert([{ name, breed, birth_date, height, color, gender, level, status: status || 'active', notes }])
+                .insert([{ 
+                    name, stable_name, breed, color, sex, birth_date, country_of_birth,
+                    passport_number, life_number, microchip,
+                    fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
+                    sjf_license_number, sjf_license_valid_until, sjf_registration_date,
+                    owner_name, owner_contact, owner_address,
+                    height_cm, weight_kg, level, disciplines,
+                    insurance_company, insurance_policy, insurance_valid_until, insurance_value,
+                    status: status || 'active', photo_url, notes 
+                }])
                 .select().single();
             if (error) throw error;
             return res.status(201).json(data);

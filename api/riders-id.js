@@ -25,9 +25,36 @@ module.exports = async (req, res) => {
             return res.status(200).json({ message: 'Deleted' });
         }
         if (req.method === 'PUT') {
-            const { first_name, last_name, email, phone, birth_date, level, preferred_horse_id, status, notes } = req.body;
+            const { 
+                first_name, last_name, birth_date, gender, nationality,
+                email, phone, address,
+                sjf_license_number, sjf_license_type, sjf_license_valid_until,
+                szvj_date, szvj_certificate_number,
+                fei_id, fei_registered, fei_license_valid_until,
+                category, level, disciplines,
+                highest_level_jumping, highest_level_dressage,
+                medical_certificate_valid, medical_certificate_date, medical_certificate_expiry,
+                health_notes, insurance_company, insurance_valid_until,
+                gdpr_consent, gdpr_consent_date, photo_consent,
+                emergency_contact_name, emergency_contact_phone,
+                status, photo_url, notes
+            } = req.body;
             const { data, error } = await supabase.from('riders')
-                .update({ first_name, last_name, email, phone, birth_date, level, preferred_horse_id, status, notes, updated_at: new Date() })
+                .update({ 
+                    first_name, last_name, birth_date, gender, nationality,
+                    email, phone, address,
+                    sjf_license_number, sjf_license_type, sjf_license_valid_until,
+                    szvj_date, szvj_certificate_number,
+                    fei_id, fei_registered, fei_license_valid_until,
+                    category, level, disciplines,
+                    highest_level_jumping, highest_level_dressage,
+                    medical_certificate_valid, medical_certificate_date, medical_certificate_expiry,
+                    health_notes, insurance_company, insurance_valid_until,
+                    gdpr_consent, gdpr_consent_date, photo_consent,
+                    emergency_contact_name, emergency_contact_phone,
+                    status, photo_url, notes,
+                    updated_at: new Date() 
+                })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);

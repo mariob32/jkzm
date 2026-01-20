@@ -28,9 +28,28 @@ module.exports = async (req, res) => {
         if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
 
         if (req.method === 'PUT') {
-            const { name, breed, birth_date, height, color, gender, level, status, notes } = req.body;
+            const { 
+                name, stable_name, breed, color, sex, birth_date, country_of_birth,
+                passport_number, life_number, microchip,
+                fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
+                sjf_license_number, sjf_license_valid_until, sjf_registration_date,
+                owner_name, owner_contact, owner_address,
+                height_cm, weight_kg, level, disciplines,
+                insurance_company, insurance_policy, insurance_valid_until, insurance_value,
+                status, photo_url, notes
+            } = req.body;
             const { data, error } = await supabase.from('horses')
-                .update({ name, breed, birth_date, height, color, gender, level, status, notes, updated_at: new Date() })
+                .update({ 
+                    name, stable_name, breed, color, sex, birth_date, country_of_birth,
+                    passport_number, life_number, microchip,
+                    fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
+                    sjf_license_number, sjf_license_valid_until, sjf_registration_date,
+                    owner_name, owner_contact, owner_address,
+                    height_cm, weight_kg, level, disciplines,
+                    insurance_company, insurance_policy, insurance_valid_until, insurance_value,
+                    status, photo_url, notes, 
+                    updated_at: new Date() 
+                })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);
