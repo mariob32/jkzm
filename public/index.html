@@ -3,223 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jazdecký klub Zelená míľa | Jaslovské Bohunice</title>
-    <meta name="description" content="Jazdecký klub Zelená míľa Jaslovské Bohunice - Meet your Good Friend, Horse Today. Jazdecké tréningy, rekreačné jazdenie, skoky, drezúra.">
+    <title>Jazdecký klub Zelená míľa | Jaslovské Bohunice | Člen SJF</title>
+    <meta name="description" content="Jazdecký klub Zelená míľa Jaslovské Bohunice - Meet your Good Friend, Horse Today. SZVJ skúšky, jazdecké tréningy, skoky, drezúra. Člen SJF.">
+    <meta name="keywords" content="jazdecký klub, Jaslovské Bohunice, jazdenie, kone, SZVJ, SJF, skoky, drezúra, hipoterapia, jazdecká licencia">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Poppins',sans-serif;color:#333;line-height:1.6}a{text-decoration:none;color:inherit}img{max-width:100%}
-        :root{--green:#228B22;--green-dark:#1a6b1a;--green-light:#90EE90;--gold:#DAA520;--dark:#1a1a1a;--gray:#666;--light:#f8f9fa;--white:#fff}
+        :root{--green:#228B22;--green-dark:#1a6b1a;--green-light:#90EE90;--gold:#DAA520;--dark:#1a1a1a;--gray:#666;--light:#f8f9fa;--white:#fff;--sjf:#1a5276}
+        
+        .top-bar{background:var(--dark);color:var(--white);padding:0.5rem 2rem;font-size:0.85rem}
+        .top-bar-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem}
+        .top-bar a{color:var(--green-light);margin-left:1rem}
+        
         header{background:var(--white);position:fixed;top:0;left:0;right:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,0.1)}
-        .header-inner{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
-        .logo{display:flex;align-items:center;gap:1rem}.logo img{height:70px}.logo-text{font-weight:700;font-size:1.1rem;color:var(--green)}
-        nav{display:flex;align-items:center;gap:2rem}nav a{font-weight:500;color:var(--dark);transition:color 0.3s}nav a:hover{color:var(--green)}
-        .btn{display:inline-block;padding:0.75rem 1.5rem;border-radius:50px;font-weight:600;transition:all 0.3s;border:none;cursor:pointer;font-family:inherit}
+        .header-inner{max-width:1200px;margin:0 auto;padding:0.75rem 2rem;display:flex;align-items:center;justify-content:space-between}
+        .logo{display:flex;align-items:center;gap:0.75rem}.logo img{height:55px}
+        .logo-text{font-weight:700;font-size:1rem;color:var(--green)}.logo-text small{display:block;font-size:0.7rem;font-weight:400;color:var(--gray)}
+        nav{display:flex;align-items:center;gap:1.5rem}nav a{font-weight:500;color:var(--dark);transition:color 0.3s;font-size:0.9rem}nav a:hover{color:var(--green)}
+        .btn{display:inline-block;padding:0.6rem 1.25rem;border-radius:50px;font-weight:600;transition:all 0.3s;border:none;cursor:pointer;font-family:inherit;font-size:0.9rem}
         .btn-green{background:var(--green);color:var(--white)}.btn-green:hover{background:var(--green-dark);transform:translateY(-2px)}
         .mobile-menu{display:none;font-size:1.5rem;background:none;border:none;cursor:pointer}
-        .hero{min-height:100vh;background:linear-gradient(135deg,rgba(34,139,34,0.9),rgba(26,107,26,0.85)),url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1920') center/cover;display:flex;align-items:center;padding:8rem 2rem 4rem}
-        .hero-content{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-        .hero-text{color:var(--white)}.hero-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:0.5rem 1rem;border-radius:50px;font-size:0.9rem;margin-bottom:1.5rem;backdrop-filter:blur(10px)}
-        .hero h1{font-size:3.5rem;line-height:1.2;margin-bottom:1rem;font-weight:700}
-        .hero-slogan{font-size:1.4rem;font-style:italic;opacity:0.95;margin-bottom:1.5rem;color:var(--green-light)}
-        .hero p{font-size:1.1rem;opacity:0.9;margin-bottom:2rem;max-width:500px}
-        .hero-buttons{display:flex;gap:1rem;flex-wrap:wrap}.hero-buttons .btn{padding:1rem 2rem;font-size:1rem}
+        
+        .hero{min-height:100vh;background:linear-gradient(135deg,rgba(34,139,34,0.9),rgba(26,107,26,0.85)),url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1920') center/cover;display:flex;align-items:center;padding:7rem 2rem 4rem}
+        .hero-content{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+        .hero-text{color:var(--white)}.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.2);padding:0.5rem 1rem;border-radius:50px;font-size:0.85rem;margin-bottom:1.5rem;backdrop-filter:blur(10px)}
+        .hero h1{font-size:3rem;line-height:1.2;margin-bottom:0.75rem;font-weight:700}
+        .hero-slogan{font-size:1.2rem;font-style:italic;opacity:0.95;margin-bottom:1rem;color:var(--green-light)}
+        .hero p{font-size:1rem;opacity:0.9;margin-bottom:1.5rem;max-width:500px}
+        .hero-buttons{display:flex;gap:1rem;flex-wrap:wrap}.hero-buttons .btn{padding:0.875rem 1.75rem}
         .hero-buttons .btn-white{background:var(--white);color:var(--green)}.hero-buttons .btn-white:hover{background:var(--light)}
         .hero-buttons .btn-outline-white{border:2px solid var(--white);color:var(--white);background:transparent}.hero-buttons .btn-outline-white:hover{background:var(--white);color:var(--green)}
         .hero-image img{border-radius:20px;box-shadow:0 30px 60px rgba(0,0,0,0.3)}
-        .hero-stats{display:flex;gap:2rem;margin-top:2rem}
-        .stat{text-align:center;background:rgba(255,255,255,0.15);padding:1rem 1.5rem;border-radius:15px;backdrop-filter:blur(10px)}
-        .stat-num{font-size:2rem;font-weight:700}.stat-label{font-size:0.85rem;opacity:0.9}
-        section{padding:5rem 2rem}.container{max-width:1200px;margin:0 auto}
-        .section-header{text-align:center;margin-bottom:3rem}
-        .section-header h2{font-size:2.5rem;color:var(--dark);margin-bottom:1rem}
-        .section-header p{color:var(--gray);max-width:600px;margin:0 auto}
+        .hero-stats{display:flex;gap:1.25rem;margin-top:1.5rem;flex-wrap:wrap}
+        .stat{text-align:center;background:rgba(255,255,255,0.15);padding:0.875rem 1.25rem;border-radius:15px;backdrop-filter:blur(10px)}
+        .stat-num{font-size:1.75rem;font-weight:700}.stat-label{font-size:0.8rem;opacity:0.9}
+        
+        section{padding:4rem 2rem}.container{max-width:1200px;margin:0 auto}
+        .section-header{text-align:center;margin-bottom:2.5rem}
+        .section-header h2{font-size:2.2rem;color:var(--dark);margin-bottom:0.75rem}
+        .section-header p{color:var(--gray);max-width:600px;margin:0 auto;font-size:0.95rem}
         .section-header .line{width:60px;height:4px;background:var(--green);margin:0 auto 1rem;border-radius:2px}
+        
         .about{background:var(--light)}
-        .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-        .about-image img{border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.15)}
-        .about-badge{position:absolute;top:-20px;right:-20px;background:var(--green);color:var(--white);padding:1.5rem;border-radius:15px;text-align:center;box-shadow:0 10px 30px rgba(34,139,34,0.3)}
-        .about-badge .num{font-size:2.5rem;font-weight:700}.about-badge .txt{font-size:0.85rem}
-        .about-content h3{font-size:2rem;color:var(--dark);margin-bottom:1rem}
-        .about-content p{color:var(--gray);margin-bottom:1.5rem}
-        .about-features{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
-        .about-feature{display:flex;align-items:center;gap:0.75rem;padding:1rem;background:var(--white);border-radius:10px}
-        .about-feature .icon{width:40px;height:40px;background:rgba(34,139,34,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
-        .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+        .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+        .about-image{position:relative}.about-image img{border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.15)}
+        .about-badge{position:absolute;bottom:20px;right:-15px;background:var(--green);color:var(--white);padding:1.25rem;border-radius:15px;text-align:center;box-shadow:0 10px 30px rgba(34,139,34,0.3)}
+        .about-badge .num{font-size:2rem;font-weight:700;display:block}.about-badge .txt{font-size:0.75rem}
+        .about-content h3{font-size:1.75rem;color:var(--dark);margin-bottom:1rem}
+        .about-content p{color:var(--gray);margin-bottom:1rem;font-size:0.95rem}
+        .about-features{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:1.5rem}
+        .about-feature{display:flex;align-items:center;gap:0.6rem;padding:0.75rem;background:var(--white);border-radius:10px;font-size:0.85rem}
+        .about-feature .icon{width:32px;height:32px;background:rgba(34,139,34,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+        
+        .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
         .service-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);transition:transform 0.3s}
-        .service-card:hover{transform:translateY(-10px)}
-        .service-img{height:200px;overflow:hidden}.service-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s}.service-card:hover .service-img img{transform:scale(1.1)}
-        .service-content{padding:1.5rem}
-        .service-content h3{font-size:1.3rem;color:var(--dark);margin-bottom:0.5rem}
-        .service-content p{color:var(--gray);font-size:0.95rem;margin-bottom:1rem}
-        .service-price{font-size:1.5rem;font-weight:700;color:var(--green)}
-        .service-price span{font-size:0.9rem;font-weight:400;color:var(--gray)}
+        .service-card:hover{transform:translateY(-8px)}
+        .service-img{height:160px;overflow:hidden}.service-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s}.service-card:hover .service-img img{transform:scale(1.1)}
+        .service-content{padding:1.25rem}
+        .service-content h3{font-size:1.1rem;color:var(--dark);margin-bottom:0.4rem}
+        .service-content p{color:var(--gray);font-size:0.85rem;margin-bottom:0.75rem}
+        .service-price{font-size:1.3rem;font-weight:700;color:var(--green)}
+        .service-price span{font-size:0.8rem;font-weight:400;color:var(--gray)}
+        
+        .sjf-section{background:linear-gradient(135deg,var(--sjf),#2874a6);color:var(--white);position:relative;overflow:hidden}
+        .sjf-section::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:rgba(255,255,255,0.05);border-radius:50%}
+        .sjf-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;position:relative;z-index:1}
+        .sjf-content h2{font-size:1.8rem;margin-bottom:1.25rem}
+        .sjf-content>p{opacity:0.9;margin-bottom:1.25rem;font-size:0.95rem}
+        .sjf-steps{display:grid;gap:0.75rem}
+        .sjf-step{display:flex;gap:0.875rem;align-items:flex-start;background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px)}
+        .sjf-step-num{width:36px;height:36px;background:var(--white);color:var(--sjf);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:0.9rem}
+        .sjf-step h4{font-size:0.95rem;margin-bottom:0.2rem}.sjf-step p{font-size:0.8rem;opacity:0.85}
+        .sjf-info-cards{display:grid;gap:0.875rem}
+        .sjf-info-card{background:rgba(255,255,255,0.1);padding:1.25rem;border-radius:12px;backdrop-filter:blur(10px)}
+        .sjf-info-card h4{font-size:1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem}
+        .sjf-info-card ul{list-style:none;font-size:0.85rem;opacity:0.9}
+        .sjf-info-card li{padding:0.25rem 0;padding-left:1.25rem;position:relative}
+        .sjf-info-card li::before{content:'✓';position:absolute;left:0;color:var(--green-light)}
+        
+        .trainings{background:var(--light)}
+        .trainings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+        .training-card{background:var(--white);border-radius:15px;padding:1.25rem;box-shadow:0 8px 25px rgba(0,0,0,0.08);border-left:4px solid var(--green);transition:transform 0.3s}
+        .training-card:hover{transform:translateX(8px)}
+        .training-icon{width:45px;height:45px;background:rgba(34,139,34,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:0.75rem}
+        .training-card h3{font-size:1.05rem;color:var(--dark);margin-bottom:0.4rem}
+        .training-card p{color:var(--gray);margin-bottom:0.6rem;font-size:0.85rem}
+        .training-time{display:flex;align-items:center;gap:0.4rem;color:var(--green);font-weight:600;font-size:0.85rem}
+        
         .horses{background:linear-gradient(135deg,var(--green),var(--green-dark));color:var(--white);position:relative;overflow:hidden}
         .horses .section-header h2{color:var(--white)}.horses .section-header p{color:rgba(255,255,255,0.8)}
-        .horses-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;position:relative;z-index:1}
+        .horses-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;position:relative;z-index:1}
         .horse-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-radius:15px;overflow:hidden;transition:transform 0.3s,background 0.3s}
         .horse-card:hover{transform:translateY(-5px);background:rgba(255,255,255,0.15)}
-        .horse-img{height:200px;overflow:hidden}.horse-img img{width:100%;height:100%;object-fit:cover}
-        .horse-info{padding:1.25rem;text-align:center}
-        .horse-info h4{font-size:1.2rem;margin-bottom:0.25rem}
-        .horse-info p{opacity:0.8;font-size:0.9rem}
-        .horse-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:0.3rem 0.8rem;border-radius:20px;font-size:0.75rem;margin-top:0.5rem}
-        .trainings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem}
-        .training-card{background:var(--white);border-radius:15px;padding:2rem;box-shadow:0 10px 30px rgba(0,0,0,0.08);border-left:4px solid var(--green);transition:transform 0.3s}
-        .training-card:hover{transform:translateX(10px)}
-        .training-icon{width:60px;height:60px;background:rgba(34,139,34,0.1);border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:1rem}
-        .training-card h3{font-size:1.3rem;color:var(--dark);margin-bottom:0.5rem}
-        .training-card p{color:var(--gray);margin-bottom:1rem}
-        .training-time{display:flex;align-items:center;gap:0.5rem;color:var(--green);font-weight:600}
+        .horse-img{height:160px;overflow:hidden}.horse-img img{width:100%;height:100%;object-fit:cover}
+        .horse-info{padding:1rem;text-align:center}
+        .horse-info h4{font-size:1.05rem;margin-bottom:0.2rem}
+        .horse-info p{opacity:0.8;font-size:0.8rem}
+        .horse-badges{display:flex;justify-content:center;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap}
+        .horse-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:0.2rem 0.5rem;border-radius:20px;font-size:0.65rem}
+        .horse-badge.sjf{background:rgba(26,82,118,0.6)}.horse-badge.fei{background:rgba(108,52,131,0.6)}
+        
+        .pricelist{background:var(--white)}
+        .price-table{background:var(--white);border-radius:15px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1)}
+        .price-table table{width:100%;border-collapse:collapse}
+        .price-table th,.price-table td{padding:0.875rem 1.25rem;text-align:left;border-bottom:1px solid var(--light)}
+        .price-table th{background:var(--green);color:var(--white);font-weight:600;font-size:0.9rem}
+        .price-table td{font-size:0.9rem}
+        .price-table tr:last-child td{border-bottom:none}
+        .price-table tr:hover td{background:var(--light)}
+        .price-table .price{font-weight:700;color:var(--green);font-size:1rem}
+        
         .hipoterapia{background:var(--light)}
-        .hipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-        .hipo-content h3{font-size:2rem;color:var(--dark);margin-bottom:1rem}
-        .hipo-content p{color:var(--gray);margin-bottom:1rem}
-        .hipo-notice{background:rgba(218,165,32,0.1);border-left:4px solid var(--gold);padding:1rem;border-radius:0 10px 10px 0;margin:1.5rem 0}
+        .hipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+        .hipo-content h3{font-size:1.75rem;color:var(--dark);margin-bottom:1rem}
+        .hipo-content p{color:var(--gray);margin-bottom:0.875rem;font-size:0.95rem}
+        .hipo-notice{background:rgba(218,165,32,0.15);border-left:4px solid var(--gold);padding:1rem;border-radius:0 10px 10px 0;margin:1.25rem 0}
         .hipo-notice strong{color:#b8860b}
-        .hipo-benefits{display:grid;gap:0.75rem;margin-top:1.5rem}
-        .hipo-benefit{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--white);border-radius:10px}
-        .hipo-benefit .check{color:var(--green);font-weight:bold}
-        .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-        .gallery-item{position:relative;border-radius:15px;overflow:hidden;aspect-ratio:1;cursor:pointer}
-        .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s}
-        .gallery-item:hover img{transform:scale(1.1)}
+        .hipo-benefits{display:grid;gap:0.6rem;margin-top:1.25rem}
+        .hipo-benefit{display:flex;align-items:center;gap:0.6rem;padding:0.6rem;background:var(--white);border-radius:10px;font-size:0.85rem}
+        .hipo-benefit .check{color:var(--green);font-weight:bold;font-size:1rem}
+        
         .contact{background:linear-gradient(135deg,var(--dark),#2d2d2d);color:var(--white)}
         .contact .section-header h2{color:var(--white)}.contact .section-header p{color:rgba(255,255,255,0.7)}
-        .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem}
-        .contact-info h3{font-size:1.5rem;margin-bottom:1.5rem}
-        .contact-item{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem}
-        .contact-item .icon{width:50px;height:50px;background:rgba(34,139,34,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
-        .contact-item h4{font-size:1rem;margin-bottom:0.25rem}.contact-item p{opacity:0.8;font-size:0.95rem}
+        .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+        .contact-info h3{font-size:1.3rem;margin-bottom:1.25rem}
+        .contact-item{display:flex;align-items:flex-start;gap:0.875rem;margin-bottom:1.25rem}
+        .contact-item .icon{width:40px;height:40px;background:rgba(34,139,34,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+        .contact-item h4{font-size:0.9rem;margin-bottom:0.2rem}.contact-item p{opacity:0.8;font-size:0.85rem}
         .contact-item a{color:var(--green-light)}
-        .contact-form{background:var(--white);padding:2rem;border-radius:20px}
-        .contact-form h3{color:var(--dark);margin-bottom:1.5rem}
-        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-        .form-group{margin-bottom:1rem}
-        .form-group label{display:block;color:var(--gray);font-size:0.9rem;margin-bottom:0.5rem}
-        .form-group input,.form-group select,.form-group textarea{width:100%;padding:0.9rem 1rem;border:2px solid #e0e0e0;border-radius:10px;font-family:inherit;font-size:1rem;transition:border 0.3s}
+        .social-links{display:flex;gap:0.75rem;margin-top:1.5rem}
+        .social-link{width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.3s}
+        .social-link:hover{background:var(--green);transform:translateY(-3px)}
+        .donation-box{background:rgba(34,139,34,0.2);padding:1rem;border-radius:12px;margin-top:1.5rem}
+        .donation-box h4{margin-bottom:0.4rem;font-size:0.95rem}
+        .donation-box p{font-size:0.85rem;opacity:0.9}
+        .contact-form{background:var(--white);padding:1.75rem;border-radius:15px}
+        .contact-form h3{color:var(--dark);margin-bottom:1.25rem;font-size:1.2rem}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-bottom:0.875rem}
+        .form-group{margin-bottom:0.875rem}
+        .form-group label{display:block;color:var(--gray);font-size:0.8rem;margin-bottom:0.4rem}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:0.75rem 1rem;border:2px solid #e0e0e0;border-radius:10px;font-family:inherit;font-size:0.9rem;transition:border 0.3s}
         .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--green)}
-        .support-box{background:rgba(218,165,32,0.2);border:2px dashed var(--gold);padding:1.5rem;border-radius:15px;text-align:center;margin-top:1.5rem}
-        .support-box h4{color:var(--gold);margin-bottom:0.5rem}
-        footer{background:var(--dark);color:var(--white);padding:3rem 2rem 1rem}
-        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;max-width:1200px;margin:0 auto}
-        .footer-brand .logo img{height:60px;filter:brightness(0) invert(1);margin-bottom:1rem}
-        .footer-brand p{opacity:0.7;margin-bottom:1.5rem;font-size:0.95rem}
-        .social-links{display:flex;gap:0.75rem}
-        .social-links a{width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background 0.3s}
-        .social-links a:hover{background:var(--green)}
-        .footer-col h4{font-size:1.1rem;margin-bottom:1rem}.footer-col ul{list-style:none}.footer-col li{margin-bottom:0.5rem}
-        .footer-col a{opacity:0.7;transition:opacity 0.3s}.footer-col a:hover{opacity:1;color:var(--green-light)}
-        .footer-bottom{border-top:1px solid rgba(255,255,255,0.1);margin-top:2rem;padding-top:1.5rem;text-align:center;opacity:0.6;font-size:0.9rem;max-width:1200px;margin-left:auto;margin-right:auto}
-        .toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:var(--white);padding:1rem 2rem;border-radius:10px;transform:translateY(150%);opacity:0;transition:all 0.3s;z-index:9999}
+        .form-group textarea{resize:vertical;min-height:90px}
+        
+        footer{background:var(--dark);color:var(--white);padding:2.5rem 2rem 1.25rem}
+        .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:1.5rem}
+        .footer-col h4{font-size:0.95rem;margin-bottom:0.875rem;color:var(--green-light)}
+        .footer-col p{font-size:0.85rem;opacity:0.8;margin-bottom:0.4rem}
+        .footer-col a{display:block;font-size:0.85rem;opacity:0.8;padding:0.25rem 0;transition:opacity 0.3s}
+        .footer-col a:hover{opacity:1;color:var(--green-light)}
+        .footer-logo{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.875rem}
+        .footer-logo img{height:45px;filter:brightness(0) invert(1)}
+        .footer-bottom{max-width:1200px;margin:0 auto;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;opacity:0.7;flex-wrap:wrap;gap:0.5rem}
+        
+        .toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:var(--white);padding:1rem 1.5rem;border-radius:10px;transform:translateY(150%);opacity:0;transition:all 0.3s;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
         .toast.show{transform:translateY(0);opacity:1}
-        @media(max-width:1024px){.hero-content,.about-grid,.hipo-grid,.contact-grid{grid-template-columns:1fr}.services-grid,.trainings-grid{grid-template-columns:repeat(2,1fr)}.horses-grid,.gallery-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:2.5rem}.hero-image{display:none}}
-        @media(max-width:768px){nav{display:none}.mobile-menu{display:block}.services-grid,.trainings-grid,.horses-grid,.gallery-grid{grid-template-columns:1fr}.about-features,.form-row{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.hero h1{font-size:2rem}.hero-stats{flex-direction:column;gap:1rem}}
+        
+        @media(max-width:1024px){
+            .hero-content,.about-grid,.sjf-grid,.hipo-grid,.contact-grid{grid-template-columns:1fr}
+            .services-grid,.trainings-grid{grid-template-columns:1fr 1fr}
+            .horses-grid{grid-template-columns:repeat(2,1fr)}
+            .footer-grid{grid-template-columns:1fr 1fr}
+        }
+        @media(max-width:768px){
+            nav{display:none}.mobile-menu{display:block}
+            .hero h1{font-size:2rem}
+            .services-grid,.trainings-grid,.horses-grid{grid-template-columns:1fr}
+            .form-row{grid-template-columns:1fr}
+            .about-features{grid-template-columns:1fr}
+            .hero-stats{justify-content:center}
+            .footer-grid{grid-template-columns:1fr}
+            .top-bar-inner{justify-content:center;text-align:center}
+        }
     </style>
 </head>
 <body>
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <span>🏇 Člen Slovenskej jazdeckej federácie (SJF) • Príprava na SZVJ skúšky</span>
+            <div><span>📞 +421 905 523 022</span><a href="mailto:apilera@apilera.com">📧 apilera@apilera.com</a></div>
+        </div>
+    </div>
+    
     <header>
         <div class="header-inner">
-            <a href="/" class="logo"><img src="/assets/logo.png" alt="JK Zelená míľa"><span class="logo-text">Zelená míľa</span></a>
+            <a href="#" class="logo">
+                <img src="/assets/logo.png" alt="Logo JK Zelená míľa">
+                <div class="logo-text">JK Zelená míľa<small>Jaslovské Bohunice</small></div>
+            </a>
             <nav>
-                <a href="#o-nas">O nás</a>
-                <a href="#sluzby">Služby</a>
-                <a href="#kone">Naše kone</a>
-                <a href="#treningy">Tréningy</a>
-                <a href="#hipoterapia">Hipoterapia</a>
-                <a href="#kontakt">Kontakt</a>
-                <a href="/admin" class="btn btn-green">Admin</a>
+                <a href="#about">O nás</a>
+                <a href="#services">Služby</a>
+                <a href="#szvj">SZVJ skúšky</a>
+                <a href="#horses">Kone</a>
+                <a href="#pricelist">Cenník</a>
+                <a href="#contact">Kontakt</a>
+                <a href="#contact" class="btn btn-green">Rezervácia</a>
             </nav>
-            <button class="mobile-menu">☰</button>
+            <button class="mobile-menu" onclick="document.querySelector('nav').style.display=document.querySelector('nav').style.display==='flex'?'none':'flex'">☰</button>
         </div>
     </header>
 
-    <section class="hero" id="home">
+    <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
-                <span class="hero-badge">🐴 Jazdecký klub Jaslovské Bohunice</span>
+                <div class="hero-badge">🏇 Člen SJF • Registrovaný klub • SZVJ skúšky</div>
                 <h1>Jazdecký klub<br>Zelená míľa</h1>
                 <p class="hero-slogan">"Meet your Good Friend, Horse Today"</p>
-                <p>Vítame Vás na stránkach jazdeckého klubu. Jazdecký klub Zelená míľa Jaslovské Bohunice je priamym nástupcom Jazdeckého klubu AXA Jaslovské Bohunice s dlhoročnou tradíciou.</p>
+                <p>Vítame Vás v jazdeckom klube s dlhoročnou tradíciou. Ponúkame profesionálne jazdecké služby, prípravu na SZVJ skúšky a výcvik pre všetky vekové kategórie.</p>
                 <div class="hero-buttons">
-                    <a href="#kontakt" class="btn btn-white">Rezervovať tréning</a>
-                    <a href="https://www.facebook.com/JKZMJB" target="_blank" class="btn btn-outline-white">📘 Facebook</a>
+                    <a href="#contact" class="btn btn-white">Rezervovať jazdu</a>
+                    <a href="#szvj" class="btn btn-outline-white">SZVJ informácie</a>
                 </div>
                 <div class="hero-stats">
-                    <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Rokov tradície</div></div>
-                    <div class="stat"><div class="stat-num">10+</div><div class="stat-label">Koní</div></div>
-                    <div class="stat"><div class="stat-num">100+</div><div class="stat-label">Jazdcov</div></div>
+                    <div class="stat"><div class="stat-num">20+</div><div class="stat-label">rokov tradície</div></div>
+                    <div class="stat"><div class="stat-num">10+</div><div class="stat-label">koní</div></div>
+                    <div class="stat"><div class="stat-num">SJF</div><div class="stat-label">registrácia</div></div>
+                    <div class="stat"><div class="stat-num">SZVJ</div><div class="stat-label">príprava</div></div>
                 </div>
             </div>
-            <div class="hero-image"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600" alt="Jazda na koni"></div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600" alt="Jazdecký klub">
+            </div>
         </div>
     </section>
 
-    <section class="about" id="o-nas">
+    <section class="about" id="about">
         <div class="container">
             <div class="about-grid">
-                <div class="about-image" style="position:relative">
-                    <img src="https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=600" alt="Jazdecký klub">
-                    <div class="about-badge"><div class="num">2000</div><div class="txt">Založené</div></div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1566251037378-5e04e3bec343?w=600" alt="O nás">
+                    <div class="about-badge"><span class="num">20+</span><span class="txt">rokov skúseností</span></div>
                 </div>
                 <div class="about-content">
-                    <h3>O našom klube</h3>
-                    <p>Jazdecký klub Zelená míľa Jaslovské Bohunice je občianske združenie s dlhoročnou tradíciou. Sídlime v areáli poľnohospodárskeho družstva v Jaslovských Bohuniciach, kde máme k dispozícii moderné zázemie pre kone aj jazdcov.</p>
-                    <p>Náš tím tvorí skupina nadšencov, ktorí milujú kone a jazdecký šport. Poskytujeme komplexné služby od výuky jazdy na koni pre začiatočníkov až po tréningy pokročilých jazdcov v disciplínach skoky a drezúra.</p>
+                    <h3>O jazdeckom klube</h3>
+                    <p>Jazdecký klub Zelená míľa Jaslovské Bohunice je priamym nástupcom Jazdeckého klubu AXA Jaslovské Bohunice s dlhoročnou tradíciou v jazdeckom športe.</p>
+                    <p>Sídlime v areáli Poľnohospodárskeho družstva Jaslovské Bohunice, kde máme k dispozícii kvalitné zázemie vrátane jazdeckej haly a vonkajšieho parkúru.</p>
+                    <p>Náš tím tvoria <strong>licencovaní tréneri SJF</strong>, ktorí zabezpečujú kvalitnú výuku od úplných začiatočníkov až po prípravu na súťaže a <strong>SZVJ skúšky</strong>.</p>
                     <div class="about-features">
-                        <div class="about-feature"><div class="icon">🏇</div><span>Profesionálni tréneri</span></div>
-                        <div class="about-feature"><div class="icon">🐴</div><span>Kvalitné školské kone</span></div>
-                        <div class="about-feature"><div class="icon">🏆</div><span>Účasť na pretekoch</span></div>
-                        <div class="about-feature"><div class="icon">👨‍👩‍👧</div><span>Rodinná atmosféra</span></div>
+                        <div class="about-feature"><div class="icon">🏆</div><span>Licencovaní tréneri SJF</span></div>
+                        <div class="about-feature"><div class="icon">📋</div><span>Príprava na SZVJ</span></div>
+                        <div class="about-feature"><div class="icon">🐴</div><span>Registrované kone</span></div>
+                        <div class="about-feature"><div class="icon">👶</div><span>Jazda pre deti od 5 rokov</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="services" id="sluzby">
+    <section class="services" id="services">
         <div class="container">
             <div class="section-header">
                 <div class="line"></div>
                 <h2>Naše služby</h2>
-                <p>Ponúkame široké spektrum služieb pre všetky vekové kategórie a úrovne skúseností</p>
+                <p>Komplexné jazdecké služby pre všetky vekové kategórie a úrovne</p>
             </div>
             <div class="services-grid">
-                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1509773896068-7fd415d91e2e?w=500" alt="Jazdecké lekcie"></div><div class="service-content"><h3>Jazdecké lekcie</h3><p>Individuálne aj skupinové lekcie pre začiatočníkov a pokročilých jazdcov.</p><div class="service-price">od 20€ <span>/lekcia</span></div></div></div>
-                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1566251037378-5e04e3bec343?w=500" alt="Skoky"></div><div class="service-content"><h3>Parkúrové skoky</h3><p>Tréningy skokových disciplín pre pokročilých jazdcov s prípravou na preteky.</p><div class="service-price">od 25€ <span>/tréning</span></div></div></div>
-                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1527153907251-2285f7a6ebd7?w=500" alt="Drezúra"></div><div class="service-content"><h3>Drezúra</h3><p>Výcvik v drezúrnych prvkoch pre zlepšenie komunikácie s koňom.</p><div class="service-price">od 25€ <span>/tréning</span></div></div></div>
-                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?w=500" alt="Pre deti"></div><div class="service-content"><h3>Jazda pre deti</h3><p>Bezpečné prvé kroky na koni pre najmenších jazdcov v sprievode inštruktora.</p><div class="service-price">od 15€ <span>/30 min</span></div></div></div>
-                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1565622905889-375e2cad3703?w=500" alt="Ustajnenie"></div><div class="service-content"><h3>Ustajnenie</h3><p>Kvalitné ustajnenie pre vaše kone s denne čerstvou podstielkou a krmivom.</p><div class="service-price">od 250€ <span>/mesiac</span></div></div></div>
-                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1508761048490-5c60d7d12a06?w=500" alt="Vychádzky"></div><div class="service-content"><h3>Vychádzky do prírody</h3><p>Relaxačné vychádzky na koni po okolitej prírode.</p><div class="service-price">od 30€ <span>/hodina</span></div></div></div>
+                <div class="service-card">
+                    <div class="service-img"><img src="https://images.unsplash.com/photo-1609765219540-c0c1cae54423?w=400" alt="Jazdecké lekcie"></div>
+                    <div class="service-content">
+                        <h3>Jazdecké lekcie</h3>
+                        <p>Individuálne a skupinové tréningy pre začiatočníkov aj pokročilých</p>
+                        <div class="service-price">od 20€ <span>/ hodina</span></div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img"><img src="https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=400" alt="Skoky"></div>
+                    <div class="service-content">
+                        <h3>Parkúrové skoky</h3>
+                        <p>Tréning skokových disciplín s prípravou na súťaže</p>
+                        <div class="service-price">od 25€ <span>/ hodina</span></div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img"><img src="https://images.unsplash.com/photo-1508881598441-324f3974994b?w=400" alt="Drezúra"></div>
+                    <div class="service-content">
+                        <h3>Drezúra</h3>
+                        <p>Klasický výcvik v drezúrnych disciplínach</p>
+                        <div class="service-price">od 25€ <span>/ hodina</span></div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img"><img src="https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=400" alt="Detská jazda"></div>
+                    <div class="service-content">
+                        <h3>Jazda pre deti</h3>
+                        <p>Bezpečná výuka pre najmenších s pokojnými koňmi</p>
+                        <div class="service-price">od 15€ <span>/ 45 min</span></div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img"><img src="https://images.unsplash.com/photo-1573225342350-6f7deaf5d8c2?w=400" alt="Ustajnenie"></div>
+                    <div class="service-content">
+                        <h3>Ustajnenie koní</h3>
+                        <p>Kvalitné ustajnenie s kompletnou starostlivosťou</p>
+                        <div class="service-price">od 250€ <span>/ mesiac</span></div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img"><img src="https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?w=400" alt="SZVJ"></div>
+                    <div class="service-content">
+                        <h3>Príprava na SZVJ</h3>
+                        <p>Kompletná príprava na skúšky základného výcviku jazdca</p>
+                        <div class="service-price">od 25€ <span>/ hodina</span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="horses" id="kone">
+    <section class="sjf-section" id="szvj">
+        <div class="container">
+            <div class="sjf-grid">
+                <div class="sjf-content">
+                    <h2>🎓 SZVJ - Skúšky základného výcviku jazdca</h2>
+                    <p>Náš klub je oprávnený organizovať SZVJ skúšky v spolupráci so Slovenskou jazdeckou federáciou. Úspešné absolvovanie SZVJ je podmienkou pre získanie jazdeckej licencie a účasť na oficiálnych súťažiach.</p>
+                    
+                    <div class="sjf-steps">
+                        <div class="sjf-step">
+                            <div class="sjf-step-num">1</div>
+                            <div><h4>Príprava</h4><p>Individuálna príprava s našimi trénermi - teória aj praktické zručnosti</p></div>
+                        </div>
+                        <div class="sjf-step">
+                            <div class="sjf-step-num">2</div>
+                            <div><h4>Teoretická skúška</h4><p>30 otázok, 60 minút, minimálne 25 správnych odpovedí</p></div>
+                        </div>
+                        <div class="sjf-step">
+                            <div class="sjf-step-num">3</div>
+                            <div><h4>Praktická skúška</h4><p>Základné chody (krok, klus, cval), sed, pomôcky jazdca</p></div>
+                        </div>
+                        <div class="sjf-step">
+                            <div class="sjf-step-num">4</div>
+                            <div><h4>Licencia SJF</h4><p>Po úspešnom absolvovaní získate jazdeckú licenciu SJF</p></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sjf-info-cards">
+                    <div class="sjf-info-card">
+                        <h4>📋 Podmienky pre SZVJ</h4>
+                        <ul>
+                            <li>Minimálny vek 9 rokov</li>
+                            <li>Minimálna výška 140 cm</li>
+                            <li>Lekárske potvrdenie o zdravotnom stave</li>
+                            <li>Registrovaný tréner v klube SJF</li>
+                            <li>Vyplnená prihláška na SZVJ</li>
+                        </ul>
+                    </div>
+                    <div class="sjf-info-card">
+                        <h4>📚 Obsah teoretickej skúšky</h4>
+                        <ul>
+                            <li>Anatómia a fyziológia koňa</li>
+                            <li>Starostlivosť a kŕmenie</li>
+                            <li>Výstroj jazdca a koňa</li>
+                            <li>Pravidlá jazdeckého športu</li>
+                            <li>Prvá pomoc a bezpečnosť</li>
+                        </ul>
+                    </div>
+                    <div class="sjf-info-card">
+                        <h4>🏆 Kategórie jazdcov SJF</h4>
+                        <ul>
+                            <li>Deti - do 12 rokov</li>
+                            <li>Pony jazdci</li>
+                            <li>Juniori - 14-18 rokov</li>
+                            <li>Mladí jazdci - 16-21 rokov</li>
+                            <li>Seniori - 21+ rokov</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trainings" id="trainings">
+        <div class="container">
+            <div class="section-header">
+                <div class="line"></div>
+                <h2>Rozpis tréningov</h2>
+                <p>Pravidelné tréningy pre všetky kategórie jazdcov</p>
+            </div>
+            <div class="trainings-grid">
+                <div class="training-card">
+                    <div class="training-icon">👥</div>
+                    <h3>Skupinový tréning</h3>
+                    <p>Základný tréning pre začiatočníkov a mierne pokročilých</p>
+                    <div class="training-time">🕐 Po - Pi: 17:00 - 18:00</div>
+                </div>
+                <div class="training-card">
+                    <div class="training-icon">👤</div>
+                    <h3>Individuálny tréning</h3>
+                    <p>Osobný tréning podľa vašich potrieb a cieľov</p>
+                    <div class="training-time">🕐 Podľa dohody</div>
+                </div>
+                <div class="training-card">
+                    <div class="training-icon">🏆</div>
+                    <h3>Príprava na preteky</h3>
+                    <p>Intenzívny tréning pre súťažných jazdcov</p>
+                    <div class="training-time">🕐 Víkendy</div>
+                </div>
+                <div class="training-card">
+                    <div class="training-icon">👶</div>
+                    <h3>Detská jazda</h3>
+                    <p>Bezpečná výuka pre deti od 5 rokov</p>
+                    <div class="training-time">🕐 Víkendy: 10:00 - 12:00</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="horses" id="horses">
         <div class="container">
             <div class="section-header">
                 <div class="line" style="background:var(--white)"></div>
                 <h2>Naše kone</h2>
-                <p>Spoznajte našich štvornohých priateľov, ktorí sú srdcom nášho klubu</p>
+                <p>Všetky kone sú registrované a majú platné veterinárne vyšetrenia</p>
             </div>
-            <div class="horses-grid" id="horsesGallery">
-                <div class="horse-card"><div class="horse-img"><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400" alt="Kôň"></div><div class="horse-info"><h4>Načítavam...</h4><p>Naše kone</p></div></div>
-            </div>
+            <div class="horses-grid" id="horsesGallery"></div>
         </div>
     </section>
 
-    <section class="trainings" id="treningy">
+    <section class="pricelist" id="pricelist">
         <div class="container">
             <div class="section-header">
                 <div class="line"></div>
-                <h2>Rozvrh tréningov</h2>
-                <p>Pravidelné skupinové tréningy prebiehajú počas celého týždňa</p>
+                <h2>Cenník služieb</h2>
+                <p>Prehľad cien našich služieb</p>
             </div>
-            <div class="trainings-grid">
-                <div class="training-card"><div class="training-icon">📅</div><h3>Skupinový tréning</h3><p>Pravidelné skupinové tréningy pre jazdcov všetkých úrovní. Maximálne 4 jazdci v skupine.</p><div class="training-time">🕐 Pondelok - Piatok: 17:00 - 18:00</div></div>
-                <div class="training-card"><div class="training-icon">👤</div><h3>Individuálny tréning</h3><p>Osobný prístup a maximálna pozornosť trénera. Ideálne pre začiatočníkov aj pokročilých.</p><div class="training-time">🕐 Podľa dohody s trénerom</div></div>
-                <div class="training-card"><div class="training-icon">🏆</div><h3>Príprava na preteky</h3><p>Intenzívna príprava pre jazdcov, ktorí sa chcú zúčastniť skokových alebo drezúrnych pretekov.</p><div class="training-time">🕐 Soboty a nedele</div></div>
-                <div class="training-card"><div class="training-icon">👶</div><h3>Detská jazda</h3><p>Bezpečná a zábavná jazda pre deti od 4 rokov. Vodenie na koni s inštruktorom.</p><div class="training-time">🕐 Víkendy: 10:00 - 12:00</div></div>
+            <div class="price-table">
+                <table>
+                    <thead><tr><th>Služba</th><th>Trvanie</th><th>Cena</th></tr></thead>
+                    <tbody>
+                        <tr><td>Skupinový tréning</td><td>60 min</td><td class="price">20 €</td></tr>
+                        <tr><td>Individuálny tréning</td><td>60 min</td><td class="price">30 €</td></tr>
+                        <tr><td>Detská jazda</td><td>45 min</td><td class="price">15 €</td></tr>
+                        <tr><td>Lonžovanie</td><td>30 min</td><td class="price">15 €</td></tr>
+                        <tr><td>Parkúrový tréning</td><td>60 min</td><td class="price">35 €</td></tr>
+                        <tr><td>Drezúrny tréning</td><td>60 min</td><td class="price">35 €</td></tr>
+                        <tr><td>Príprava na SZVJ</td><td>60 min</td><td class="price">25 €</td></tr>
+                        <tr><td>Vychádzka do prírody</td><td>60 min</td><td class="price">30 €</td></tr>
+                        <tr><td>Ustajnenie</td><td>mesiac</td><td class="price">od 250 €</td></tr>
+                        <tr><td>Členský poplatok</td><td>rok</td><td class="price">50 €</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -228,68 +453,84 @@
         <div class="container">
             <div class="hipo-grid">
                 <div class="hipo-content">
-                    <h3>🏥 Hipoterapia</h3>
-                    <p>Hipoterapia je jedna z metód rehabilitácie porúch hybnosti. Jej zvláštnosťou je využitie koňa, ktorý sa s pacientom pohybuje spôsobom podobným ľudskej chôdzi, ako zdroja pohybových impulzov.</p>
-                    <div class="hipo-notice"><strong>⚠️ Aktuálne JK Zelená míľa Jaslovské Bohunice hipoterapiu neposkytuje.</strong></div>
-                    <p>Vplyvom pohybových impulzov dochádza k uvoľneniu svalového napätia, odbúravajú sa patologické pohybové stereotypy pacienta, harmonizuje sa celková svalová koordinácia, podporuje sa vzpriamené držanie tela a hlavy, cvičí sa rovnováha.</p>
-                    <p>Z psychologického hľadiska je pôsobenie hipoterapie azda ešte významnejšie. U pacientov otvára nový pohľad na život, dáva im chuť do nového cvičenia, posilňuje ich sebavedomie a pozitívne nalaďuje celý organizmus.</p>
+                    <h3>🐴 Hipoterapia</h3>
+                    <p>Hipoterapia je rehabilitačná metóda využívajúca pohyb koňa, ktorý je veľmi podobný ľudskej chôdzi. Pohyb koňa stimuluje vestibulárny aparát a zlepšuje posturálnu kontrolu.</p>
+                    <div class="hipo-notice">
+                        <strong>⚠️ Aktuálne JK Zelená míľa Jaslovské Bohunice hipoterapiu neposkytuje.</strong><br>
+                        V prípade záujmu vás radi odkážeme na špecializované pracoviská.
+                    </div>
                     <div class="hipo-benefits">
-                        <div class="hipo-benefit"><span class="check">✓</span> Uvoľnenie svalového napätia</div>
-                        <div class="hipo-benefit"><span class="check">✓</span> Zlepšenie koordinácie</div>
-                        <div class="hipo-benefit"><span class="check">✓</span> Posilnenie sebavedomia</div>
-                        <div class="hipo-benefit"><span class="check">✓</span> Pozitívny vplyv na psychiku</div>
+                        <div class="hipo-benefit"><span class="check">✓</span>Uvoľnenie spazmov svalstva</div>
+                        <div class="hipo-benefit"><span class="check">✓</span>Zlepšenie koordinácie pohybov</div>
+                        <div class="hipo-benefit"><span class="check">✓</span>Tréning rovnováhy</div>
+                        <div class="hipo-benefit"><span class="check">✓</span>Psychologické benefity</div>
                     </div>
                 </div>
-                <div class="hipo-image"><img src="https://images.unsplash.com/photo-1583946099379-f9c9cb8bc030?w=600" alt="Hipoterapia" style="border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.15)"></div>
+                <div class="hipo-image">
+                    <img src="https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=600" alt="Hipoterapia" style="border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.15)">
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="gallery" id="galeria">
+    <section class="contact" id="contact">
         <div class="container">
             <div class="section-header">
-                <div class="line"></div>
-                <h2>Galéria</h2>
-                <p>Momentky z nášho klubu</p>
-            </div>
-            <div class="gallery-grid">
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1527153907251-2285f7a6ebd7?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1566251037378-5e04e3bec343?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1509773896068-7fd415d91e2e?w=400" alt="Galéria"></div>
-                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1583946099379-f9c9cb8bc030?w=400" alt="Galéria"></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="contact" id="kontakt">
-        <div class="container">
-            <div class="section-header">
-                <div class="line" style="background:var(--green-light)"></div>
-                <h2>Kontaktujte nás</h2>
-                <p>Máte otázky alebo sa chcete prihlásiť na tréning?</p>
+                <div class="line" style="background:var(--white)"></div>
+                <h2>Kontakt</h2>
+                <p>Neváhajte nás kontaktovať</p>
             </div>
             <div class="contact-grid">
                 <div class="contact-info">
-                    <h3>Kontaktné údaje</h3>
-                    <div class="contact-item"><div class="icon">📍</div><div><h4>Prevádzka</h4><p>Areál PD Jaslovské Bohunice<br>Hlavná Jaslovce 124/127<br>919 30 Jaslovské Bohunice</p></div></div>
-                    <div class="contact-item"><div class="icon">📮</div><div><h4>Korešpondenčná adresa</h4><p>Jazdecký klub Zelená míľa, o.z.<br>Nová 297/41<br>919 30 Jaslovské Bohunice</p></div></div>
-                    <div class="contact-item"><div class="icon">📞</div><div><h4>Telefón</h4><p><a href="tel:+421905523022">+421 905 523 022</a></p></div></div>
-                    <div class="contact-item"><div class="icon">✉️</div><div><h4>Email</h4><p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p></div></div>
-                    <div class="contact-item"><div class="icon">📘</div><div><h4>Facebook</h4><p><a href="https://www.facebook.com/JKZMJB" target="_blank">facebook.com/JKZMJB</a></p></div></div>
-                    <div class="support-box"><h4>❤️ Darujte nám 2% z dane</h4><p style="font-size:0.9rem;opacity:0.9">Podporíte rozvoj jazdeckého športu v našom regióne</p></div>
+                    <h3>Jazdecký klub Zelená míľa<br>Jaslovské Bohunice, o.z.</h3>
+                    <div class="contact-item">
+                        <div class="icon">📍</div>
+                        <div><h4>Areál (jazdiareň)</h4><p>Areál PD Jaslovské Bohunice<br>Hlavná Jaslovce 124/127, 919 30</p></div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">📮</div>
+                        <div><h4>Korešpondenčná adresa</h4><p>Nová 297/41, 919 30 Jaslovské Bohunice</p></div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">📞</div>
+                        <div><h4>Telefón</h4><p><a href="tel:+421905523022">+421 905 523 022</a></p></div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">📧</div>
+                        <div><h4>Email</h4><p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p></div>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://facebook.com/JKZMJB" target="_blank" class="social-link">📘</a>
+                    </div>
+                    <div class="donation-box">
+                        <h4>💚 2% z daní</h4>
+                        <p>Podporte náš jazdecký klub darovaním 2% z vašich daní.</p>
+                    </div>
                 </div>
+                
                 <div class="contact-form">
                     <h3>Napíšte nám</h3>
                     <form id="contactForm">
-                        <div class="form-row"><div class="form-group"><label>Meno *</label><input type="text" name="name" required></div><div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Meno *</label><input type="text" name="name" required></div>
+                            <div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div>
+                        </div>
                         <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
-                        <div class="form-group"><label>Mám záujem o</label><select name="service"><option value="">-- Vyberte službu --</option><option value="skupinovy-trening">Skupinový tréning</option><option value="individualny-trening">Individuálny tréning</option><option value="detska-jazda">Jazda pre deti</option><option value="ustajnenie">Ustajnenie</option><option value="ine">Iné</option></select></div>
-                        <div class="form-group"><label>Správa *</label><textarea name="message" rows="4" required placeholder="Napíšte vašu správu..."></textarea></div>
-                        <button type="submit" class="btn btn-green" style="width:100%;padding:1rem">Odoslať správu</button>
+                        <div class="form-group">
+                            <label>Záujem o službu</label>
+                            <select name="service">
+                                <option value="">Vyberte službu</option>
+                                <option>Jazdecké lekcie</option>
+                                <option>Detská jazda</option>
+                                <option>Príprava na SZVJ</option>
+                                <option>Parkúrový tréning</option>
+                                <option>Drezúrny tréning</option>
+                                <option>Ustajnenie</option>
+                                <option>Iné</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Správa *</label><textarea name="message" required placeholder="Napíšte vašu správu..."></textarea></div>
+                        <button type="submit" class="btn btn-green" style="width:100%">Odoslať správu</button>
                     </form>
                 </div>
             </div>
@@ -298,22 +539,107 @@
 
     <footer>
         <div class="footer-grid">
-            <div class="footer-brand"><div class="logo"><img src="/assets/logo.png" alt="Logo"></div><p>Jazdecký klub Zelená míľa Jaslovské Bohunice - váš partner pre jazdecký šport od roku 2000.</p><div class="social-links"><a href="https://www.facebook.com/JKZMJB" target="_blank" title="Facebook">📘</a></div></div>
-            <div class="footer-col"><h4>Navigácia</h4><ul><li><a href="#o-nas">O nás</a></li><li><a href="#sluzby">Služby</a></li><li><a href="#kone">Naše kone</a></li><li><a href="#treningy">Tréningy</a></li><li><a href="#kontakt">Kontakt</a></li></ul></div>
-            <div class="footer-col"><h4>Služby</h4><ul><li><a href="#sluzby">Jazdecké lekcie</a></li><li><a href="#sluzby">Skoky</a></li><li><a href="#sluzby">Drezúra</a></li><li><a href="#sluzby">Ustajnenie</a></li><li><a href="#hipoterapia">Hipoterapia</a></li></ul></div>
-            <div class="footer-col"><h4>Kontakt</h4><ul><li>📍 Jaslovské Bohunice</li><li>📞 +421 905 523 022</li><li>✉️ apilera@apilera.com</li><li>🕐 Po-Pi: 17:00-18:00</li></ul></div>
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="/assets/logo.png" alt="Logo">
+                    <div><strong>JK Zelená míľa</strong><br><small>Jaslovské Bohunice</small></div>
+                </div>
+                <p>"Meet your Good Friend, Horse Today"</p>
+                <p style="margin-top:0.75rem">Člen Slovenskej jazdeckej federácie (SJF). Profesionálne jazdecké služby a príprava na SZVJ skúšky.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Rýchle odkazy</h4>
+                <a href="#about">O nás</a>
+                <a href="#services">Služby</a>
+                <a href="#szvj">SZVJ skúšky</a>
+                <a href="#horses">Naše kone</a>
+                <a href="#pricelist">Cenník</a>
+                <a href="#contact">Kontakt</a>
+            </div>
+            <div class="footer-col">
+                <h4>Služby</h4>
+                <a href="#services">Jazdecké lekcie</a>
+                <a href="#services">Parkúrové skoky</a>
+                <a href="#services">Drezúra</a>
+                <a href="#services">Detská jazda</a>
+                <a href="#services">Ustajnenie</a>
+            </div>
+            <div class="footer-col">
+                <h4>Kontakt</h4>
+                <p>📍 Areál PD Jaslovské Bohunice</p>
+                <p>📞 +421 905 523 022</p>
+                <p>📧 apilera@apilera.com</p>
+            </div>
         </div>
-        <div class="footer-bottom">© 2025 Jazdecký klub Zelená míľa Jaslovské Bohunice, o.z. | <a href="/admin">Admin</a></div>
+        <div class="footer-bottom">
+            <p>© 2025 JK Zelená míľa Jaslovské Bohunice, o.z.</p>
+            <span>Člen SJF • SZVJ skúšky</span>
+        </div>
     </footer>
 
     <div class="toast" id="toast"></div>
 
     <script>
-    async function loadHorses(){try{const res=await fetch('/api/horses');const horses=await res.json();const levels={beginner:'Začiatočníci',intermediate:'Pokročilí',advanced:'Skúsení',children:'Deti'};const imgs=['https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400','https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400','https://images.unsplash.com/photo-1527153907251-2285f7a6ebd7?w=400','https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=400'];document.getElementById('horsesGallery').innerHTML=horses.length?horses.map((h,i)=>`<div class="horse-card"><div class="horse-img"><img src="${imgs[i%imgs.length]}" alt="${h.name}"></div><div class="horse-info"><h4>${h.name}</h4><p>${h.breed||'Kôň'}</p><span class="horse-badge">${levels[h.level]||'Všetky úrovne'}</span></div></div>`).join(''):`<div class="horse-card"><div class="horse-img"><img src="${imgs[0]}" alt="Blesk"></div><div class="horse-info"><h4>Blesk</h4><p>Lipican</p><span class="horse-badge">Pokročilí</span></div></div><div class="horse-card"><div class="horse-img"><img src="${imgs[1]}" alt="Luna"></div><div class="horse-info"><h4>Luna</h4><p>Slovenský teplokrvník</p><span class="horse-badge">Začiatočníci</span></div></div><div class="horse-card"><div class="horse-img"><img src="${imgs[2]}" alt="Šibal"></div><div class="horse-info"><h4>Šibal</h4><p>Hafling</p><span class="horse-badge">Deti</span></div></div><div class="horse-card"><div class="horse-img"><img src="${imgs[3]}" alt="Čert"></div><div class="horse-info"><h4>Čert</h4><p>Slovenský teplokrvník</p><span class="horse-badge">Skúsení</span></div></div>`;}catch(e){console.error(e);}}
-    document.getElementById('contactForm').addEventListener('submit',async(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target));try{const res=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(res.ok){showToast('Správa bola odoslaná!');e.target.reset();}else{showToast('Chyba pri odosielaní.');}}catch(e){showToast('Chyba pripojenia.');}});
-    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
-    document.querySelector('.mobile-menu').addEventListener('click',()=>{const nav=document.querySelector('nav');if(nav.style.display==='flex'){nav.style.display='none';}else{nav.style.cssText='display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:white;padding:1rem 2rem;box-shadow:0 10px 30px rgba(0,0,0,0.1);';}});
+    async function loadHorses() {
+        try {
+            const res = await fetch('/api/horses');
+            const horses = await res.json();
+            const active = horses.filter(h => h.status === 'active');
+            const labels = {beginner:'Začiatočníci',intermediate:'Pokročilí',advanced:'Skúsení',children:'Deti',competition:'Súťažný'};
+            
+            document.getElementById('horsesGallery').innerHTML = active.length ? active.map(h => `
+                <div class="horse-card">
+                    <div class="horse-img"><img src="${h.photo_url || 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400'}" alt="${h.name}"></div>
+                    <div class="horse-info">
+                        <h4>${h.name}</h4>
+                        <p>${h.breed || ''}</p>
+                        <div class="horse-badges">
+                            <span class="horse-badge">${labels[h.level] || ''}</span>
+                            ${h.sjf_license_number ? '<span class="horse-badge sjf">SJF</span>' : ''}
+                            ${h.fei_id ? '<span class="horse-badge fei">FEI</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('') : defaultHorses();
+        } catch(e) { document.getElementById('horsesGallery').innerHTML = defaultHorses(); }
+    }
+    
+    function defaultHorses() {
+        return `
+            <div class="horse-card"><div class="horse-img"><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400"></div><div class="horse-info"><h4>Gentleman Z</h4><p>Zangersheide</p><div class="horse-badges"><span class="horse-badge">Súťažný</span><span class="horse-badge sjf">SJF</span></div></div></div>
+            <div class="horse-card"><div class="horse-img"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"></div><div class="horse-info"><h4>Luna Star</h4><p>Slovenský teplokrvník</p><div class="horse-badges"><span class="horse-badge">Pokročilí</span><span class="horse-badge sjf">SJF</span></div></div></div>
+            <div class="horse-card"><div class="horse-img"><img src="https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=400"></div><div class="horse-info"><h4>Šibal</h4><p>Hafling</p><div class="horse-badges"><span class="horse-badge">Deti</span></div></div></div>
+            <div class="horse-card"><div class="horse-img"><img src="https://images.unsplash.com/photo-1566251037378-5e04e3bec343?w=400"></div><div class="horse-info"><h4>Blesk</h4><p>Lipican</p><div class="horse-badges"><span class="horse-badge">Skúsení</span><span class="horse-badge sjf">SJF</span><span class="horse-badge fei">FEI</span></div></div></div>
+        `;
+    }
     loadHorses();
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(Object.fromEntries(new FormData(e.target)))
+            });
+            showToast(res.ok ? 'Správa odoslaná! Budeme vás kontaktovať.' : 'Chyba pri odosielaní.');
+            if(res.ok) e.target.reset();
+        } catch(err) { showToast('Chyba pripojenia.'); }
+    });
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+        });
+    });
     </script>
 </body>
 </html>
