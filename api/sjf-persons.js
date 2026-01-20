@@ -1,11 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -20,7 +17,6 @@ export default async function handler(req, res) {
       .select('*')
       .order('surname');
     
-    // Filter podľa role
     if (role === 'judge') {
       query = query.not('judge_license', 'is', null);
     } else if (role === 'trainer') {
@@ -37,14 +33,9 @@ export default async function handler(req, res) {
     
     const { data, error } = await query;
     
-    if (error) {
-      console.error('SJF Persons error:', error);
-      return res.status(500).json({ error: error.message, hint: error.hint || 'Check if table sjf_persons exists' });
-    }
-    
+    if (error) return res.status(500).json({ error: error.message });
     res.status(200).json(data || []);
   } catch (e) {
-    console.error('SJF Persons exception:', e);
     res.status(500).json({ error: e.message });
   }
-}
+};
