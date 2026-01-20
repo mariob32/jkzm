@@ -145,6 +145,7 @@
                     <div class="nav-section-title">Šport</div>
                     <div class="nav-item" data-section="competitions"><span class="icon">🏆</span>Preteky</div>
                     <div class="nav-item" data-section="licenses"><span class="icon">📋</span>Licencie SJF/FEI</div>
+                    <div class="nav-item" data-section="sjf-register"><span class="icon">🏛️</span>SJF Register</div>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Financie</div>
@@ -256,6 +257,33 @@
                 <div class="header"><h1>📋 Licencie SJF/FEI</h1></div>
                 <div class="tabs"><div class="tab active" data-tab="licRiders">Jazdci</div><div class="tab" data-tab="licHorses">Kone</div><div class="tab" data-tab="licTrainers">Tréneri</div></div>
                 <div class="card"><div class="card-body" id="licensesContent"><p>Vyberte kategóriu</p></div></div>
+            </section>
+
+            <!-- SJF REGISTER -->
+            <section id="sjf-register" class="section">
+                <div class="header"><h1>🏛️ SJF Register</h1><small style="color:var(--muted)">Dáta z evidencia.sjf.sk</small></div>
+                <div class="tabs">
+                    <div class="tab active" data-tab="sjfClubs">Kluby (50)</div>
+                    <div class="tab" data-tab="sjfJudges">Rozhodcovia (41)</div>
+                    <div class="tab" data-tab="sjfBuilders">Stavitelia (6)</div>
+                    <div class="tab" data-tab="sjfTrainers">Tréneri</div>
+                </div>
+                <div class="card" style="margin-bottom:1rem">
+                    <div class="card-body" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+                        <input type="text" id="sjfSearch" placeholder="🔍 Hľadať..." style="flex:1;min-width:200px;padding:0.5rem;border:1px solid var(--border);border-radius:var(--radius)">
+                        <select id="sjfRegion" style="padding:0.5rem;border:1px solid var(--border);border-radius:var(--radius)">
+                            <option value="">Všetky regióny</option>
+                            <option value="B">Bratislavský (B)</option>
+                            <option value="Z">Západné Slovensko (Z)</option>
+                            <option value="S">Stredné Slovensko (S)</option>
+                            <option value="V">Východné Slovensko (V)</option>
+                        </select>
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                            <input type="checkbox" id="sjfActiveOnly" checked> Len aktívne
+                        </label>
+                    </div>
+                </div>
+                <div class="card"><div class="card-body" id="sjfContent"><p>Načítavam...</p></div></div>
             </section>
 
             <!-- PAYMENTS -->
@@ -1227,6 +1255,151 @@
         t.className = 'toast show ' + type;
         setTimeout(() => t.classList.remove('show'), 3000);
     }
+
+    // ===== SJF REGISTER =====
+    let currentSjfTab = 'sjfClubs';
+    
+    // Tab prepínanie pre SJF
+    document.querySelectorAll('#sjf-register .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('#sjf-register .tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentSjfTab = tab.dataset.tab;
+            loadSjfData();
+        });
+    });
+    
+    // Filtre
+    document.getElementById('sjfSearch').addEventListener('input', debounce(loadSjfData, 300));
+    document.getElementById('sjfRegion').addEventListener('change', loadSjfData);
+    document.getElementById('sjfActiveOnly').addEventListener('change', loadSjfData);
+    
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+    
+    async function loadSjfData() {
+        const search = document.getElementById('sjfSearch').value;
+        const region = document.getElementById('sjfRegion').value;
+        const activeOnly = document.getElementById('sjfActiveOnly').checked;
+        const container = document.getElementById('sjfContent');
+        
+        container.innerHTML = '<p>Načítavam...</p>';
+        
+        try {
+            if (currentSjfTab === 'sjfClubs') {
+                await loadSjfClubs(search, region, activeOnly);
+            } else {
+                await loadSjfPersons(search, region, activeOnly);
+            }
+        } catch (e) {
+            container.innerHTML = '<p style="color:var(--danger)">Chyba: ' + e.message + '</p>';
+        }
+    }
+    
+    async function loadSjfClubs(search, region, activeOnly) {
+        let url = `${API}/sjf-clubs?`;
+        if (search) url += `search=${encodeURIComponent(search)}&`;
+        if (region) url += `region=${region}&`;
+        if (activeOnly) url += `status=Aktívny&`;
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.length === 0) {
+            document.getElementById('sjfContent').innerHTML = '<p>Žiadne kluby</p>';
+            return;
+        }
+        
+        let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1rem">';
+        data.forEach(c => {
+            html += `
+                <div style="border:1px solid var(--border);border-radius:var(--radius);padding:1rem;background:var(--card)">
+                    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:0.5rem">
+                        <strong style="font-size:1rem">${c.name}</strong>
+                        ${c.is_riding_school ? '<span style="background:var(--success);color:#fff;padding:0.1rem 0.5rem;border-radius:10px;font-size:0.7rem">JŠ</span>' : ''}
+                    </div>
+                    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem">
+                        📍 ${c.city || '-'} ${c.region ? '('+c.region+')' : ''}
+                    </div>
+                    <div style="font-size:0.85rem;display:flex;flex-direction:column;gap:0.25rem">
+                        ${c.contact_person ? '<div>👤 ' + c.contact_person + '</div>' : ''}
+                        ${c.phone ? '<div>📞 <a href="tel:' + c.phone.replace(/[^0-9+]/g,'') + '">' + c.phone + '</a></div>' : ''}
+                        ${c.email ? '<div>✉️ <a href="mailto:' + c.email + '">' + c.email + '</a></div>' : ''}
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        html += `<p style="margin-top:1rem;color:var(--muted);font-size:0.85rem">Zobrazených: ${data.length} klubov</p>`;
+        
+        document.getElementById('sjfContent').innerHTML = html;
+    }
+    
+    async function loadSjfPersons(search, region, activeOnly) {
+        let role = '';
+        let title = '';
+        let licenseField = '';
+        
+        if (currentSjfTab === 'sjfJudges') {
+            role = 'judge';
+            title = 'Rozhodcovia';
+            licenseField = 'judge_license';
+        } else if (currentSjfTab === 'sjfBuilders') {
+            role = 'builder';
+            title = 'Stavitelia parkúrov';
+            licenseField = 'course_builder_license';
+        } else if (currentSjfTab === 'sjfTrainers') {
+            role = 'trainer';
+            title = 'Tréneri';
+            licenseField = 'trainer_license';
+        }
+        
+        let url = `${API}/sjf-persons?role=${role}&`;
+        if (search) url += `search=${encodeURIComponent(search)}&`;
+        if (region) url += `region=${region}&`;
+        if (activeOnly) url += `status=Aktívny&`;
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.length === 0) {
+            document.getElementById('sjfContent').innerHTML = '<p>Žiadne osoby</p>';
+            return;
+        }
+        
+        let html = '<table class="table"><thead><tr><th>Meno</th><th>Klub</th><th>Región</th><th>Licencia</th><th>Status</th></tr></thead><tbody>';
+        data.forEach(p => {
+            const license = p[licenseField] || '-';
+            const statusColor = p.sjf_license_status === 'Aktívny' ? 'var(--success)' : 'var(--muted)';
+            html += `
+                <tr>
+                    <td><strong>${p.first_name} ${p.surname}</strong></td>
+                    <td style="font-size:0.85rem">${p.club_name || '-'}</td>
+                    <td>${p.region || '-'}</td>
+                    <td><code style="background:var(--bg);padding:0.2rem 0.5rem;border-radius:4px">${license}</code></td>
+                    <td><span style="color:${statusColor}">${p.sjf_license_status || '-'}</span></td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table>';
+        html += `<p style="margin-top:1rem;color:var(--muted);font-size:0.85rem">Zobrazených: ${data.length} osôb</p>`;
+        
+        document.getElementById('sjfContent').innerHTML = html;
+    }
+    
+    // Načítaj SJF dáta pri prepnutí na sekciu
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            if (item.dataset.section === 'sjf-register') {
+                setTimeout(loadSjfData, 100);
+            }
+        });
+    });
 
     // Set today's date
     document.getElementById('trainingDate').value = new Date().toISOString().split('T')[0];
