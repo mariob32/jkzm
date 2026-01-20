@@ -4,933 +4,316 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jazdecký klub Zelená míľa | Jaslovské Bohunice</title>
-    <meta name="description" content="Rodinný jazdecký klub s tradíciou od roku 2000. Jazdecké lekcie, ustajnenie, letné tábory.">
+    <meta name="description" content="Jazdecký klub Zelená míľa Jaslovské Bohunice - Meet your Good Friend, Horse Today. Jazdecké tréningy, rekreačné jazdenie, skoky, drezúra.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; color: #333; line-height: 1.6; }
-        a { text-decoration: none; color: inherit; }
-        img { max-width: 100%; }
-
-        :root {
-            --green: #228B22;
-            --green-dark: #1a6b1a;
-            --green-light: #90EE90;
-            --gold: #DAA520;
-            --dark: #1a1a1a;
-            --gray: #666;
-            --light: #f8f9fa;
-            --white: #fff;
-        }
-
-        /* Header */
-        header {
-            background: var(--white);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-        }
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .logo img {
-            height: 80px;
-        }
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-        nav a {
-            font-weight: 500;
-            color: var(--dark);
-            transition: color 0.3s;
-        }
-        nav a:hover {
-            color: var(--green);
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-        }
-        .btn-green {
-            background: var(--green);
-            color: var(--white);
-        }
-        .btn-green:hover {
-            background: var(--green-dark);
-            transform: translateY(-2px);
-        }
-        .mobile-menu {
-            display: none;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* Hero */
-        .hero {
-            min-height: 100vh;
-            background: linear-gradient(135deg, rgba(34,139,34,0.9), rgba(26,107,26,0.85)), 
-                        url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1920') center/cover;
-            display: flex;
-            align-items: center;
-            padding: 8rem 2rem 4rem;
-            position: relative;
-        }
-        .hero-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-        .hero-text {
-            color: var(--white);
-        }
-        .hero-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        .hero-text h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-        }
-        .hero-text h1 span {
-            color: var(--gold);
-        }
-        .hero-text p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
-            max-width: 500px;
-        }
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-        .btn-white {
-            background: var(--white);
-            color: var(--green);
-        }
-        .btn-white:hover {
-            background: var(--light);
-            transform: translateY(-2px);
-        }
-        .btn-outline {
-            border: 2px solid var(--white);
-            color: var(--white);
-            background: transparent;
-        }
-        .btn-outline:hover {
-            background: var(--white);
-            color: var(--green);
-        }
-        .hero-logo {
-            text-align: center;
-        }
-        .hero-logo img {
-            max-width: 350px;
-            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
-            background: var(--white);
-            border-radius: 50%;
-            padding: 20px;
-        }
-
-        /* Sections */
-        section {
-            padding: 5rem 2rem;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .section-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        .section-header h2 {
-            font-size: 2.5rem;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-        .section-header p {
-            color: var(--gray);
-            font-size: 1.1rem;
-        }
-        .section-header .line {
-            width: 60px;
-            height: 4px;
-            background: var(--green);
-            margin: 1rem auto 0;
-            border-radius: 2px;
-        }
-
-        /* About */
-        .about {
-            background: var(--light);
-        }
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-        .about-image img {
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        }
-        .about-text h3 {
-            font-size: 2rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-        .about-text p {
-            color: var(--gray);
-            margin-bottom: 1rem;
-        }
-        .about-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .about-feature {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .about-feature .icon {
-            width: 40px;
-            height: 40px;
-            background: var(--green);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-        .about-feature span {
-            font-weight: 500;
-        }
-
-        /* Stats */
-        .stats {
-            background: var(--green);
-            padding: 3rem 2rem;
-        }
-        .stats-grid {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            text-align: center;
-            color: var(--white);
-        }
-        .stat h3 {
-            font-size: 3rem;
-            font-weight: 700;
-        }
-        .stat p {
-            opacity: 0.9;
-        }
-
-        /* Services */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-        }
-        .service-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-            border: 1px solid #eee;
-        }
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        }
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--green), var(--green-light));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin: 0 auto 1.5rem;
-        }
-        .service-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
-            color: var(--dark);
-        }
-        .service-card p {
-            color: var(--gray);
-            font-size: 0.95rem;
-        }
-
-        /* Horses */
-        .horses {
-            background: var(--light);
-        }
-        .horses-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-        }
-        .horse-card {
-            background: var(--white);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
-        }
-        .horse-card:hover {
-            transform: translateY(-5px);
-        }
-        .horse-img {
-            height: 200px;
-            background: linear-gradient(135deg, var(--green), var(--green-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
-        }
-        .horse-info {
-            padding: 1.5rem;
-        }
-        .horse-info h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: var(--dark);
-        }
-        .horse-info p {
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-bottom: 0.75rem;
-        }
-        .horse-tag {
-            display: inline-block;
-            background: var(--green-light);
-            color: var(--green-dark);
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        /* Contact */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-        }
-        .contact-info h3 {
-            font-size: 1.75rem;
-            margin-bottom: 2rem;
-            color: var(--dark);
-        }
-        .contact-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .contact-item .icon {
-            width: 50px;
-            height: 50px;
-            background: var(--green);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-        .contact-item h4 {
-            color: var(--green);
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-        .contact-item p, .contact-item a {
-            color: var(--dark);
-            font-size: 1rem;
-        }
-        .contact-item a:hover {
-            color: var(--green);
-        }
-        .contact-form {
-            background: var(--light);
-            padding: 2.5rem;
-            border-radius: 20px;
-        }
-        .contact-form h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.9rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--green);
-        }
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
-        }
-
-        /* Map */
-        .map {
-            height: 400px;
-        }
-        .map iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: var(--white);
-            padding: 4rem 2rem 2rem;
-        }
-        .footer-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 3rem;
-            margin-bottom: 3rem;
-        }
-        .footer-brand img {
-            height: 80px;
-            margin-bottom: 1rem;
-        }
-        .footer-brand p {
-            color: #aaa;
-            font-size: 0.95rem;
-        }
-        footer h4 {
-            color: var(--green-light);
-            margin-bottom: 1.5rem;
-            font-size: 1rem;
-        }
-        .footer-links {
-            list-style: none;
-        }
-        .footer-links li {
-            margin-bottom: 0.75rem;
-        }
-        .footer-links a {
-            color: #aaa;
-            transition: color 0.3s;
-        }
-        .footer-links a:hover {
-            color: var(--green-light);
-        }
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 2rem;
-            border-top: 1px solid #333;
-            text-align: center;
-            color: #777;
-            font-size: 0.9rem;
-        }
-
-        /* Mobile Menu */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            top: 100px;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            padding: 1rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            z-index: 999;
-        }
-        .mobile-nav.active {
-            display: block;
-        }
-        .mobile-nav a {
-            display: block;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-            font-weight: 500;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            color: var(--white);
-            font-weight: 500;
-            z-index: 9999;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .toast.success { background: var(--green); }
-        .toast.error { background: #dc3545; }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .hero-content { grid-template-columns: 1fr; text-align: center; }
-            .hero-logo { display: none; }
-            .hero-text p { margin: 0 auto 2rem; }
-            .hero-buttons { justify-content: center; }
-            .about-grid { grid-template-columns: 1fr; }
-            .about-image { order: -1; }
-            .services-grid { grid-template-columns: repeat(2, 1fr); }
-            .horses-grid { grid-template-columns: repeat(2, 1fr); }
-            .contact-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 768px) {
-            nav { display: none; }
-            .mobile-menu { display: block; }
-            .logo img { height: 60px; }
-            .hero { padding: 7rem 1.5rem 3rem; }
-            .hero-text h1 { font-size: 2rem; }
-            .services-grid { grid-template-columns: 1fr; }
-            .horses-grid { grid-template-columns: 1fr; }
-            .form-row { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr; text-align: center; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
-            .stat h3 { font-size: 2rem; }
-            section { padding: 3rem 1.5rem; }
-        }
+        *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Poppins',sans-serif;color:#333;line-height:1.6}a{text-decoration:none;color:inherit}img{max-width:100%}
+        :root{--green:#228B22;--green-dark:#1a6b1a;--green-light:#90EE90;--gold:#DAA520;--dark:#1a1a1a;--gray:#666;--light:#f8f9fa;--white:#fff}
+        header{background:var(--white);position:fixed;top:0;left:0;right:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,0.1)}
+        .header-inner{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+        .logo{display:flex;align-items:center;gap:1rem}.logo img{height:70px}.logo-text{font-weight:700;font-size:1.1rem;color:var(--green)}
+        nav{display:flex;align-items:center;gap:2rem}nav a{font-weight:500;color:var(--dark);transition:color 0.3s}nav a:hover{color:var(--green)}
+        .btn{display:inline-block;padding:0.75rem 1.5rem;border-radius:50px;font-weight:600;transition:all 0.3s;border:none;cursor:pointer;font-family:inherit}
+        .btn-green{background:var(--green);color:var(--white)}.btn-green:hover{background:var(--green-dark);transform:translateY(-2px)}
+        .mobile-menu{display:none;font-size:1.5rem;background:none;border:none;cursor:pointer}
+        .hero{min-height:100vh;background:linear-gradient(135deg,rgba(34,139,34,0.9),rgba(26,107,26,0.85)),url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1920') center/cover;display:flex;align-items:center;padding:8rem 2rem 4rem}
+        .hero-content{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+        .hero-text{color:var(--white)}.hero-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:0.5rem 1rem;border-radius:50px;font-size:0.9rem;margin-bottom:1.5rem;backdrop-filter:blur(10px)}
+        .hero h1{font-size:3.5rem;line-height:1.2;margin-bottom:1rem;font-weight:700}
+        .hero-slogan{font-size:1.4rem;font-style:italic;opacity:0.95;margin-bottom:1.5rem;color:var(--green-light)}
+        .hero p{font-size:1.1rem;opacity:0.9;margin-bottom:2rem;max-width:500px}
+        .hero-buttons{display:flex;gap:1rem;flex-wrap:wrap}.hero-buttons .btn{padding:1rem 2rem;font-size:1rem}
+        .hero-buttons .btn-white{background:var(--white);color:var(--green)}.hero-buttons .btn-white:hover{background:var(--light)}
+        .hero-buttons .btn-outline-white{border:2px solid var(--white);color:var(--white);background:transparent}.hero-buttons .btn-outline-white:hover{background:var(--white);color:var(--green)}
+        .hero-image img{border-radius:20px;box-shadow:0 30px 60px rgba(0,0,0,0.3)}
+        .hero-stats{display:flex;gap:2rem;margin-top:2rem}
+        .stat{text-align:center;background:rgba(255,255,255,0.15);padding:1rem 1.5rem;border-radius:15px;backdrop-filter:blur(10px)}
+        .stat-num{font-size:2rem;font-weight:700}.stat-label{font-size:0.85rem;opacity:0.9}
+        section{padding:5rem 2rem}.container{max-width:1200px;margin:0 auto}
+        .section-header{text-align:center;margin-bottom:3rem}
+        .section-header h2{font-size:2.5rem;color:var(--dark);margin-bottom:1rem}
+        .section-header p{color:var(--gray);max-width:600px;margin:0 auto}
+        .section-header .line{width:60px;height:4px;background:var(--green);margin:0 auto 1rem;border-radius:2px}
+        .about{background:var(--light)}
+        .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+        .about-image img{border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.15)}
+        .about-badge{position:absolute;top:-20px;right:-20px;background:var(--green);color:var(--white);padding:1.5rem;border-radius:15px;text-align:center;box-shadow:0 10px 30px rgba(34,139,34,0.3)}
+        .about-badge .num{font-size:2.5rem;font-weight:700}.about-badge .txt{font-size:0.85rem}
+        .about-content h3{font-size:2rem;color:var(--dark);margin-bottom:1rem}
+        .about-content p{color:var(--gray);margin-bottom:1.5rem}
+        .about-features{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
+        .about-feature{display:flex;align-items:center;gap:0.75rem;padding:1rem;background:var(--white);border-radius:10px}
+        .about-feature .icon{width:40px;height:40px;background:rgba(34,139,34,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+        .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+        .service-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);transition:transform 0.3s}
+        .service-card:hover{transform:translateY(-10px)}
+        .service-img{height:200px;overflow:hidden}.service-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s}.service-card:hover .service-img img{transform:scale(1.1)}
+        .service-content{padding:1.5rem}
+        .service-content h3{font-size:1.3rem;color:var(--dark);margin-bottom:0.5rem}
+        .service-content p{color:var(--gray);font-size:0.95rem;margin-bottom:1rem}
+        .service-price{font-size:1.5rem;font-weight:700;color:var(--green)}
+        .service-price span{font-size:0.9rem;font-weight:400;color:var(--gray)}
+        .horses{background:linear-gradient(135deg,var(--green),var(--green-dark));color:var(--white);position:relative;overflow:hidden}
+        .horses .section-header h2{color:var(--white)}.horses .section-header p{color:rgba(255,255,255,0.8)}
+        .horses-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;position:relative;z-index:1}
+        .horse-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-radius:15px;overflow:hidden;transition:transform 0.3s,background 0.3s}
+        .horse-card:hover{transform:translateY(-5px);background:rgba(255,255,255,0.15)}
+        .horse-img{height:200px;overflow:hidden}.horse-img img{width:100%;height:100%;object-fit:cover}
+        .horse-info{padding:1.25rem;text-align:center}
+        .horse-info h4{font-size:1.2rem;margin-bottom:0.25rem}
+        .horse-info p{opacity:0.8;font-size:0.9rem}
+        .horse-badge{display:inline-block;background:rgba(255,255,255,0.2);padding:0.3rem 0.8rem;border-radius:20px;font-size:0.75rem;margin-top:0.5rem}
+        .trainings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem}
+        .training-card{background:var(--white);border-radius:15px;padding:2rem;box-shadow:0 10px 30px rgba(0,0,0,0.08);border-left:4px solid var(--green);transition:transform 0.3s}
+        .training-card:hover{transform:translateX(10px)}
+        .training-icon{width:60px;height:60px;background:rgba(34,139,34,0.1);border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:1rem}
+        .training-card h3{font-size:1.3rem;color:var(--dark);margin-bottom:0.5rem}
+        .training-card p{color:var(--gray);margin-bottom:1rem}
+        .training-time{display:flex;align-items:center;gap:0.5rem;color:var(--green);font-weight:600}
+        .hipoterapia{background:var(--light)}
+        .hipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+        .hipo-content h3{font-size:2rem;color:var(--dark);margin-bottom:1rem}
+        .hipo-content p{color:var(--gray);margin-bottom:1rem}
+        .hipo-notice{background:rgba(218,165,32,0.1);border-left:4px solid var(--gold);padding:1rem;border-radius:0 10px 10px 0;margin:1.5rem 0}
+        .hipo-notice strong{color:#b8860b}
+        .hipo-benefits{display:grid;gap:0.75rem;margin-top:1.5rem}
+        .hipo-benefit{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--white);border-radius:10px}
+        .hipo-benefit .check{color:var(--green);font-weight:bold}
+        .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+        .gallery-item{position:relative;border-radius:15px;overflow:hidden;aspect-ratio:1;cursor:pointer}
+        .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s}
+        .gallery-item:hover img{transform:scale(1.1)}
+        .contact{background:linear-gradient(135deg,var(--dark),#2d2d2d);color:var(--white)}
+        .contact .section-header h2{color:var(--white)}.contact .section-header p{color:rgba(255,255,255,0.7)}
+        .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem}
+        .contact-info h3{font-size:1.5rem;margin-bottom:1.5rem}
+        .contact-item{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem}
+        .contact-item .icon{width:50px;height:50px;background:rgba(34,139,34,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+        .contact-item h4{font-size:1rem;margin-bottom:0.25rem}.contact-item p{opacity:0.8;font-size:0.95rem}
+        .contact-item a{color:var(--green-light)}
+        .contact-form{background:var(--white);padding:2rem;border-radius:20px}
+        .contact-form h3{color:var(--dark);margin-bottom:1.5rem}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+        .form-group{margin-bottom:1rem}
+        .form-group label{display:block;color:var(--gray);font-size:0.9rem;margin-bottom:0.5rem}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:0.9rem 1rem;border:2px solid #e0e0e0;border-radius:10px;font-family:inherit;font-size:1rem;transition:border 0.3s}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--green)}
+        .support-box{background:rgba(218,165,32,0.2);border:2px dashed var(--gold);padding:1.5rem;border-radius:15px;text-align:center;margin-top:1.5rem}
+        .support-box h4{color:var(--gold);margin-bottom:0.5rem}
+        footer{background:var(--dark);color:var(--white);padding:3rem 2rem 1rem}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;max-width:1200px;margin:0 auto}
+        .footer-brand .logo img{height:60px;filter:brightness(0) invert(1);margin-bottom:1rem}
+        .footer-brand p{opacity:0.7;margin-bottom:1.5rem;font-size:0.95rem}
+        .social-links{display:flex;gap:0.75rem}
+        .social-links a{width:40px;height:40px;background:rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background 0.3s}
+        .social-links a:hover{background:var(--green)}
+        .footer-col h4{font-size:1.1rem;margin-bottom:1rem}.footer-col ul{list-style:none}.footer-col li{margin-bottom:0.5rem}
+        .footer-col a{opacity:0.7;transition:opacity 0.3s}.footer-col a:hover{opacity:1;color:var(--green-light)}
+        .footer-bottom{border-top:1px solid rgba(255,255,255,0.1);margin-top:2rem;padding-top:1.5rem;text-align:center;opacity:0.6;font-size:0.9rem;max-width:1200px;margin-left:auto;margin-right:auto}
+        .toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:var(--white);padding:1rem 2rem;border-radius:10px;transform:translateY(150%);opacity:0;transition:all 0.3s;z-index:9999}
+        .toast.show{transform:translateY(0);opacity:1}
+        @media(max-width:1024px){.hero-content,.about-grid,.hipo-grid,.contact-grid{grid-template-columns:1fr}.services-grid,.trainings-grid{grid-template-columns:repeat(2,1fr)}.horses-grid,.gallery-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:2.5rem}.hero-image{display:none}}
+        @media(max-width:768px){nav{display:none}.mobile-menu{display:block}.services-grid,.trainings-grid,.horses-grid,.gallery-grid{grid-template-columns:1fr}.about-features,.form-row{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.hero h1{font-size:2rem}.hero-stats{flex-direction:column;gap:1rem}}
     </style>
 </head>
 <body>
-
-    <!-- Header -->
     <header>
         <div class="header-inner">
-            <a href="#" class="logo">
-                <img src="/assets/logo.png" alt="Jazdecký klub Zelená míľa">
-            </a>
+            <a href="/" class="logo"><img src="/assets/logo.png" alt="JK Zelená míľa"><span class="logo-text">Zelená míľa</span></a>
             <nav>
-                <a href="#about">O nás</a>
-                <a href="#services">Služby</a>
-                <a href="#horses">Kone</a>
-                <a href="#contact">Kontakt</a>
-                <a href="#contact" class="btn btn-green">Rezervovať</a>
+                <a href="#o-nas">O nás</a>
+                <a href="#sluzby">Služby</a>
+                <a href="#kone">Naše kone</a>
+                <a href="#treningy">Tréningy</a>
+                <a href="#hipoterapia">Hipoterapia</a>
+                <a href="#kontakt">Kontakt</a>
+                <a href="/admin" class="btn btn-green">Admin</a>
             </nav>
-            <button class="mobile-menu" onclick="toggleMobileMenu()">☰</button>
+            <button class="mobile-menu">☰</button>
         </div>
     </header>
 
-    <!-- Mobile Nav -->
-    <div class="mobile-nav" id="mobileNav">
-        <a href="#about" onclick="toggleMobileMenu()">O nás</a>
-        <a href="#services" onclick="toggleMobileMenu()">Služby</a>
-        <a href="#horses" onclick="toggleMobileMenu()">Kone</a>
-        <a href="#contact" onclick="toggleMobileMenu()">Kontakt</a>
-    </div>
-
-    <!-- Hero -->
     <section class="hero" id="home">
         <div class="hero-content">
             <div class="hero-text">
-                <div class="hero-badge">🏇 Od roku 2000 s vami</div>
-                <h1>Jazdecký klub <span>Zelená míľa</span></h1>
-                <p>Rodinný jazdecký klub v Jaslovských Bohuniciach. Tradícia od roku 2000, nový klub od 2021. Objavte svet koní s nami.</p>
+                <span class="hero-badge">🐴 Jazdecký klub Jaslovské Bohunice</span>
+                <h1>Jazdecký klub<br>Zelená míľa</h1>
+                <p class="hero-slogan">"Meet your Good Friend, Horse Today"</p>
+                <p>Vítame Vás na stránkach jazdeckého klubu. Jazdecký klub Zelená míľa Jaslovské Bohunice je priamym nástupcom Jazdeckého klubu AXA Jaslovské Bohunice s dlhoročnou tradíciou.</p>
                 <div class="hero-buttons">
-                    <a href="#contact" class="btn btn-white">Kontaktujte nás</a>
-                    <a href="#about" class="btn btn-outline">Zistiť viac</a>
+                    <a href="#kontakt" class="btn btn-white">Rezervovať tréning</a>
+                    <a href="https://www.facebook.com/JKZMJB" target="_blank" class="btn btn-outline-white">📘 Facebook</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Rokov tradície</div></div>
+                    <div class="stat"><div class="stat-num">10+</div><div class="stat-label">Koní</div></div>
+                    <div class="stat"><div class="stat-num">100+</div><div class="stat-label">Jazdcov</div></div>
                 </div>
             </div>
-            <div class="hero-logo">
-                <img src="/assets/logo.png" alt="Jazdecký klub Zelená míľa">
-            </div>
+            <div class="hero-image"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600" alt="Jazda na koni"></div>
         </div>
     </section>
 
-    <!-- About -->
-    <section class="about" id="about">
+    <section class="about" id="o-nas">
         <div class="container">
             <div class="about-grid">
-                <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600" alt="Jazdecký klub">
+                <div class="about-image" style="position:relative">
+                    <img src="https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=600" alt="Jazdecký klub">
+                    <div class="about-badge"><div class="num">2000</div><div class="txt">Založené</div></div>
                 </div>
-                <div class="about-text">
+                <div class="about-content">
                     <h3>O našom klube</h3>
-                    <p>Jazdecký klub Zelená míľa je rodinný klub v Jaslovských Bohuniciach, kde sa venujeme jazdeniu na koni už od roku 2000.</p>
-                    <p>V roku 2021 sme založili nový klub, ktorý nadväzuje na dlhoročné skúsenosti. Ponúkame jazdecké lekcie pre všetky vekové kategórie a úrovne - od úplných začiatočníkov po pokročilých jazdcov.</p>
-                    <p>Naše kone sú starostlivo vybrané a trénované. Máme k dispozícii pieskovú jazdiareň a krásne prostredie v kontakte s prírodou.</p>
+                    <p>Jazdecký klub Zelená míľa Jaslovské Bohunice je občianske združenie s dlhoročnou tradíciou. Sídlime v areáli poľnohospodárskeho družstva v Jaslovských Bohuniciach, kde máme k dispozícii moderné zázemie pre kone aj jazdcov.</p>
+                    <p>Náš tím tvorí skupina nadšencov, ktorí milujú kone a jazdecký šport. Poskytujeme komplexné služby od výuky jazdy na koni pre začiatočníkov až po tréningy pokročilých jazdcov v disciplínach skoky a drezúra.</p>
                     <div class="about-features">
-                        <div class="about-feature">
-                            <div class="icon">🐴</div>
-                            <span>Skúsené kone</span>
-                        </div>
-                        <div class="about-feature">
-                            <div class="icon">👨‍🏫</div>
-                            <span>Kvalifikovaní tréneri</span>
-                        </div>
-                        <div class="about-feature">
-                            <div class="icon">🌿</div>
-                            <span>Prírodné prostredie</span>
-                        </div>
-                        <div class="about-feature">
-                            <div class="icon">👨‍👩‍👧‍👦</div>
-                            <span>Pre celú rodinu</span>
-                        </div>
+                        <div class="about-feature"><div class="icon">🏇</div><span>Profesionálni tréneri</span></div>
+                        <div class="about-feature"><div class="icon">🐴</div><span>Kvalitné školské kone</span></div>
+                        <div class="about-feature"><div class="icon">🏆</div><span>Účasť na pretekoch</span></div>
+                        <div class="about-feature"><div class="icon">👨‍👩‍👧</div><span>Rodinná atmosféra</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Stats -->
-    <section class="stats">
-        <div class="stats-grid">
-            <div class="stat">
-                <h3>25+</h3>
-                <p>Rokov skúseností</p>
-            </div>
-            <div class="stat">
-                <h3>500+</h3>
-                <p>Spokojných jazdcov</p>
-            </div>
-            <div class="stat">
-                <h3>15+</h3>
-                <p>Krásnych koní</p>
-            </div>
-            <div class="stat">
-                <h3>1000+</h3>
-                <p>Hodín tréningov</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services -->
-    <section class="services" id="services">
+    <section class="services" id="sluzby">
         <div class="container">
             <div class="section-header">
-                <h2>Naše služby</h2>
-                <p>Komplexné služby pre milovníkov koní</p>
                 <div class="line"></div>
+                <h2>Naše služby</h2>
+                <p>Ponúkame široké spektrum služieb pre všetky vekové kategórie a úrovne skúseností</p>
             </div>
             <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🐴</div>
-                    <h3>Jazdecké lekcie</h3>
-                    <p>Individuálne a skupinové lekcie pre začiatočníkov aj pokročilých všetkých vekových kategórií.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🏠</div>
-                    <h3>Ustajnenie</h3>
-                    <p>Profesionálna starostlivosť o vášho koňa. Moderné boxy, kvalitné krmivo a denná starostlivosť.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🏕️</div>
-                    <h3>Letné tábory</h3>
-                    <p>Nezabudnuteľné prázdniny pre deti. Jazdenie, starostlivosť o kone a zábava v prírode.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🎉</div>
-                    <h3>Podujatia</h3>
-                    <p>Narodeninové oslavy, firemné akcie a špeciálne podujatia s koňmi.</p>
-                </div>
+                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1509773896068-7fd415d91e2e?w=500" alt="Jazdecké lekcie"></div><div class="service-content"><h3>Jazdecké lekcie</h3><p>Individuálne aj skupinové lekcie pre začiatočníkov a pokročilých jazdcov.</p><div class="service-price">od 20€ <span>/lekcia</span></div></div></div>
+                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1566251037378-5e04e3bec343?w=500" alt="Skoky"></div><div class="service-content"><h3>Parkúrové skoky</h3><p>Tréningy skokových disciplín pre pokročilých jazdcov s prípravou na preteky.</p><div class="service-price">od 25€ <span>/tréning</span></div></div></div>
+                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1527153907251-2285f7a6ebd7?w=500" alt="Drezúra"></div><div class="service-content"><h3>Drezúra</h3><p>Výcvik v drezúrnych prvkoch pre zlepšenie komunikácie s koňom.</p><div class="service-price">od 25€ <span>/tréning</span></div></div></div>
+                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?w=500" alt="Pre deti"></div><div class="service-content"><h3>Jazda pre deti</h3><p>Bezpečné prvé kroky na koni pre najmenších jazdcov v sprievode inštruktora.</p><div class="service-price">od 15€ <span>/30 min</span></div></div></div>
+                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1565622905889-375e2cad3703?w=500" alt="Ustajnenie"></div><div class="service-content"><h3>Ustajnenie</h3><p>Kvalitné ustajnenie pre vaše kone s denne čerstvou podstielkou a krmivom.</p><div class="service-price">od 250€ <span>/mesiac</span></div></div></div>
+                <div class="service-card"><div class="service-img"><img src="https://images.unsplash.com/photo-1508761048490-5c60d7d12a06?w=500" alt="Vychádzky"></div><div class="service-content"><h3>Vychádzky do prírody</h3><p>Relaxačné vychádzky na koni po okolitej prírode.</p><div class="service-price">od 30€ <span>/hodina</span></div></div></div>
             </div>
         </div>
     </section>
 
-    <!-- Horses -->
-    <section class="horses" id="horses">
+    <section class="horses" id="kone">
         <div class="container">
             <div class="section-header">
+                <div class="line" style="background:var(--white)"></div>
                 <h2>Naše kone</h2>
-                <p>Spoznajte našich štvornohých priateľov</p>
-                <div class="line"></div>
+                <p>Spoznajte našich štvornohých priateľov, ktorí sú srdcom nášho klubu</p>
             </div>
-            <div class="horses-grid" id="horsesGrid">
-                <div class="horse-card">
-                    <div class="horse-img">🐴</div>
-                    <div class="horse-info">
-                        <h3>Načítavam...</h3>
-                        <p>Prosím počkajte</p>
+            <div class="horses-grid" id="horsesGallery">
+                <div class="horse-card"><div class="horse-img"><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400" alt="Kôň"></div><div class="horse-info"><h4>Načítavam...</h4><p>Naše kone</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trainings" id="treningy">
+        <div class="container">
+            <div class="section-header">
+                <div class="line"></div>
+                <h2>Rozvrh tréningov</h2>
+                <p>Pravidelné skupinové tréningy prebiehajú počas celého týždňa</p>
+            </div>
+            <div class="trainings-grid">
+                <div class="training-card"><div class="training-icon">📅</div><h3>Skupinový tréning</h3><p>Pravidelné skupinové tréningy pre jazdcov všetkých úrovní. Maximálne 4 jazdci v skupine.</p><div class="training-time">🕐 Pondelok - Piatok: 17:00 - 18:00</div></div>
+                <div class="training-card"><div class="training-icon">👤</div><h3>Individuálny tréning</h3><p>Osobný prístup a maximálna pozornosť trénera. Ideálne pre začiatočníkov aj pokročilých.</p><div class="training-time">🕐 Podľa dohody s trénerom</div></div>
+                <div class="training-card"><div class="training-icon">🏆</div><h3>Príprava na preteky</h3><p>Intenzívna príprava pre jazdcov, ktorí sa chcú zúčastniť skokových alebo drezúrnych pretekov.</p><div class="training-time">🕐 Soboty a nedele</div></div>
+                <div class="training-card"><div class="training-icon">👶</div><h3>Detská jazda</h3><p>Bezpečná a zábavná jazda pre deti od 4 rokov. Vodenie na koni s inštruktorom.</p><div class="training-time">🕐 Víkendy: 10:00 - 12:00</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hipoterapia" id="hipoterapia">
+        <div class="container">
+            <div class="hipo-grid">
+                <div class="hipo-content">
+                    <h3>🏥 Hipoterapia</h3>
+                    <p>Hipoterapia je jedna z metód rehabilitácie porúch hybnosti. Jej zvláštnosťou je využitie koňa, ktorý sa s pacientom pohybuje spôsobom podobným ľudskej chôdzi, ako zdroja pohybových impulzov.</p>
+                    <div class="hipo-notice"><strong>⚠️ Aktuálne JK Zelená míľa Jaslovské Bohunice hipoterapiu neposkytuje.</strong></div>
+                    <p>Vplyvom pohybových impulzov dochádza k uvoľneniu svalového napätia, odbúravajú sa patologické pohybové stereotypy pacienta, harmonizuje sa celková svalová koordinácia, podporuje sa vzpriamené držanie tela a hlavy, cvičí sa rovnováha.</p>
+                    <p>Z psychologického hľadiska je pôsobenie hipoterapie azda ešte významnejšie. U pacientov otvára nový pohľad na život, dáva im chuť do nového cvičenia, posilňuje ich sebavedomie a pozitívne nalaďuje celý organizmus.</p>
+                    <div class="hipo-benefits">
+                        <div class="hipo-benefit"><span class="check">✓</span> Uvoľnenie svalového napätia</div>
+                        <div class="hipo-benefit"><span class="check">✓</span> Zlepšenie koordinácie</div>
+                        <div class="hipo-benefit"><span class="check">✓</span> Posilnenie sebavedomia</div>
+                        <div class="hipo-benefit"><span class="check">✓</span> Pozitívny vplyv na psychiku</div>
                     </div>
                 </div>
+                <div class="hipo-image"><img src="https://images.unsplash.com/photo-1583946099379-f9c9cb8bc030?w=600" alt="Hipoterapia" style="border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.15)"></div>
             </div>
         </div>
     </section>
 
-    <!-- Contact -->
-    <section class="contact" id="contact">
+    <section class="gallery" id="galeria">
         <div class="container">
             <div class="section-header">
-                <h2>Kontaktujte nás</h2>
-                <p>Máte otázky? Radi vám pomôžeme.</p>
                 <div class="line"></div>
+                <h2>Galéria</h2>
+                <p>Momentky z nášho klubu</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1527153907251-2285f7a6ebd7?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1566251037378-5e04e3bec343?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1509773896068-7fd415d91e2e?w=400" alt="Galéria"></div>
+                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1583946099379-f9c9cb8bc030?w=400" alt="Galéria"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="kontakt">
+        <div class="container">
+            <div class="section-header">
+                <div class="line" style="background:var(--green-light)"></div>
+                <h2>Kontaktujte nás</h2>
+                <p>Máte otázky alebo sa chcete prihlásiť na tréning?</p>
             </div>
             <div class="contact-grid">
                 <div class="contact-info">
-                    <h3>Kde nás nájdete</h3>
-                    <div class="contact-item">
-                        <div class="icon">📍</div>
-                        <div>
-                            <h4>Adresa</h4>
-                            <p>Nová ulica 297/41<br>919 30 Jaslovské Bohunice</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="icon">📞</div>
-                        <div>
-                            <h4>Telefón</h4>
-                            <p>
-                                <a href="tel:+421905523022">+421 905 523 022</a><br>
-                                <a href="tel:+421905682824">+421 905 682 824</a>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="icon">✉️</div>
-                        <div>
-                            <h4>Email</h4>
-                            <p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="icon">🕐</div>
-                        <div>
-                            <h4>Otváracie hodiny</h4>
-                            <p>Po - Pi: 8:00 - 19:00<br>So - Ne: 9:00 - 17:00</p>
-                        </div>
-                    </div>
+                    <h3>Kontaktné údaje</h3>
+                    <div class="contact-item"><div class="icon">📍</div><div><h4>Prevádzka</h4><p>Areál PD Jaslovské Bohunice<br>Hlavná Jaslovce 124/127<br>919 30 Jaslovské Bohunice</p></div></div>
+                    <div class="contact-item"><div class="icon">📮</div><div><h4>Korešpondenčná adresa</h4><p>Jazdecký klub Zelená míľa, o.z.<br>Nová 297/41<br>919 30 Jaslovské Bohunice</p></div></div>
+                    <div class="contact-item"><div class="icon">📞</div><div><h4>Telefón</h4><p><a href="tel:+421905523022">+421 905 523 022</a></p></div></div>
+                    <div class="contact-item"><div class="icon">✉️</div><div><h4>Email</h4><p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p></div></div>
+                    <div class="contact-item"><div class="icon">📘</div><div><h4>Facebook</h4><p><a href="https://www.facebook.com/JKZMJB" target="_blank">facebook.com/JKZMJB</a></p></div></div>
+                    <div class="support-box"><h4>❤️ Darujte nám 2% z dane</h4><p style="font-size:0.9rem;opacity:0.9">Podporíte rozvoj jazdeckého športu v našom regióne</p></div>
                 </div>
                 <div class="contact-form">
                     <h3>Napíšte nám</h3>
                     <form id="contactForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Meno *</label>
-                                <input type="text" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Email *</label>
-                                <input type="email" name="email" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Telefón</label>
-                                <input type="tel" name="phone">
-                            </div>
-                            <div class="form-group">
-                                <label>Služba</label>
-                                <select name="service">
-                                    <option value="">Vyberte službu</option>
-                                    <option value="lessons">Jazdecké lekcie</option>
-                                    <option value="boarding">Ustajnenie</option>
-                                    <option value="camp">Letný tábor</option>
-                                    <option value="event">Podujatie</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Správa</label>
-                            <textarea name="message" placeholder="Vaša správa..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-green btn-submit">Odoslať správu</button>
+                        <div class="form-row"><div class="form-group"><label>Meno *</label><input type="text" name="name" required></div><div class="form-group"><label>Telefón</label><input type="tel" name="phone"></div></div>
+                        <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
+                        <div class="form-group"><label>Mám záujem o</label><select name="service"><option value="">-- Vyberte službu --</option><option value="skupinovy-trening">Skupinový tréning</option><option value="individualny-trening">Individuálny tréning</option><option value="detska-jazda">Jazda pre deti</option><option value="ustajnenie">Ustajnenie</option><option value="ine">Iné</option></select></div>
+                        <div class="form-group"><label>Správa *</label><textarea name="message" rows="4" required placeholder="Napíšte vašu správu..."></textarea></div>
+                        <button type="submit" class="btn btn-green" style="width:100%;padding:1rem">Odoslať správu</button>
                     </form>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Map -->
-    <div class="map">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10629.926661994066!2d17.64!3d48.49!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476c9c7a20f8e8e5%3A0x400f7d1c6978bc0!2s919%2030%20Jaslovsk%C3%A9%20Bohunice!5e0!3m2!1ssk!2ssk!4v1705000000000" allowfullscreen="" loading="lazy"></iframe>
-    </div>
-
-    <!-- Footer -->
     <footer>
         <div class="footer-grid">
-            <div class="footer-brand">
-                <img src="/assets/logo.png" alt="Jazdecký klub Zelená míľa">
-                <p>Rodinný jazdecký klub s tradíciou od roku 2000. Vaša brána do sveta koní.</p>
-            </div>
-            <div>
-                <h4>Navigácia</h4>
-                <ul class="footer-links">
-                    <li><a href="#about">O nás</a></li>
-                    <li><a href="#services">Služby</a></li>
-                    <li><a href="#horses">Kone</a></li>
-                    <li><a href="#contact">Kontakt</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4>Služby</h4>
-                <ul class="footer-links">
-                    <li><a href="#services">Jazdecké lekcie</a></li>
-                    <li><a href="#services">Ustajnenie</a></li>
-                    <li><a href="#services">Letné tábory</a></li>
-                    <li><a href="#services">Podujatia</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4>Kontakt</h4>
-                <ul class="footer-links">
-                    <li><a href="tel:+421905523022">+421 905 523 022</a></li>
-                    <li><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></li>
-                    <li>Jaslovské Bohunice</li>
-                </ul>
-            </div>
+            <div class="footer-brand"><div class="logo"><img src="/assets/logo.png" alt="Logo"></div><p>Jazdecký klub Zelená míľa Jaslovské Bohunice - váš partner pre jazdecký šport od roku 2000.</p><div class="social-links"><a href="https://www.facebook.com/JKZMJB" target="_blank" title="Facebook">📘</a></div></div>
+            <div class="footer-col"><h4>Navigácia</h4><ul><li><a href="#o-nas">O nás</a></li><li><a href="#sluzby">Služby</a></li><li><a href="#kone">Naše kone</a></li><li><a href="#treningy">Tréningy</a></li><li><a href="#kontakt">Kontakt</a></li></ul></div>
+            <div class="footer-col"><h4>Služby</h4><ul><li><a href="#sluzby">Jazdecké lekcie</a></li><li><a href="#sluzby">Skoky</a></li><li><a href="#sluzby">Drezúra</a></li><li><a href="#sluzby">Ustajnenie</a></li><li><a href="#hipoterapia">Hipoterapia</a></li></ul></div>
+            <div class="footer-col"><h4>Kontakt</h4><ul><li>📍 Jaslovské Bohunice</li><li>📞 +421 905 523 022</li><li>✉️ apilera@apilera.com</li><li>🕐 Po-Pi: 17:00-18:00</li></ul></div>
         </div>
-        <div class="footer-bottom">
-            <p>© 2000 - 2025 Jazdecký klub Zelená míľa | IČO: 53536002 | Nová ulica 297/41, 919 30 Jaslovské Bohunice</p>
-        </div>
+        <div class="footer-bottom">© 2025 Jazdecký klub Zelená míľa Jaslovské Bohunice, o.z. | <a href="/admin">Admin</a></div>
     </footer>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
-        function toggleMobileMenu() {
-            document.getElementById('mobileNav').classList.toggle('active');
-        }
-
-        // Load horses
-        async function loadHorses() {
-            try {
-                const res = await fetch('/api/horses');
-                if (!res.ok) throw new Error();
-                const horses = await res.json();
-                const grid = document.getElementById('horsesGrid');
-                
-                if (!horses.length) {
-                    grid.innerHTML = '<p style="text-align:center;color:#666;grid-column:1/-1;padding:2rem;">Momentálne nemáme žiadne kone v databáze.</p>';
-                    return;
-                }
-                
-                const levels = { 'beginner': 'Začiatočníci', 'intermediate': 'Pokročilí', 'advanced': 'Skúsení', 'children': 'Deti' };
-                
-                grid.innerHTML = horses.map(h => `
-                    <div class="horse-card">
-                        <div class="horse-img">🐴</div>
-                        <div class="horse-info">
-                            <h3>${h.name}</h3>
-                            <p>${h.breed || 'Krásny kôň'}${h.color ? ' • ' + h.color : ''}</p>
-                            ${h.level ? `<span class="horse-tag">${levels[h.level] || h.level}</span>` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) {
-                document.getElementById('horsesGrid').innerHTML = '<p style="text-align:center;color:#666;grid-column:1/-1;padding:2rem;">Nepodarilo sa načítať kone.</p>';
-            }
-        }
-        loadHorses();
-
-        // Contact form
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            const original = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = 'Odosielam...';
-
-            try {
-                const data = Object.fromEntries(new FormData(e.target));
-                const res = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (res.ok) {
-                    showToast('Ďakujeme! Čoskoro sa vám ozveme.', 'success');
-                    e.target.reset();
-                } else {
-                    throw new Error();
-                }
-            } catch (err) {
-                showToast('Chyba pri odosielaní. Skúste znova.', 'error');
-            }
-
-            btn.disabled = false;
-            btn.textContent = original;
-        });
-
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type + ' show';
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
+    async function loadHorses(){try{const res=await fetch('/api/horses');const horses=await res.json();const levels={beginner:'Začiatočníci',intermediate:'Pokročilí',advanced:'Skúsení',children:'Deti'};const imgs=['https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400','https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400','https://images.unsplash.com/photo-1527153907251-2285f7a6ebd7?w=400','https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=400'];document.getElementById('horsesGallery').innerHTML=horses.length?horses.map((h,i)=>`<div class="horse-card"><div class="horse-img"><img src="${imgs[i%imgs.length]}" alt="${h.name}"></div><div class="horse-info"><h4>${h.name}</h4><p>${h.breed||'Kôň'}</p><span class="horse-badge">${levels[h.level]||'Všetky úrovne'}</span></div></div>`).join(''):`<div class="horse-card"><div class="horse-img"><img src="${imgs[0]}" alt="Blesk"></div><div class="horse-info"><h4>Blesk</h4><p>Lipican</p><span class="horse-badge">Pokročilí</span></div></div><div class="horse-card"><div class="horse-img"><img src="${imgs[1]}" alt="Luna"></div><div class="horse-info"><h4>Luna</h4><p>Slovenský teplokrvník</p><span class="horse-badge">Začiatočníci</span></div></div><div class="horse-card"><div class="horse-img"><img src="${imgs[2]}" alt="Šibal"></div><div class="horse-info"><h4>Šibal</h4><p>Hafling</p><span class="horse-badge">Deti</span></div></div><div class="horse-card"><div class="horse-img"><img src="${imgs[3]}" alt="Čert"></div><div class="horse-info"><h4>Čert</h4><p>Slovenský teplokrvník</p><span class="horse-badge">Skúsení</span></div></div>`;}catch(e){console.error(e);}}
+    document.getElementById('contactForm').addEventListener('submit',async(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target));try{const res=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(res.ok){showToast('Správa bola odoslaná!');e.target.reset();}else{showToast('Chyba pri odosielaní.');}}catch(e){showToast('Chyba pripojenia.');}});
+    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
+    document.querySelector('.mobile-menu').addEventListener('click',()=>{const nav=document.querySelector('nav');if(nav.style.display==='flex'){nav.style.display='none';}else{nav.style.cssText='display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:white;padding:1rem 2rem;box-shadow:0 10px 30px rgba(0,0,0,0.1);';}});
+    loadHorses();
     </script>
 </body>
 </html>
