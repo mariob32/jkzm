@@ -1,0 +1,171 @@
+{
+  "podkuvaci": [
+    {
+      "meno": "Peagas Farrier Slovakia",
+      "telefon": "0918 562 092",
+      "facebook": "/peagasfarrierslovakia",
+      "licencia": "IVVL medzinárodná",
+      "region": "Celé Slovensko",
+      "cennik": {
+        "korekcia_sportove": "15 €",
+        "korekcia_tazne": "20 €",
+        "korekcia_zriebata": "22 €",
+        "podkuvanie_sportove": "50 €",
+        "podkuvanie_tazne": "60 €",
+        "podkuvanie_zriebata": "40 €"
+      },
+      "poznamka": "Korekcia podľa Hiltrude Strassera na požiadanie"
+    },
+    {
+      "meno": "Podkúvanie Královič",
+      "web": "https://www.podkuvanie.sk/",
+      "licencia": "IVVL Košice",
+      "region": "Západné Slovensko",
+      "poznamka": "Individuálny prístup, bez násilia"
+    },
+    {
+      "meno": "Farma pod Poľanou - René",
+      "web": "https://www.farmapodpolanou.sk/nase-sluzby/podkuvanie-koni/",
+      "licencia": "IVVL Košice",
+      "region": "Celé Slovensko",
+      "poznamka": "Korektúra pravidelných/nepravidelných kopýt"
+    }
+  ],
+  "veterinari_kone": [
+    {
+      "nazov": "Klinika koní UVLF Košice",
+      "typ": "Univerzitná nemocnica",
+      "adresa": "Komenského 73, 041 81 Košice",
+      "web": "https://www.uvlf.sk/kontakty/univerzitna-veterinarna-nemocnica/klinika-koni",
+      "sluzby": ["Chirurgia", "Interná medicína", "Reprodukcia", "Ortopédia", "Urgentné stavy"]
+    },
+    {
+      "nazov": "Fazivet Nitra",
+      "telefon": "+421 911 263 703",
+      "web": "https://fazivet.sk/veterinarne-sluzby/kone/",
+      "adresa": "Nitra",
+      "ordinacne_hodiny": "Po-Pi: 8:30-12:00, 13:00-19:00, So: 8:30-11:30",
+      "pohotovost": "Non-stop po tel. dohovore",
+      "sluzby": ["Interná medicína", "Chirurgia", "Reprodukcia", "Inseminácia", "Ultrazvuk", "Koliky", "Urgentné stavy"],
+      "poznamka": "Výjazdová služba v Nitre a okolí"
+    },
+    {
+      "nazov": "MVDr. Jana Morvayová - Výjazdový veterinár",
+      "telefon": "Viď web",
+      "web": "https://www.vyjazdovyveterinar.sk/",
+      "adresa": "Vlčkova 20, 811 04 Bratislava",
+      "ordinacne_hodiny": "Po-Pi: 9:00-16:00 (16:00-20:00 s príplatkom 30€)",
+      "sluzby": ["Výjazdy", "Zazmluvnené kone a poníky"],
+      "poznamka": "Celoživotná prax s koňmi, dcéra konského veterinára"
+    },
+    {
+      "nazov": "Vetklinika Ružinov Bratislava",
+      "web": "https://www.vetklinika.sk/",
+      "adresa": "Bratislava - Ružinov",
+      "sluzby": ["Domáce zvieratá", "Hospodárske zvieratá", "Kone"],
+      "poznamka": "Online objednávky, akútne prípady prednostne"
+    }
+  ],
+  "preprava_koni": [
+    {
+      "nazov": "ZT Horse Transport",
+      "web": "http://prepravakoni.sk/",
+      "sluzby": ["Medzinárodná preprava", "Vnútroštátna preprava", "Preteky", "TRACES list"],
+      "kapacita": "až 4 kone",
+      "poznamka": "Nonstop prevoz na kliniky Brno, Košice, Viedeň, Budapešť"
+    },
+    {
+      "nazov": "Preprava zvierat - Ranč Severný Vietor",
+      "web": "https://www.prepravazvierat.sk/",
+      "adresa": "Považany",
+      "sluzby": ["Preprava koní", "Požičovňa prepravníkov", "Hotel pre kone"],
+      "poznamka": "Certifikovaný prepravca, individuálna preprava"
+    },
+    {
+      "nazov": "Prenájom boxov - Preprava koní",
+      "web": "https://prenajomboxov.sk/preprava-koni/",
+      "kapacita": "2 kone",
+      "vozidlo": "Audi Q5 + prepravník",
+      "region": "SR, ČR a okolité krajiny",
+      "poznamka": "Možnosť samostatného zapožičania prepravníka"
+    },
+    {
+      "kontakt": "0917 770 686",
+      "sluzby": ["Preprava koní", "Celá EÚ", "24/7"],
+      "vybava": "Seno, voda, kamera"
+    },
+    {
+      "kontakt": "0917 251 014",
+      "sluzby": ["Preprava koní", "Dobytok", "Ovce", "Ošípané"],
+      "region": "Celé Slovensko"
+    },
+    {
+      "kontakt": "0908 122 848",
+      "sluzby": ["Preprava koní", "SR", "ČR"],
+      "poznamka": "Pomoc pri nakladaní a vykladaní"
+    }
+  ],
+  "rozhodcovia_drezura": [
+    {"meno": "Bučkuliaková Linda", "kvalifikacia": "RD2", "sjf_id": 2093, "klub": "JO Martin Záturčie"},
+    {"meno": "Fogašová Mária", "kvalifikacia": "RD2", "sjf_id": 278, "klub": "OZ Galaxia Spišská Teplica", "email": "ozgalaxia@azet.sk", "telefon": "0905 436 993"},
+    {"meno": "Gbúrová Alica", "kvalifikacia": "RD2", "sjf_id": 3055, "klub": "JK Limit Bratislava"},
+    {"meno": "Horná Michaela", "kvalifikacia": "RD2", "sjf_id": 2965, "klub": "JK pri NŽ Topoľčianky", "email": "michaela.horna@post.sk"},
+    {"meno": "Ivaničová Nadežda", "kvalifikacia": "RD4", "sjf_id": 599, "klub": "JK Alexandria Hviezdoslavov", "email": "danclub@danclub.sk", "telefon": "0907 220 054"},
+    {"meno": "Kohút Patrik", "kvalifikacia": "RD2", "sjf_id": 2964, "klub": "JK Agrocontract Jasová"},
+    {"meno": "Kohút Rudolf", "kvalifikacia": "RD2", "sjf_id": 222, "klub": "JK Agrocontract Jasová"},
+    {"meno": "Kohútová Edita", "kvalifikacia": "RD2", "sjf_id": 3373, "klub": "JK Agrocontract Jasová"},
+    {"meno": "Komarek Michaela", "kvalifikacia": "RD2", "sjf_id": 8014, "klub": "Paradrezúra Excelent"},
+    {"meno": "Krivosudská Lucia", "kvalifikacia": "RD2", "sjf_id": 5174, "klub": "JK Napoli Bratislava"},
+    {"meno": "Lisiková Terézia", "kvalifikacia": "RD2", "sjf_id": 1836, "klub": "Parkúr Team Košice B.V.", "telefon": "+421 949 116 384", "email": "transformativeequinetraining@gmail.com"},
+    {"meno": "Magál Slavomír", "kvalifikacia": "RD2", "klub": "TJ Žrebčín Motešice"},
+    {"meno": "Medová Jana", "kvalifikacia": "RD2", "sjf_id": 1906, "klub": "JK Žižka Bratislava", "email": "jana.medova@gmail.com", "telefon": "0905 514 550"},
+    {"meno": "Patócs Ádam", "kvalifikacia": "RD2", "sjf_id": 5185, "klub": "TJ Žrebčín Motešice", "email": "dressagee@gmail.com", "telefon": "+421 915 150 118"},
+    {"meno": "Paučo Ľubomír", "kvalifikacia": "RD2", "sjf_id": 217, "klub": "JK Epona Mútnik Liptovský Mikuláš", "email": "arietaandria@gmail.com", "telefon": "0903 559 581"},
+    {"meno": "Pechová Michaela", "kvalifikacia": "RD2", "sjf_id": 867, "klub": "JK Ivanka pri Dunaji"},
+    {"meno": "Petrušková Milada", "kvalifikacia": "RD2", "sjf_id": 5267, "klub": "JK Equida", "email": "petruskova.milada@gmail.com", "telefon": "0905 288 941"},
+    {"meno": "Poláková Silvia", "kvalifikacia": "RD4", "sjf_id": 7518, "klub": "SŠ Ivanka pri Dunaji", "email": "csarcha@gmail.com", "telefon": "0903 749 947"},
+    {"meno": "Rindošová Diana Františka", "kvalifikacia": "RD2", "sjf_id": 6666, "klub": "JK Slávia UVLF Košice"},
+    {"meno": "Vietor Iľja", "kvalifikacia": "FRD4", "sjf_id": 652, "klub": "SŠ Ivanka pri Dunaji", "poznamka": "FEI rozhodca"},
+    {"meno": "Výbohová Martina", "kvalifikacia": "RD2", "sjf_id": 7749, "klub": "JK Enimo Slatinské Lazy"}
+  ],
+  "stewardi_drezura": [
+    {"meno": "Bábyová Ivana", "kvalifikacia": "KD3", "sjf_id": 4303, "klub": "JK Napoli Bratislava"},
+    {"meno": "Dedinská - Maderová Ivana", "kvalifikacia": "KD2", "sjf_id": 1135, "klub": "JK Femini Team Trnava"},
+    {"meno": "Gavorníková Silvia", "kvalifikacia": "KD3", "sjf_id": 1413, "klub": "Riders & Dreams Bratislava"},
+    {"meno": "Kelemenová Veronika", "kvalifikacia": "FKD2", "sjf_id": 358, "klub": "Riders & Dreams Bratislava", "poznamka": "FEI steward"},
+    {"meno": "Melišeková Iveta", "kvalifikacia": "KD2", "sjf_id": 347, "klub": "JS Závada Hájik", "telefon": "0907 803 261"},
+    {"meno": "Pistovčáková Monika", "kvalifikacia": "FKD1", "sjf_id": 6764, "klub": "Riders & Dreams Bratislava", "poznamka": "FEI steward"},
+    {"meno": "Prieložná Katarína", "kvalifikacia": "FKD1", "sjf_id": 6411, "klub": "JK Rozálka Pezinok", "poznamka": "FEI steward"},
+    {"meno": "Sotáková Viktória", "kvalifikacia": "KD2", "sjf_id": 8168, "klub": "JK Enimo Slatinské Lazy"}
+  ],
+  "institucie": [
+    {
+      "nazov": "Slovenská jazdecká federácia (SJF)",
+      "web": "https://www.sjf.sk/",
+      "evidencia": "https://evidencia.sjf.sk/",
+      "popis": "Národný riadiaci orgán jazdeckého športu"
+    },
+    {
+      "nazov": "Štátna veterinárna a potravinová správa SR (ŠVPS)",
+      "web": "https://svps.sk/",
+      "popis": "Veterinárna starostlivosť, pasy koní, IAE testy"
+    },
+    {
+      "nazov": "Inštitút vzdelávania veterinárnych lekárov Košice (IVVL)",
+      "web": "https://www.ivvl.sk/",
+      "popis": "Kurzy podkúvač, veterinárne vzdelávanie"
+    },
+    {
+      "nazov": "Národný žrebčín Topoľčianky",
+      "web": "https://nztopolcianky.sk/",
+      "telefon": "Viď web",
+      "popis": "Predaj koní, chov, preprava"
+    }
+  ],
+  "poznamky": {
+    "zdroj_rozhodcovia": "Drezúrna komisia SJF - aktualizované 22.11.2025",
+    "zdroj_podkuvaci": "Verejné inzeráty a webstránky",
+    "zdroj_veterinari": "Verejné webstránky kliník",
+    "evidencia_sjf": "https://evidencia.sjf.sk/ - kone, jazdci, kluby (vyžaduje priame pripojenie)"
+  }
+}
