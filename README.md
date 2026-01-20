@@ -188,3 +188,28 @@ Kompletný profesionálny manažment systém pre jazdecký klub, navrhnutý v s�
 ---
 
 © 2025 Jazdecký klub Zelená míľa Jaslovské Bohunice, o.z.
+
+---
+
+## 🏇 SJF Register (nové!)
+
+Systém obsahuje synchronizáciu s evidencia.sjf.sk:
+- 50 aktívnych klubov
+- 41 aktívnych rozhodcov
+- 6 aktívnych staviteľov parkúrov
+
+### Tabuľky
+- `sjf_clubs` - Všetky jazdecké kluby
+- `sjf_persons` - Rozhodcovia, tréneri, stavitelia
+- `sjf_horses` - Register koní
+- `sjf_sync_log` - Log synchronizácií
+
+### Aktualizácia dát
+```bash
+cd tools/sjf-import
+npm install
+node sjf-import.js --clubs SJF-Export_kluby.csv
+node sjf-import.js --persons SJF-Export_osoby.csv
+```
+
+Viac info: `SJF-PREHLAD.md`

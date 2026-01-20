@@ -856,3 +856,235 @@ $$ LANGUAGE plpgsql;
 -- SELECT * FROM search_contacts('farrier', NULL, NULL);
 -- SELECT * FROM search_contacts(NULL, NULL, 'kone');
 -- SELECT * FROM v_contacts_by_category WHERE category = 'transport';
+
+-- =====================================================
+-- SJF REGISTRE - Externé referenčné tabuľky
+-- Pre synchronizáciu s evidencia.sjf.sk
+-- =====================================================
+
+-- Tabuľka: SJF Kluby
+CREATE TABLE IF NOT EXISTS sjf_clubs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    street VARCHAR(255),
+    postal_code VARCHAR(10),
+    house_number VARCHAR(20),
+    region VARCHAR(5),
+    city VARCHAR(100),
+    is_riding_school BOOLEAN DEFAULT FALSE,
+    statutory VARCHAR(255),
+    contact_person VARCHAR(255),
+    phone VARCHAR(100),
+    email VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'Neaktívny',
+    sjf_import_date TIMESTAMP DEFAULT NOW(),
+    sjf_last_update TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Tabuľka: SJF Osoby
+CREATE TABLE IF NOT EXISTS sjf_persons (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    surname VARCHAR(100) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    birth_date DATE,
+    club_name VARCHAR(255),
+    region VARCHAR(5),
+    sjf_license_status VARCHAR(20),
+    sjf_license_number VARCHAR(20),
+    fei_license_status VARCHAR(20),
+    is_talented_athlete BOOLEAN DEFAULT FALSE,
+    badge_gold BOOLEAN DEFAULT FALSE,
+    badge_silver BOOLEAN DEFAULT FALSE,
+    badge_bronze BOOLEAN DEFAULT FALSE,
+    is_riding_school_student BOOLEAN DEFAULT FALSE,
+    general_rules BOOLEAN DEFAULT FALSE,
+    rider_license VARCHAR(50),
+    judge_license VARCHAR(50),
+    trainer_license VARCHAR(50),
+    course_builder_license VARCHAR(50),
+    steward_license VARCHAR(50),
+    fei_vet_license VARCHAR(50),
+    sjf_vet_judge_license VARCHAR(50),
+    technical_delegate VARCHAR(50),
+    sjf_official VARCHAR(255),
+    mcras_official VARCHAR(255),
+    fei_treating_vet VARCHAR(50),
+    member_type VARCHAR(50),
+    lunger_license VARCHAR(50),
+    main_discipline VARCHAR(100),
+    secondary_discipline VARCHAR(100),
+    voltiz VARCHAR(50),
+    sjf_import_date TIMESTAMP DEFAULT NOW(),
+    sjf_last_update TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Tabuľka: SJF Kone
+CREATE TABLE IF NOT EXISTS sjf_horses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sjf_license_number VARCHAR(20),
+    name VARCHAR(255) NOT NULL,
+    owner_name VARCHAR(255),
+    life_number VARCHAR(50),
+    club_name VARCHAR(255),
+    gender VARCHAR(20),
+    sjf_license_status VARCHAR(20),
+    fei_license_status VARCHAR(20),
+    fei_license_number VARCHAR(20),
+    birth_date DATE,
+    color VARCHAR(50),
+    breed VARCHAR(100),
+    sire VARCHAR(255),
+    dam VARCHAR(255),
+    disciplines TEXT,
+    sjf_import_date TIMESTAMP DEFAULT NOW(),
+    sjf_last_update TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Sync log
+CREATE TABLE IF NOT EXISTS sjf_sync_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sync_type VARCHAR(20) NOT NULL,
+    sync_date TIMESTAMP DEFAULT NOW(),
+    records_total INTEGER,
+    records_added INTEGER,
+    records_updated INTEGER,
+    records_unchanged INTEGER,
+    file_hash VARCHAR(64),
+    notes TEXT
+);
+
+-- Indexy
+CREATE INDEX IF NOT EXISTS idx_sjf_clubs_name ON sjf_clubs(name);
+CREATE INDEX IF NOT EXISTS idx_sjf_clubs_status ON sjf_clubs(status);
+CREATE INDEX IF NOT EXISTS idx_sjf_clubs_region ON sjf_clubs(region);
+CREATE INDEX IF NOT EXISTS idx_sjf_persons_name ON sjf_persons(surname, first_name);
+CREATE INDEX IF NOT EXISTS idx_sjf_persons_license ON sjf_persons(sjf_license_number);
+CREATE INDEX IF NOT EXISTS idx_sjf_persons_judge ON sjf_persons(judge_license) WHERE judge_license IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_sjf_persons_trainer ON sjf_persons(trainer_license) WHERE trainer_license IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_sjf_persons_builder ON sjf_persons(course_builder_license) WHERE course_builder_license IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_sjf_horses_name ON sjf_horses(name);
+CREATE INDEX IF NOT EXISTS idx_sjf_horses_life_number ON sjf_horses(life_number);
+
+-- =====================================================
+-- SJF SEED DATA - Aktívne kluby a funkcionári
+-- Export z evidencia.sjf.sk dňa 20.01.2025
+-- =====================================================
+
+-- AKTÍVNE KLUBY (50)
+INSERT INTO sjf_clubs (name, street, postal_code, house_number, region, city, is_riding_school, statutory, contact_person, phone, email, status) VALUES
+('AL ASIL Liptovský Mikuláš', 'Beňadiková', '03204', '110', 'S', 'Liptovský Mikuláš', TRUE, 'Feras Boulbol', 'Charlotte Mlynčeková', '0944/940023', 'feiruz.boulbolova@gmail.com', 'Aktívny'),
+('BMM Belá - Dulice', 'Folkušová', '03842', '108', 'S', 'Folkušová', FALSE, 'JUDr. Pavol Krišpinský, LL.M.', 'Mgr. Eva Krišpinská', '0918740241', 'marrubium8@gmail.com', 'Aktívny'),
+('CRAZY TEAM Hajnáčka', 'Hajnáčka', '98033', '286', 'S', 'Hajnáčka', TRUE, 'Bc. Kristína Pelleová', 'Bc. Kristína Pelleová', '0908/940893', 'milordkiki@gmail.com', 'Aktívny'),
+('EQUESTRIAN Poprad', 'Hôrka', '05912', '1051', '-', 'Hôrka', FALSE, 'Ing. Jaroslava Danko', 'Ing. Jaroslava Danko', '0910/987778', 'dankojaroslava@gmail.com', 'Aktívny'),
+('EQUINIBRIUM AMH Vlkanová', 'Matuškova', '97631', '48', '-', 'Vlkanová', FALSE, 'Amália Hudobová', 'Amália Hudobová', '0950/522899', 'amy@equinibrium.sk', 'Aktívny'),
+('EQUIPOINT HREUS Žilina', 'Mojšova Lúčka', '01001', '-', 'S', 'Žilina', FALSE, 'MVDr. Marián Hreus', 'MVDr. Marián Hreus', '0915/874771', 'marian@hreus.sk', 'Aktívny'),
+('EquiStyle Club Lehnice', 'Kolónia', '93037', '467', '-', 'Lehnice', FALSE, 'Matej Pinďák', 'Claudia Belešová', '0905/402798', 'equistyle@equistyle.sk', 'Aktívny'),
+('EQUITANA SPORT HORSES Bratislava', 'Vápenka', '84108', '15', 'B', 'Bratislava', FALSE, 'Daniel Ouzký', 'Daniel Ouzký', '0915/067563', 'ouzkydaniel@gmail.com', 'Aktívny'),
+('FARAO Trnovec nad Váhom', 'Športová', '92501', '244', 'Z', 'Trnovec nad Váhom', TRUE, 'Vladimíra Lenčéšová', 'Vladimíra Lenčéšová', '0907/050355', 'vladimira.lencesova@zoznam.sk', 'Aktívny'),
+('GREENFIELD SPORT HORSES Hôrka', 'Hôrka', '05912', '-', 'V', 'Poprad', FALSE, 'Samuel Matejka', 'Katarína Matejková', '0917/530193', 'samuel.matejka44@gmail.com', 'Aktívny'),
+('HARMÓNIA V SEDLE Ivanka pri Dunaji', 'Poľovnícka', '90028', '1633', 'B', 'Ivanka pri Dunaji', FALSE, 'Miroslav Slobodník', 'Anežka Slobodníková', '0915/583146', 'jazmonia13@gmail.com', 'Aktívny'),
+('HORSE AREA Vysoké Tatry', 'Priekopa', '06001', '23', 'V', 'Kežmarok', FALSE, 'Peter Mikulášik', 'Peter Mikulášik', '0905/406456', 'mikulasikpeter@gmail.com', 'Aktívny'),
+('HORSE CLUB CHADAR Hrušov', 'Hrušov', '99142', '482', '-', 'Hrušov', FALSE, 'Ing. Matej Knopp', 'Filip Molek', '0948/940530', 'info@terraservis.sk', 'Aktívny'),
+('JA TARTAROS Pečeňany', 'Pečeňany', '95636', '211', '-', 'Pečeňany', TRUE, 'Kristína Balažovičová', 'Kristína Balažovičová', '0948/837401', 'kris.balazovicova@gmail.com', 'Aktívny'),
+('JK ACER Prešov', 'Sekčovská', '08001', '87', 'V', 'Prešov', TRUE, 'Monika Imreová', 'Monika Imreová', '0918/282096', 'jkacerpresov@gmail.com', 'Aktívny'),
+('JK ALEXANDRIA Hviezdoslavov', 'Farma Hviezdoslavov', '93041', '134', 'Z', 'Hviezdoslavov', FALSE, 'Ján Skatulla', 'Jarmila Skatullová', '0907/716124', 'skatullova.jarka@gmail.com', 'Aktívny'),
+('JK ALLFOR Bratislava', 'Prešovská', '82102', '45', 'B', 'Bratislava', FALSE, 'Ing. Jozef Drozd', 'Ing. Ingrid Drozd Janečková', '0905/342021', 'ingrid.allfor@gmail.com', 'Aktívny'),
+('JK EL ZORRO Veľký Kýr', 'Nitrianska cesta', '95113', '753', 'Z', 'Branč', TRUE, 'Ing. Stanislava Zorádová', 'Ing. Stanislava Zorádová', '0907/212787', 'info@elzorro.sk', 'Aktívny'),
+('JK ENIMO Slatinské Lazy', 'Slatinské Lazy', '96225', '73', 'B', 'Slatinské Lazy', FALSE, 'Martina Výbohová', 'Martina Výbohová', '0911/120024', 'jazdeckyklubenimo@gmail.com', 'Aktívny'),
+('JK EPONA MÚTNIK Liptovský Mikuláš', 'Mútnik', '03101', '1', 'S', 'Liptovský Mikuláš', FALSE, 'Oto Macko', 'Oto Macko', '0903/153803', 'oto28macko@gmail.com', 'Aktívny'),
+('JK EQUIDA Prievidza', 'Severná', '97101', '2787', 'Z', 'Prievidza', TRUE, 'Milada Petrušková', 'Milada Petrušková', '0915/288941', 'areal.equida@gmail.com', 'Aktívny'),
+('JK EQUINOX Modrová', 'Modrová', '91635', '240', 'Z', 'Modrová', FALSE, 'Ing. Mária Kurtišová', 'Ing. Mária Kurtišová', '0905/610221', 'jk.equinox@gmail.com', 'Aktívny'),
+('JK FADEX Miloslavov', 'Jazerná', '90042', '10', 'B', 'Miloslavov', TRUE, 'Monika Fišerová', 'Monika Jány Fišerová', '0908/628231', 'fiserova.monika@gmail.com', 'Aktívny'),
+('JK FREESTYLE Poprad', 'Ranč', '05315', '208', 'V', 'Betlanovce', TRUE, 'Mgr. Lucie Tonkovičová', 'Ing. Jozef Janiga', '0903/624847', 'janiga.jozo@gmail.com', 'Aktívny'),
+('JK LARISA Trebišov', 'Mlynská', '07622', '181', 'V', 'Hriadky', TRUE, 'Iveta Kelečei', 'Iveta Kelečei', '0908/210281', 'jazdectvolarisa@gmail.com', 'Aktívny'),
+('JK LIMIT Bratislava', 'Vývojová', '85110', '857', 'B', 'Bratislava', TRUE, 'Alica Gbúrová', 'Alica Gbúrová', '0911/357511', 'alica.gburova@gmail.com', 'Aktívny'),
+('JK LINDA Prievidza', 'Malá Čausa', '97101', '316', 'Z', 'Prievidza', FALSE, 'Ing. Andrej Slanina', 'Ing. Simona Slaninová', '0915/748253', 'slaninovasima@gmail.com', 'Aktívny'),
+('JK MALÝ MAJER Hrabušice', 'Hlavná', '05315', '14', 'V', 'Hrabušice', FALSE, 'Ing. Zuzana Labudová', 'Ing. Zuzana Labudová', '0907/999384', 'zuzkalabudova@gmail.com', 'Aktívny'),
+('JK MASARYKOV DVOR Vígľaš - Pstruša', 'Pstruša', '96202', '361', 'S', 'Vígľaš', TRUE, 'Martin Malatinec', 'Ľubomír Paučo', '0915/805634', 'malatinec@agrosev.sk', 'Aktívny'),
+('JK MONTY RANČ Nitrianske Pravno', 'Jilemnického', '97213', '32', 'Z', 'Nitrianske Pravno', FALSE, 'Róbert Rovný', 'Katarína Rovná', '0905/454508', 'info@montyranc.sk', 'Aktívny'),
+('JK NAPOLI Bratislava', 'Dubová x-bionic sphere', '93101', '33', 'B', 'Šamorín', TRUE, 'Dušan Krivosudský', 'Daniela Dovalová', '0903/614922', 'dusan.krivosudsky@napoli.sk', 'Aktívny'),
+('JK Podtureň', 'Podtureň', '03301', '239', 'S', 'Podtureň', TRUE, 'Zuzana Hanáková', 'Zuzana Hanáková', '0905/523870', 'zuzanahanakova@pobox.sk', 'Aktívny'),
+('JK RANČ LHOTA Dubnica nad Váhom', 'Prejtská', '01841', '487', 'Z', 'Dubnica nad Váhom', FALSE, 'Mária Suchánek', 'Mária Suchánek', '0902/964195', 'mariasuchanek@ranclhota.sk', 'Aktívny'),
+('JK ROLLERS Rakúsy-Kežmarok', 'Rakúsy', '05976', '2', '-', 'Rakúsy', TRUE, 'Ing. Zuzana Šlosárová', 'Ing. Zuzana Šlosárová', '0905/730940', 'komunikmanager@gmail.com', 'Aktívny'),
+('JK SAIDA Bratislava', 'Agátový rad', '93101', '1', 'B', 'Šamorín', FALSE, 'Ing. Ivana Urminská', 'Ľuba Polonyová', '0902/175440', 'ivanka.urminska@gmail.com', 'Aktívny'),
+('JK SCARLETT Šamorín', 'Agátový rad', '93101', '1', '-', 'Šamorín', TRUE, 'Silvia Záhorská', 'Silvia Záhorská', '0948/328811', 'info@scarlett.sk', 'Aktívny'),
+('JK SLÁVIA Spišská Nová Ves', 'Kamenný obrázok', '05201', '8', 'V', 'Spišská Nová Ves', FALSE, 'Zdeno Kuchár', 'Zdeno Kuchár', '0905/430834', 'kuchar.zdeno@gmail.com', 'Aktívny'),
+('JK SLÁVIA SPU Nitra', 'Československej armády', '94976', '1', 'Z', 'Nitra', FALSE, 'Ľubomír Urban', 'Prof.Ing. Marko Halo, PhD.', '0905/521528', 'marko.halo@uniag.sk', 'Aktívny'),
+('JK SLOVAN HÁJE Bratislava', 'Starohájska', '85104', '31', 'B', 'Bratislava', FALSE, 'JUDr. Diana Lauková', 'JUDr. Diana Lauková', '0903/218222', 'diana.laukova@gmail.com', 'Aktívny'),
+('JK SŠ Ivanka pri Dunaji', 'SNP', '90028', '30', 'B', 'Ivanka pri Dunaji', FALSE, 'Lenka Marčeková', 'Ing. Katarína Kubišová', '0917/950353', 'gazalko@gmail.com', 'Aktívny'),
+('JK TAMARIS Odorín', 'Teplička', '05201', '', '-', 'Teplička', TRUE, 'Denisa Jasečková', 'Denisa Jasečková', '0905/252604', 'denisa.dulajova@gmail.com', 'Aktívny'),
+('JK TAVAROK Mengusovce', 'Mengusovce', '05936', '191', 'V', 'Mengusovce', FALSE, 'Ing. Matúš Holmok', 'Ing. Matúš Holmok', '0903/636242', 'matus.holmok@gmail.com', 'Aktívny'),
+('JK TJ SLÁVIA STU Bratislava', 'Májová', '85101', '21', 'B', 'Bratislava', FALSE, 'Ing. Rastislav Noskovič', 'Ing. Lucia Noskovičová', '0903/744477', 'tjslaviastu@gmail.com', 'Aktívny'),
+('PH SPORTHORSES Dunajská Lužná', 'Jánošíkovská', '90042', '3006', 'B', 'Dunajská Lužná', FALSE, 'Mgr. Petra Havlovičová', 'Mgr. Petra Havlovičová', '0905/730967', 'petra.havlovicova@gmail.com', 'Aktívny'),
+('SPOLOK PRIATEĽOV KONÍ Trnava', 'Modranská', '91701', '2', 'Z', 'Trnava', TRUE, 'MVDr. Štefan Ambruš', 'MVDr. Štefan Ambruš', '0905/260589', 'mvdr.stefanambrus@gmail.com', 'Aktívny'),
+('TJ ŽIŽKA Bratislava', 'Starý Háj', '85104', '2047', 'B', 'Bratislava', FALSE, 'Marián Štangel', 'Gabriela Rošková', '0905/544715', 'marianstangel1970@gmail.com', 'Aktívny'),
+('TJ ŽREBČÍN Motešice', 'Slivnická', '91326', '87', 'Z', 'Motešice', FALSE, 'Doc. PhDr. Dana Petranová, PhD.', 'Doc. PhDr. Dana Petranová, PhD.', '0903/546201', 'furioso@furioso.sk', 'Aktívny'),
+('VIDA Bratislava', 'Topoľčianska', '85105', '3', 'B', 'Bratislava', TRUE, 'Vojtech Vida', 'Vojtech Vida', '0905/599234', 'aris5@zoznam.sk', 'Aktívny'),
+('VOLTILAND Košice', 'Opiná', '04447', '39', 'V', 'Opiná', TRUE, 'Martin Necela', 'Mgr. Slavomíra Necelová', '0903/167744', 'necelova@gmail.com', 'Aktívny'),
+('WAVO HORSES Slovenská Ľupča', 'Za Pílou', '97613', '1', 'S', 'Slovenská Ľupča', TRUE, 'Ing. Daniel Smorádek', 'Ing. Lucia Kohútová', '0915/808636', 'kohutova.lucia@gmail.com', 'Aktívny')
+ON CONFLICT DO NOTHING;
+
+-- AKTÍVNI STAVITELIA PARKÚROV (6)
+INSERT INTO sjf_persons (first_name, surname, club_name, region, sjf_license_status, course_builder_license) VALUES
+('Radka', 'HERMÉLY', 'GREENFIELD SPORT HORSES Hôrka', 'V', 'Aktívny', 'SS2'),
+('Zdenek', 'KUCHÁR', 'JK SLÁVIA Spišská Nová Ves', 'V', 'Aktívny', 'SS2'),
+('Maroš', 'KUCHÁR', 'JK SLÁVIA Spišská Nová Ves', 'V', 'Aktívny', 'SS2'),
+('Zdeno', 'MALÍK', 'TJ ŽREBČÍN Motešice', 'Z', 'Aktívny', 'SS2, SC2'),
+('Ľubomír', 'PAUČO', 'JK MASARYKOV DVOR Vígľaš - Pstruša', 'S', 'Aktívny', 'SS4, SC3'),
+('Ján', 'SKATULLA', 'JK ALEXANDRIA Hviezdoslavov', 'Z', 'Aktívny', 'SS4')
+ON CONFLICT DO NOTHING;
+
+-- AKTÍVNI ROZHODCOVIA (41)
+INSERT INTO sjf_persons (first_name, surname, club_name, region, sjf_license_status, judge_license) VALUES
+('Diana', 'ANTALÍKOVÁ', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'RV2'),
+('Zuzana', 'BAČIAK MASARYKOVÁ', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'FRV3'),
+('Dušana', 'BALOGHOVÁ', 'SPOLOK PRIATEĽOV KONÍ Trnava', 'Z', 'Aktívny', 'PRV2, RPV2'),
+('Alica', 'GBÚROVÁ', 'JK LIMIT Bratislava', 'B', 'Aktívny', 'RD2, RC2'),
+('Jozef', 'HALGOŠ', 'JK TJ SLÁVIA STU Bratislava', 'B', 'Aktívny', 'RS4'),
+('Petra', 'HUBAČOVÁ', 'JK NAPOLI Bratislava', 'B', 'Aktívny', 'RE2'),
+('Nadežda', 'IVANIČOVÁ', 'JK ALEXANDRIA Hviezdoslavov', 'Z', 'Aktívny', 'RD4'),
+('Jana', 'JANUSCHKEOVÁ', 'JK LIMIT Bratislava', 'B', 'Aktívny', 'RC1'),
+('Mária', 'KORENKOVÁ LUDVIGOVÁ', 'JK SLÁVIA Spišská Nová Ves', 'V', 'Aktívny', 'RS2'),
+('Pavla', 'KRAUSPE', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'FRV4'),
+('Kinga', 'KRESANOVÁ', 'AL ASIL Liptovský Mikuláš', 'S', 'Aktívny', 'RE2'),
+('Lucia', 'KRIVOSUDSKÁ', 'JK NAPOLI Bratislava', 'B', 'Aktívny', 'RD2'),
+('Ján', 'KUCHÁR', 'JK SLÁVIA Spišská Nová Ves', 'V', 'Aktívny', 'RS4'),
+('Ivana', 'KUCHÁROVÁ', 'JK SLÁVIA Spišská Nová Ves', 'V', 'Aktívny', 'RS2'),
+('Jana', 'LAMOŠOVÁ', 'EQUIPOINT HREUS Žilina', 'S', 'Aktívny', 'RS2'),
+('Laura', 'LENČÉŠOVÁ', 'FARAO Trnovec nad Váhom', 'Z', 'Aktívny', 'RV2, RPV2'),
+('Vladimíra', 'LENČÉŠOVÁ', 'FARAO Trnovec nad Váhom', 'Z', 'Aktívny', 'RV4, RPV4'),
+('Ľubica', 'LUKÁČOVÁ', 'JK FREESTYLE Poprad', 'V', 'Aktívny', 'RV4, RPV4'),
+('Slavomír', 'MAGÁL', 'TJ ŽREBČÍN Motešice', 'Z', 'Aktívny', 'RS2, RD2'),
+('Zdeno', 'MALÍK', 'TJ ŽREBČÍN Motešice', 'Z', 'Aktívny', 'RS2, RC4'),
+('Zuzana', 'MÁNIKOVÁ', 'JK EQUINOX Modrová', 'Z', 'Aktívny', 'RC2'),
+('Mária', 'MARTINKOVIČOVÁ', 'SPOLOK PRIATEĽOV KONÍ Trnava', 'Z', 'Aktívny', 'RS2'),
+('Katarína', 'MARTINKOVIČOVÁ', 'SPOLOK PRIATEĽOV KONÍ Trnava', 'Z', 'Aktívny', 'RS1'),
+('Petra', 'MASÁCOVÁ', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'RV4'),
+('Jana', 'MEDOVÁ', 'TJ ŽIŽKA Bratislava', 'B', 'Aktívny', 'RD2, RC2'),
+('Peter', 'MIKULÁŠIK', 'HORSE AREA Vysoké Tatry', 'V', 'Aktívny', 'RS4, RC4, RA4'),
+('Charlotte', 'MLYNČEKOVÁ', 'AL ASIL Liptovský Mikuláš', 'S', 'Aktívny', 'RE2'),
+('Ádám', 'PATÓCS', 'TJ ŽREBČÍN Motešice', 'Z', 'Aktívny', 'RD2'),
+('Ľubomír', 'PAUČO', 'JK MASARYKOV DVOR Vígľaš - Pstruša', 'S', 'Aktívny', 'RS4, RD2, RC2'),
+('Jozef', 'PAULOVIČ', 'JK MASARYKOV DVOR Vígľaš - Pstruša', 'S', 'Aktívny', 'RS4'),
+('Milada', 'PETRUŠKOVÁ', 'JK EQUIDA Prievidza', 'Z', 'Aktívny', 'RD2'),
+('Silvia', 'POLÁKOVÁ', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'RD4, RA2'),
+('Ján', 'SKATULLA', 'JK ALEXANDRIA Hviezdoslavov', 'Z', 'Aktívny', 'RS2'),
+('Jarmila', 'SKATULLOVÁ', 'JK ALEXANDRIA Hviezdoslavov', 'Z', 'Aktívny', 'RS2'),
+('Alexandra', 'SKATULLOVÁ', 'JK ALEXANDRIA Hviezdoslavov', 'Z', 'Aktívny', 'RS2'),
+('Viktória', 'SOTÁKOVÁ', 'JK ENIMO Slatinské Lazy', 'B', 'Aktívny', 'RS2, RD1, RC2'),
+('Martina', 'SÝKOROVÁ', 'FARAO Trnovec nad Váhom', 'Z', 'Aktívny', 'RV4, RPV4'),
+('Martina', 'VARGOVÁ', 'FARAO Trnovec nad Váhom', 'Z', 'Aktívny', 'RV4, RPV4'),
+('Iľja', 'VIETOR', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'FRD3'),
+('Martina', 'VÝBOHOVÁ', 'JK ENIMO Slatinské Lazy', 'B', 'Aktívny', 'RS2, RD2, RC2'),
+('Pavol', 'ZAGATA', 'JK SŠ Ivanka pri Dunaji', 'B', 'Aktívny', 'RPV2')
+ON CONFLICT DO NOTHING;
+
+-- Log importu
+INSERT INTO sjf_sync_log (sync_type, records_total, records_added, notes) VALUES
+('initial', 97, 97, 'Iniciálny import - 50 klubov, 6 staviteľov, 41 rozhodcov');
