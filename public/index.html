@@ -55,7 +55,7 @@
         .service-card h3 { color: var(--primary); margin-bottom: 0.75rem; }
         
         .news-section { background: var(--light); }
-        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
         .news-card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .news-card img { width: 100%; height: 200px; object-fit: cover; }
         .news-card-body { padding: 1.5rem; }
@@ -74,9 +74,18 @@
         .gallery-overlay span { font-size: 0.85rem; opacity: 0.8; }
         
         .partners-section { background: var(--light); }
-        .partners-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 3rem; }
-        .partner-logo { max-height: 60px; max-width: 150px; filter: grayscale(100%); opacity: 0.6; transition: all 0.3s; }
-        .partner-logo:hover { filter: grayscale(0%); opacity: 1; }
+        .partners-container { text-align: center; }
+        .partners-group { margin-bottom: 2.5rem; }
+        .partners-group:last-child { margin-bottom: 0; }
+        .partners-group-title { font-size: 0.85rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.5rem; font-weight: 600; }
+        .partners-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2.5rem; }
+        .partner-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .partner-item a { text-decoration: none; }
+        .partner-logo { max-height: 60px; max-width: 140px; transition: all 0.3s; opacity: 0.8; }
+        .partner-logo:hover { opacity: 1; transform: scale(1.05); }
+        .partner-name { font-size: 0.9rem; color: var(--dark); font-weight: 500; }
+        .main-sponsor .partner-logo { max-height: 90px; max-width: 200px; opacity: 1; }
+        .main-sponsor .partners-grid { gap: 3rem; }
         
         .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
         .contact-info h3 { color: var(--primary); margin-bottom: 1.5rem; }
@@ -103,6 +112,7 @@
             .hero h1 { font-size: 2rem; }
             .btn-secondary { margin: 1rem 0 0; display: block; }
             .contact-grid { grid-template-columns: 1fr; }
+            .news-grid { grid-template-columns: 1fr; }
         }
         
         .loading { text-align: center; padding: 3rem; color: var(--gray); }
@@ -164,8 +174,8 @@
 
     <section class="partners-section">
         <div class="container">
-            <div class="section-title"><h2>Partneri</h2><p>Ďakujeme za podporu</p></div>
-            <div class="partners-grid" id="partnersGrid"><div class="loading">Načítavam partnerov...</div></div>
+            <div class="section-title"><h2>Partneri a sponzori</h2><p>Ďakujeme za podporu</p></div>
+            <div class="partners-container" id="partnersContainer"><div class="loading">Načítavam partnerov...</div></div>
         </div>
     </section>
 
@@ -227,7 +237,7 @@
                 const res = await fetch('/api/articles?status=published&limit=6');
                 const articles = await res.json();
                 const grid = document.getElementById('newsGrid');
-                if (!articles.length) { grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1">Zatiaľ žiadne novinky</p>'; return; }
+                if (!Array.isArray(articles) || !articles.length) { grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1">Zatiaľ žiadne novinky</p>'; return; }
                 grid.innerHTML = articles.map(a => {
                     const date = a.published_at ? new Date(a.published_at).toLocaleDateString('sk') : '';
                     const cat = a.article_categories;
@@ -243,7 +253,7 @@
                 const res = await fetch('/api/albums?public_only=true');
                 const albums = await res.json();
                 const grid = document.getElementById('galleryGrid');
-                if (!albums.length) { grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1">Zatiaľ žiadne albumy</p>'; return; }
+                if (!Array.isArray(albums) || !albums.length) { grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1">Zatiaľ žiadne albumy</p>'; return; }
                 grid.innerHTML = albums.slice(0,6).map(a => {
                     const count = a.photos?.length || 0;
                     const img = a.cover_image ? '<img src="'+a.cover_image+'" alt="'+a.title+'">' : '<div class="placeholder-img" style="position:absolute;inset:0">🖼️</div>';
@@ -254,26 +264,110 @@
         
         async function loadPartners() {
             try {
-                const res = await fetch('/api/partners?active_only=true');
-                const partners = await res.json();
-                const grid = document.getElementById('partnersGrid');
-                if (!partners.length) { grid.innerHTML = '<p style="color:var(--gray)">Zatiaľ žiadni partneri</p>'; return; }
-                grid.innerHTML = partners.map(p => {
-                    if (p.logo_url) {
-                        const link = p.website ? '<a href="'+p.website+'" target="_blank" rel="noopener">' : '<span>';
-                        const linkEnd = p.website ? '</a>' : '</span>';
-                        return link+'<img src="'+p.logo_url+'" alt="'+p.name+'" class="partner-logo" title="'+p.name+'">'+linkEnd;
-                    } else {
-                        const link = p.website ? '<a href="'+p.website+'" target="_blank" rel="noopener" style="color:var(--gray);font-weight:500">' : '<span style="color:var(--gray);font-weight:500">';
-                        const linkEnd = p.website ? '</a>' : '</span>';
-                        return link+p.name+linkEnd;
-                    }
-                }).join('');
-            } catch(e) { document.getElementById('partnersGrid').innerHTML = '<p style="color:var(--gray)">Chyba</p>'; }
+                const res = await fetch('/api/partners');
+                const allPartners = await res.json();
+                const container = document.getElementById('partnersContainer');
+                
+                console.log('All partners from API:', allPartners);
+                
+                if (!Array.isArray(allPartners)) {
+                    console.error('Partners is not an array:', allPartners);
+                    container.innerHTML = '<p style="color:var(--gray)">Chyba pri načítaní partnerov</p>';
+                    return;
+                }
+                
+                // Filtruj len aktívnych - ak is_active je true alebo null/undefined (default aktívny)
+                const partners = allPartners.filter(p => p.is_active === true || p.is_active === null || p.is_active === undefined);
+                
+                console.log('Filtered active partners:', partners);
+                
+                if (!partners.length) { 
+                    container.innerHTML = '<p style="color:var(--gray)">Zatiaľ žiadni partneri</p>'; 
+                    return; 
+                }
+                
+                // Rozdeľ podľa typu
+                const mainSponsors = partners.filter(p => p.partner_type === 'hlavny_sponzor');
+                const sponsors = partners.filter(p => p.partner_type === 'sponzor');
+                const regularPartners = partners.filter(p => p.partner_type === 'partner' || !p.partner_type);
+                const mediaPartners = partners.filter(p => p.partner_type === 'medialny_partner');
+                
+                console.log('Main sponsors:', mainSponsors);
+                console.log('Sponsors:', sponsors);
+                console.log('Regular partners:', regularPartners);
+                console.log('Media partners:', mediaPartners);
+                
+                let html = '';
+                
+                if (mainSponsors.length) {
+                    html += '<div class="partners-group main-sponsor">';
+                    html += '<div class="partners-group-title">🏆 Hlavní sponzori</div>';
+                    html += '<div class="partners-grid">' + renderPartners(mainSponsors) + '</div>';
+                    html += '</div>';
+                }
+                
+                if (sponsors.length) {
+                    html += '<div class="partners-group">';
+                    html += '<div class="partners-group-title">⭐ Sponzori</div>';
+                    html += '<div class="partners-grid">' + renderPartners(sponsors) + '</div>';
+                    html += '</div>';
+                }
+                
+                if (regularPartners.length) {
+                    html += '<div class="partners-group">';
+                    html += '<div class="partners-group-title">🤝 Partneri</div>';
+                    html += '<div class="partners-grid">' + renderPartners(regularPartners) + '</div>';
+                    html += '</div>';
+                }
+                
+                if (mediaPartners.length) {
+                    html += '<div class="partners-group">';
+                    html += '<div class="partners-group-title">📺 Mediálni partneri</div>';
+                    html += '<div class="partners-grid">' + renderPartners(mediaPartners) + '</div>';
+                    html += '</div>';
+                }
+                
+                container.innerHTML = html || '<p style="color:var(--gray)">Zatiaľ žiadni partneri</p>';
+            } catch(e) { 
+                console.error('Partners error:', e);
+                document.getElementById('partnersContainer').innerHTML = '<p style="color:var(--gray)">Chyba pri načítaní partnerov</p>'; 
+            }
         }
         
-        document.addEventListener('DOMContentLoaded', () => { loadSettings(); loadArticles(); loadGallery(); loadPartners(); });
-        document.querySelectorAll('a[href^="#"]').forEach(a => { a.addEventListener('click', function(e) { e.preventDefault(); const t = document.querySelector(this.getAttribute('href')); if(t) { t.scrollIntoView({behavior:'smooth'}); document.getElementById('mainNav').classList.remove('active'); } }); });
+        function renderPartners(partners) {
+            return partners.map(p => {
+                let content = '';
+                if (p.logo_url) {
+                    content = '<img src="'+p.logo_url+'" alt="'+p.name+'" class="partner-logo" title="'+p.name+'">';
+                } else {
+                    content = '<span class="partner-name">'+p.name+'</span>';
+                }
+                
+                if (p.website) {
+                    return '<div class="partner-item"><a href="'+p.website+'" target="_blank" rel="noopener">'+content+'</a></div>';
+                } else {
+                    return '<div class="partner-item">'+content+'</div>';
+                }
+            }).join('');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => { 
+            loadSettings(); 
+            loadArticles(); 
+            loadGallery(); 
+            loadPartners(); 
+        });
+        
+        document.querySelectorAll('a[href^="#"]').forEach(a => { 
+            a.addEventListener('click', function(e) { 
+                e.preventDefault(); 
+                const t = document.querySelector(this.getAttribute('href')); 
+                if(t) { 
+                    t.scrollIntoView({behavior:'smooth'}); 
+                    document.getElementById('mainNav').classList.remove('active'); 
+                } 
+            }); 
+        });
     </script>
 </body>
 </html>

@@ -461,7 +461,15 @@
                     </div>
                     <div class="form-group"><label>Krátky popis</label><textarea class="form-control" id="articleExcerpt" rows="2"></textarea></div>
                     <div class="form-group"><label>Obsah</label><textarea class="form-control" id="articleContent" rows="10" style="font-family:monospace"></textarea></div>
-                    <div class="form-group"><label>URL obrázku</label><input type="url" class="form-control" id="articleCoverImage" placeholder="https://..."></div>
+                    <div class="form-group">
+                        <label>Titulný obrázok</label>
+                        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+                            <input type="file" id="articleImageFile" accept="image/*" style="flex:1" onchange="uploadArticleImage(this)">
+                            <span style="color:var(--muted)">alebo</span>
+                            <input type="url" class="form-control" id="articleCoverImage" placeholder="URL: https://..." style="flex:2">
+                        </div>
+                        <div id="articleImagePreview" style="margin-top:0.5rem"></div>
+                    </div>
                     <div class="form-row">
                         <div class="form-group"><label><input type="checkbox" id="articleFeatured"> Odporúčaný</label></div>
                         <div class="form-group"><label><input type="checkbox" id="articlePinned"> Pripnutý</label></div>
@@ -586,7 +594,15 @@
                     <input type="hidden" id="albumId">
                     <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="albumTitle" required></div>
                     <div class="form-group"><label>Popis</label><textarea class="form-control" id="albumDescription" rows="3"></textarea></div>
-                    <div class="form-group"><label>URL titulného obrázku</label><input type="url" class="form-control" id="albumCover" placeholder="https://..."></div>
+                    <div class="form-group">
+                        <label>Titulný obrázok</label>
+                        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+                            <input type="file" id="albumCoverFile" accept="image/*" style="flex:1" onchange="uploadAlbumCover(this)">
+                            <span style="color:var(--muted)">alebo</span>
+                            <input type="url" class="form-control" id="albumCover" placeholder="URL: https://..." style="flex:2">
+                        </div>
+                        <div id="albumCoverPreview" style="margin-top:0.5rem"></div>
+                    </div>
                     <div class="form-group"><label><input type="checkbox" id="albumPublic" checked> Verejný</label></div>
                 </form>
             </div>
@@ -1828,6 +1844,48 @@
     document.getElementById('articleStatusFilter').addEventListener('change', loadArticles);
     document.getElementById('articleCategoryFilter').addEventListener('change', loadArticles);
     
+    // Upload článkový obrázok
+    async function uploadArticleImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            toast('Prosím vyberte obrázok', 'error');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast('Maximálna veľkosť je 5MB', 'error');
+            return;
+        }
+        
+        document.getElementById('articleImagePreview').innerHTML = '<span style="color:var(--muted)">Nahrávam...</span>';
+        
+        try {
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file: base64, filename: file.name, folder: 'articles' })
+            });
+            
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            
+            document.getElementById('articleCoverImage').value = data.url;
+            document.getElementById('articleImagePreview').innerHTML = '<img src="'+data.url+'" style="max-height:100px;border-radius:4px">';
+            toast('Obrázok nahraný!', 'success');
+        } catch(e) {
+            document.getElementById('articleImagePreview').innerHTML = '';
+            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+        }
+    }
+
     async function openArticleModal(id = null) {
         // Naplň kategórie do selectu
         const catSelect = document.getElementById('articleCategory');
@@ -1840,6 +1898,8 @@
         document.getElementById('articleForm').reset();
         document.getElementById('articleId').value = '';
         document.getElementById('articleModalTitle').textContent = 'Nový článok';
+        document.getElementById('articleImagePreview').innerHTML = '';
+        document.getElementById('articleImageFile').value = '';
         
         if (id) {
             // Editácia - načítaj dáta
@@ -1856,6 +1916,8 @@
                 document.getElementById('articleCoverImage').value = a.cover_image || '';
                 document.getElementById('articleFeatured').checked = a.is_featured || false;
                 document.getElementById('articlePinned').checked = a.is_pinned || false;
+                document.getElementById('articleImagePreview').innerHTML = a.cover_image 
+                    ? '<img src="'+a.cover_image+'" style="max-height:100px;border-radius:4px">' : '';
                 document.getElementById('articleModalTitle').textContent = 'Upraviť článok';
             } catch(e) {
                 toast('Chyba pri načítaní článku', 'error');
@@ -1956,11 +2018,55 @@
         }
     }
     
+    // Upload album cover
+    async function uploadAlbumCover(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            toast('Prosím vyberte obrázok', 'error');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast('Maximálna veľkosť je 5MB', 'error');
+            return;
+        }
+        
+        document.getElementById('albumCoverPreview').innerHTML = '<span style="color:var(--muted)">Nahrávam...</span>';
+        
+        try {
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file: base64, filename: file.name, folder: 'albums' })
+            });
+            
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            
+            document.getElementById('albumCover').value = data.url;
+            document.getElementById('albumCoverPreview').innerHTML = '<img src="'+data.url+'" style="max-height:100px;border-radius:4px">';
+            toast('Obrázok nahraný!', 'success');
+        } catch(e) {
+            document.getElementById('albumCoverPreview').innerHTML = '';
+            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+        }
+    }
+
     function openAlbumModal(id = null) {
         document.getElementById('albumForm').reset();
         document.getElementById('albumId').value = '';
         document.getElementById('albumModalTitle').textContent = 'Nový album';
         document.getElementById('albumPublic').checked = true;
+        document.getElementById('albumCoverPreview').innerHTML = '';
+        document.getElementById('albumCoverFile').value = '';
         openModal('albumModal');
     }
     
@@ -2007,6 +2113,9 @@
             document.getElementById('albumDescription').value = a.description || '';
             document.getElementById('albumCover').value = a.cover_image || '';
             document.getElementById('albumPublic').checked = a.is_public !== false;
+            document.getElementById('albumCoverFile').value = '';
+            document.getElementById('albumCoverPreview').innerHTML = a.cover_image 
+                ? '<img src="'+a.cover_image+'" style="max-height:100px;border-radius:4px">' : '';
             document.getElementById('albumModalTitle').textContent = 'Upraviť album';
             openModal('albumModal');
         } catch(e) {
