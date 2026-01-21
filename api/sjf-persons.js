@@ -17,22 +17,21 @@ module.exports = async (req, res) => {
       .select('*')
       .order('surname');
     
-    // Filter podľa role (voliteľný)
+    // Filter podľa role - gt '' znamená "väčší ako prázdny string" = neprázdny
     if (role === 'judge') {
-      query = query.not('judge_license', 'is', null);
+      query = query.gt('judge_license', '');
     } else if (role === 'trainer') {
-      query = query.not('trainer_license', 'is', null);
+      query = query.gt('trainer_license', '');
     } else if (role === 'builder') {
-      query = query.not('course_builder_license', 'is', null);
+      query = query.gt('course_builder_license', '');
     } else if (role === 'steward') {
-      query = query.not('steward_license', 'is', null);
+      query = query.gt('steward_license', '');
     }
     
     if (region) query = query.eq('region', region);
     if (status) query = query.eq('sjf_license_status', status);
     if (search) query = query.or(`surname.ilike.%${search}%,first_name.ilike.%${search}%,club_name.ilike.%${search}%`);
     
-    // Limit výsledkov
     query = query.limit(500);
     
     const { data, error } = await query;
