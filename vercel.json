@@ -12,46 +12,46 @@
     
     { "src": "/api/horses/([^/]+)", "dest": "/api/horses-id.js?id=$1" },
     { "src": "/api/horses", "dest": "/api/horses.js" },
-    
     { "src": "/api/riders/([^/]+)", "dest": "/api/riders-id.js?id=$1" },
     { "src": "/api/riders", "dest": "/api/riders.js" },
-    
     { "src": "/api/trainers/([^/]+)", "dest": "/api/trainers-id.js?id=$1" },
     { "src": "/api/trainers", "dest": "/api/trainers.js" },
-    
     { "src": "/api/employees/([^/]+)", "dest": "/api/employees-id.js?id=$1" },
     { "src": "/api/employees", "dest": "/api/employees.js" },
-    
-    { "src": "/api/trainings/([^/]+)/status", "dest": "/api/trainings-id.js?id=$1" },
     { "src": "/api/trainings/([^/]+)", "dest": "/api/trainings-id.js?id=$1" },
     { "src": "/api/trainings", "dest": "/api/trainings.js" },
-    
     { "src": "/api/feeding/([^/]+)", "dest": "/api/feeding-id.js?id=$1" },
     { "src": "/api/feeding", "dest": "/api/feeding.js" },
-    
     { "src": "/api/health/([^/]+)", "dest": "/api/health-id.js?id=$1" },
     { "src": "/api/health", "dest": "/api/health.js" },
-    
     { "src": "/api/payments/([^/]+)", "dest": "/api/payments-id.js?id=$1" },
     { "src": "/api/payments", "dest": "/api/payments.js" },
-    
     { "src": "/api/bookings/([^/]+)", "dest": "/api/bookings-id.js?id=$1" },
     { "src": "/api/bookings", "dest": "/api/bookings.js" },
-    
     { "src": "/api/contact/([^/]+)", "dest": "/api/contact-id.js?id=$1" },
     { "src": "/api/contact", "dest": "/api/contact.js" },
+    { "src": "/api/vet-records/([^/]+)", "dest": "/api/vet-records-id.js?id=$1" },
+    { "src": "/api/vet-records", "dest": "/api/vet-records.js" },
+    { "src": "/api/competitions/([^/]+)", "dest": "/api/competitions-id.js?id=$1" },
+    { "src": "/api/competitions", "dest": "/api/competitions.js" },
+    { "src": "/api/competition-results", "dest": "/api/competition-results.js" },
+    { "src": "/api/memberships", "dest": "/api/memberships.js" },
+    { "src": "/api/vaccinations", "dest": "/api/vaccinations.js" },
     
     { "src": "/api/sjf-clubs", "dest": "/api/sjf-clubs.js" },
     { "src": "/api/sjf-persons", "dest": "/api/sjf-persons.js" },
     
-    { "src": "/api/vet-records/([^/]+)", "dest": "/api/vet-records-id.js?id=$1" },
-    { "src": "/api/vet-records", "dest": "/api/vet-records.js" },
-    
-    { "src": "/api/competitions/([^/]+)", "dest": "/api/competitions-id.js?id=$1" },
-    { "src": "/api/competitions", "dest": "/api/competitions.js" },
-    
-    { "src": "/api/memberships", "dest": "/api/memberships.js" },
-    { "src": "/api/vaccinations", "dest": "/api/vaccinations.js" },
+    { "src": "/api/articles/([^/]+)", "dest": "/api/articles-id.js?id=$1" },
+    { "src": "/api/articles", "dest": "/api/articles.js" },
+    { "src": "/api/article-categories", "dest": "/api/article-categories.js" },
+    { "src": "/api/albums/([^/]+)", "dest": "/api/albums-id.js?id=$1" },
+    { "src": "/api/albums", "dest": "/api/albums.js" },
+    { "src": "/api/photos", "dest": "/api/photos.js" },
+    { "src": "/api/pages/([^/]+)", "dest": "/api/pages-id.js?id=$1" },
+    { "src": "/api/pages", "dest": "/api/pages.js" },
+    { "src": "/api/partners", "dest": "/api/partners.js" },
+    { "src": "/api/documents", "dest": "/api/documents.js" },
+    { "src": "/api/settings", "dest": "/api/settings.js" },
     
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },

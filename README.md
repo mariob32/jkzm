@@ -213,3 +213,40 @@ node sjf-import.js --persons SJF-Export_osoby.csv
 ```
 
 Viac info: `SJF-PREHLAD.md`
+
+---
+
+## 📰 CMS Systém (nové!)
+
+### Nové tabuľky
+- `albums` - Fotoalbumy
+- `photos` - Fotky s väzbami na kone/jazdcov/súťaže
+- `articles` - Články a novinky
+- `article_categories` - Kategórie článkov
+- `pages` - Statické stránky
+- `documents` - Dokumenty na stiahnutie
+- `partners` - Partneri a sponzori
+- `competition_results` - Výsledky súťaží
+- `horse_rider_history` - História kôň-jazdec
+- `settings` - Nastavenia webu
+
+### Nové API endpointy
+- `/api/articles` - CRUD články
+- `/api/albums` - CRUD albumy
+- `/api/photos` - CRUD fotky
+- `/api/pages` - CRUD stránky
+- `/api/documents` - CRUD dokumenty
+- `/api/partners` - CRUD partneri
+- `/api/settings` - Nastavenia
+- `/api/competition-results` - Výsledky
+
+### Admin panel sekcie
+- 📰 Články - správa noviniek s kategóriami
+- 🖼️ Galéria - albumy a fotky
+- 📄 Stránky - statický obsah
+- 📎 Dokumenty - súbory na stiahnutie
+- 🤝 Partneri - sponzori a partneri
+- ⚙️ Nastavenia - konfigurácia webu
+
+### SQL pre CMS
+Spusti `database-cms.sql` v Supabase SQL Editor.
