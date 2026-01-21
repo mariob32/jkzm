@@ -49,7 +49,9 @@
     { "src": "/api/photos", "dest": "/api/photos.js" },
     { "src": "/api/pages/([^/]+)", "dest": "/api/pages-id.js?id=$1" },
     { "src": "/api/pages", "dest": "/api/pages.js" },
+    { "src": "/api/partners/([^/]+)", "dest": "/api/partners-id.js?id=$1" },
     { "src": "/api/partners", "dest": "/api/partners.js" },
+    { "src": "/api/documents/([^/]+)", "dest": "/api/documents-id.js?id=$1" },
     { "src": "/api/documents", "dest": "/api/documents.js" },
     { "src": "/api/settings", "dest": "/api/settings.js" },
     

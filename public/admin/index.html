@@ -436,6 +436,159 @@
     </div>
 
     <!-- MODALS -->
+    
+    <!-- Article Modal -->
+    <div class="modal" id="articleModal">
+        <div class="modal-content" style="max-width:900px">
+            <div class="modal-header"><h3 id="articleModalTitle">Nový článok</h3><button class="modal-close" onclick="closeModal('articleModal')">×</button></div>
+            <div class="modal-body">
+                <form id="articleForm">
+                    <input type="hidden" id="articleId">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:2"><label>Názov *</label><input type="text" class="form-control" id="articleTitle" required></div>
+                        <div class="form-group"><label>Kategória</label>
+                            <select class="form-control" id="articleCategory"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Autor</label><input type="text" class="form-control" id="articleAuthor"></div>
+                        <div class="form-group"><label>Status</label>
+                            <select class="form-control" id="articleStatus">
+                                <option value="draft">Koncept</option>
+                                <option value="published">Publikovaný</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Krátky popis</label><textarea class="form-control" id="articleExcerpt" rows="2"></textarea></div>
+                    <div class="form-group"><label>Obsah</label><textarea class="form-control" id="articleContent" rows="10" style="font-family:monospace"></textarea></div>
+                    <div class="form-group"><label>URL obrázku</label><input type="url" class="form-control" id="articleCoverImage" placeholder="https://..."></div>
+                    <div class="form-row">
+                        <div class="form-group"><label><input type="checkbox" id="articleFeatured"> Odporúčaný</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="articlePinned"> Pripnutý</label></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('articleModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="saveArticle()">Uložiť</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Modal -->
+    <div class="modal" id="pageModal">
+        <div class="modal-content" style="max-width:900px">
+            <div class="modal-header"><h3 id="pageModalTitle">Nová stránka</h3><button class="modal-close" onclick="closeModal('pageModal')">×</button></div>
+            <div class="modal-body">
+                <form id="pageForm">
+                    <input type="hidden" id="pageId">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:2"><label>Názov *</label><input type="text" class="form-control" id="pageTitle" required></div>
+                        <div class="form-group"><label>URL slug *</label><input type="text" class="form-control" id="pageSlug" required placeholder="moja-stranka"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Šablóna</label>
+                            <select class="form-control" id="pageTemplate">
+                                <option value="default">Štandardná</option>
+                                <option value="contact">Kontakt</option>
+                                <option value="about">O nás</option>
+                                <option value="services">Služby</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Poradie v menu</label><input type="number" class="form-control" id="pageMenuOrder" value="0"></div>
+                    </div>
+                    <div class="form-group"><label>Obsah stránky</label><textarea class="form-control" id="pageContent" rows="12" style="font-family:monospace"></textarea></div>
+                    <div class="form-row">
+                        <div class="form-group"><label><input type="checkbox" id="pagePublished"> Publikovaná</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="pageInMenu"> Zobraziť v menu</label></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('pageModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="savePage()">Uložiť</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partner Modal -->
+    <div class="modal" id="partnerModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="partnerModalTitle">Nový partner</h3><button class="modal-close" onclick="closeModal('partnerModal')">×</button></div>
+            <div class="modal-body">
+                <form id="partnerForm">
+                    <input type="hidden" id="partnerId">
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="partnerName" required></div>
+                    <div class="form-group"><label>Typ</label>
+                        <select class="form-control" id="partnerType">
+                            <option value="partner">Partner</option>
+                            <option value="sponzor">Sponzor</option>
+                            <option value="hlavny_sponzor">Hlavný sponzor</option>
+                            <option value="medialny_partner">Mediálny partner</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Web stránka</label><input type="url" class="form-control" id="partnerWebsite" placeholder="https://www.example.com"></div>
+                    <div class="form-group"><label>URL loga</label><input type="url" class="form-control" id="partnerLogo" placeholder="https://...logo.png"></div>
+                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="partnerDescription" rows="3"></textarea></div>
+                    <div class="form-group"><label>Poradie</label><input type="number" class="form-control" id="partnerOrder" value="0"></div>
+                    <div class="form-group"><label><input type="checkbox" id="partnerActive" checked> Aktívny</label></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('partnerModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="savePartner()">Uložiť</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Modal -->
+    <div class="modal" id="documentModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3>Nový dokument</h3><button class="modal-close" onclick="closeModal('documentModal')">×</button></div>
+            <div class="modal-body">
+                <form id="documentForm">
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="docTitle" required></div>
+                    <div class="form-group"><label>Kategória</label>
+                        <select class="form-control" id="docCategory">
+                            <option value="prihlášky">Prihlášky</option>
+                            <option value="pravidlá">Pravidlá</option>
+                            <option value="výsledky">Výsledky</option>
+                            <option value="iné">Iné</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>URL súboru *</label><input type="url" class="form-control" id="docFileUrl" required placeholder="https://..."></div>
+                    <div class="form-group"><label>Názov súboru</label><input type="text" class="form-control" id="docFileName" placeholder="dokument.pdf"></div>
+                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="docDescription" rows="2"></textarea></div>
+                    <div class="form-group"><label><input type="checkbox" id="docPublic" checked> Verejný</label></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('documentModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="saveDocument()">Uložiť</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Album Modal -->
+    <div class="modal" id="albumModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="albumModalTitle">Nový album</h3><button class="modal-close" onclick="closeModal('albumModal')">×</button></div>
+            <div class="modal-body">
+                <form id="albumForm">
+                    <input type="hidden" id="albumId">
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="albumTitle" required></div>
+                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="albumDescription" rows="3"></textarea></div>
+                    <div class="form-group"><label>URL titulného obrázku</label><input type="url" class="form-control" id="albumCover" placeholder="https://..."></div>
+                    <div class="form-group"><label><input type="checkbox" id="albumPublic" checked> Verejný</label></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('albumModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="saveAlbum()">Uložiť</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Horse Modal -->
     <div class="modal" id="horseModal">
         <div class="modal-content" style="max-width:800px">
@@ -1667,9 +1820,90 @@
     document.getElementById('articleStatusFilter').addEventListener('change', loadArticles);
     document.getElementById('articleCategoryFilter').addEventListener('change', loadArticles);
     
-    function openArticleModal(id = null) {
-        alert('Editor článkov - otvorí sa modál na úpravu');
-        // TODO: Implementovať editor článkov
+    async function openArticleModal(id = null) {
+        // Naplň kategórie do selectu
+        const catSelect = document.getElementById('articleCategory');
+        catSelect.innerHTML = '<option value="">-- Bez kategórie --</option>';
+        articleCategories.forEach(c => {
+            catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+        
+        // Reset formulára
+        document.getElementById('articleForm').reset();
+        document.getElementById('articleId').value = '';
+        document.getElementById('articleModalTitle').textContent = 'Nový článok';
+        
+        if (id) {
+            // Editácia - načítaj dáta
+            try {
+                const res = await fetch(`/api/articles/${id}`);
+                const a = await res.json();
+                document.getElementById('articleId').value = a.id;
+                document.getElementById('articleTitle').value = a.title || '';
+                document.getElementById('articleCategory').value = a.category_id || '';
+                document.getElementById('articleAuthor').value = a.author || '';
+                document.getElementById('articleStatus').value = a.status || 'draft';
+                document.getElementById('articleExcerpt').value = a.excerpt || '';
+                document.getElementById('articleContent').value = a.content || '';
+                document.getElementById('articleCoverImage').value = a.cover_image || '';
+                document.getElementById('articleFeatured').checked = a.is_featured || false;
+                document.getElementById('articlePinned').checked = a.is_pinned || false;
+                document.getElementById('articleModalTitle').textContent = 'Upraviť článok';
+            } catch(e) {
+                toast('Chyba pri načítaní článku', 'error');
+                return;
+            }
+        }
+        
+        openModal('articleModal');
+    }
+    
+    async function saveArticle() {
+        const id = document.getElementById('articleId').value;
+        const article = {
+            title: document.getElementById('articleTitle').value,
+            category_id: document.getElementById('articleCategory').value || null,
+            author: document.getElementById('articleAuthor').value,
+            status: document.getElementById('articleStatus').value,
+            excerpt: document.getElementById('articleExcerpt').value,
+            content: document.getElementById('articleContent').value,
+            cover_image: document.getElementById('articleCoverImage').value,
+            is_featured: document.getElementById('articleFeatured').checked,
+            is_pinned: document.getElementById('articlePinned').checked
+        };
+        
+        if (!article.title) {
+            toast('Názov je povinný', 'error');
+            return;
+        }
+        
+        // Ak publikujeme, nastavíme dátum
+        if (article.status === 'published') {
+            article.published_at = new Date().toISOString();
+        }
+        
+        try {
+            const url = id ? `/api/articles/${id}` : '/api/articles';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(article)
+            });
+            
+            if (!res.ok) throw new Error('Chyba pri ukladaní');
+            
+            closeModal('articleModal');
+            toast(id ? 'Článok upravený' : 'Článok vytvorený', 'success');
+            loadArticles();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    function editArticle(id) {
+        openArticleModal(id);
     }
     
     async function deleteArticle(id) {
@@ -1715,15 +1949,61 @@
     }
     
     function openAlbumModal(id = null) {
-        const title = prompt('Názov albumu:');
-        if (!title) return;
-        const description = prompt('Popis (voliteľné):') || '';
+        document.getElementById('albumForm').reset();
+        document.getElementById('albumId').value = '';
+        document.getElementById('albumModalTitle').textContent = 'Nový album';
+        document.getElementById('albumPublic').checked = true;
+        openModal('albumModal');
+    }
+    
+    async function saveAlbum() {
+        const id = document.getElementById('albumId').value;
+        const album = {
+            title: document.getElementById('albumTitle').value,
+            description: document.getElementById('albumDescription').value,
+            cover_image: document.getElementById('albumCover').value,
+            is_public: document.getElementById('albumPublic').checked
+        };
         
-        fetch('/api/albums', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description })
-        }).then(() => loadAlbums());
+        if (!album.title) {
+            toast('Názov je povinný', 'error');
+            return;
+        }
+        
+        try {
+            const url = id ? `/api/albums/${id}` : '/api/albums';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(album)
+            });
+            
+            if (!res.ok) throw new Error('Chyba pri ukladaní');
+            
+            closeModal('albumModal');
+            toast(id ? 'Album upravený' : 'Album vytvorený', 'success');
+            loadAlbums();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    async function editAlbum(id) {
+        try {
+            const res = await fetch(`/api/albums/${id}`);
+            const a = await res.json();
+            document.getElementById('albumId').value = a.id;
+            document.getElementById('albumTitle').value = a.title || '';
+            document.getElementById('albumDescription').value = a.description || '';
+            document.getElementById('albumCover').value = a.cover_image || '';
+            document.getElementById('albumPublic').checked = a.is_public !== false;
+            document.getElementById('albumModalTitle').textContent = 'Upraviť album';
+            openModal('albumModal');
+        } catch(e) {
+            toast('Chyba pri načítaní albumu', 'error');
+        }
     }
     
     async function deleteAlbum(id) {
@@ -1767,7 +2047,68 @@
     }
     
     function openPageModal(id = null) {
-        alert('Editor stránok - TODO');
+        document.getElementById('pageForm').reset();
+        document.getElementById('pageId').value = '';
+        document.getElementById('pageModalTitle').textContent = 'Nová stránka';
+        document.getElementById('pagePublished').checked = false;
+        document.getElementById('pageInMenu').checked = false;
+        openModal('pageModal');
+    }
+    
+    async function savePage() {
+        const id = document.getElementById('pageId').value;
+        const page = {
+            title: document.getElementById('pageTitle').value,
+            slug: document.getElementById('pageSlug').value,
+            template: document.getElementById('pageTemplate').value,
+            menu_order: parseInt(document.getElementById('pageMenuOrder').value) || 0,
+            content: document.getElementById('pageContent').value,
+            is_published: document.getElementById('pagePublished').checked,
+            show_in_menu: document.getElementById('pageInMenu').checked
+        };
+        
+        if (!page.title || !page.slug) {
+            toast('Názov a URL slug sú povinné', 'error');
+            return;
+        }
+        
+        try {
+            const url = id ? `/api/pages/${id}` : '/api/pages';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(page)
+            });
+            
+            if (!res.ok) throw new Error('Chyba pri ukladaní');
+            
+            closeModal('pageModal');
+            toast(id ? 'Stránka upravená' : 'Stránka vytvorená', 'success');
+            loadPages();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    async function editPage(id) {
+        try {
+            const res = await fetch(`/api/pages/${id}`);
+            const p = await res.json();
+            document.getElementById('pageId').value = p.id;
+            document.getElementById('pageTitle').value = p.title || '';
+            document.getElementById('pageSlug').value = p.slug || '';
+            document.getElementById('pageTemplate').value = p.template || 'default';
+            document.getElementById('pageMenuOrder').value = p.menu_order || 0;
+            document.getElementById('pageContent').value = p.content || '';
+            document.getElementById('pagePublished').checked = p.is_published || false;
+            document.getElementById('pageInMenu').checked = p.show_in_menu || false;
+            document.getElementById('pageModalTitle').textContent = 'Upraviť stránku';
+            openModal('pageModal');
+        } catch(e) {
+            toast('Chyba pri načítaní stránky', 'error');
+        }
     }
     
     async function deletePage(id) {
@@ -1813,17 +2154,52 @@
     document.getElementById('docCategoryFilter').addEventListener('change', loadDocuments);
     
     function openDocumentModal() {
-        alert('Upload dokumentu - TODO');
+        document.getElementById('documentForm').reset();
+        document.getElementById('docPublic').checked = true;
+        openModal('documentModal');
+    }
+    
+    async function saveDocument() {
+        const doc = {
+            title: document.getElementById('docTitle').value,
+            category: document.getElementById('docCategory').value,
+            file_url: document.getElementById('docFileUrl').value,
+            file_name: document.getElementById('docFileName').value,
+            description: document.getElementById('docDescription').value,
+            is_public: document.getElementById('docPublic').checked
+        };
+        
+        if (!doc.title || !doc.file_url) {
+            toast('Názov a URL súboru sú povinné', 'error');
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/documents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(doc)
+            });
+            
+            if (!res.ok) throw new Error('Chyba pri ukladaní');
+            
+            closeModal('documentModal');
+            toast('Dokument pridaný', 'success');
+            loadDocuments();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
     }
     
     async function deleteDocument(id) {
         if (!confirm('Naozaj vymazať dokument?')) return;
-        await fetch('/api/documents', { 
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        loadDocuments();
+        try {
+            await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+            toast('Dokument vymazaný', 'success');
+            loadDocuments();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
     }
     
     // PARTNERI
@@ -1841,11 +2217,12 @@
             grid.innerHTML = data.map(p => `
                 <div class="card">
                     <div class="card-body" style="text-align:center">
-                        ${p.logo_url ? `<img src="${p.logo_url}" style="max-height:80px;margin-bottom:1rem">` : '<div style="height:80px;display:flex;align-items:center;justify-content:center;font-size:2rem">🤝</div>'}
+                        ${p.logo_url ? `<img src="${p.logo_url}" style="max-height:80px;margin-bottom:1rem;max-width:100%">` : '<div style="height:80px;display:flex;align-items:center;justify-content:center;font-size:2rem">🤝</div>'}
                         <h4>${p.name}</h4>
                         <span style="font-size:0.8rem;color:var(--muted)">${p.partner_type}</span>
-                        ${p.website ? `<br><a href="${p.website}" target="_blank" style="font-size:0.85rem">🔗 Web</a>` : ''}
+                        ${p.website ? `<br><a href="${p.website}" target="_blank" rel="noopener" style="font-size:0.85rem">🔗 Web</a>` : ''}
                         <div style="margin-top:0.5rem">
+                            <button class="btn btn-small" onclick="editPartner('${p.id}')">✏️</button>
                             <button class="btn btn-small btn-danger" onclick="deletePartner('${p.id}')">🗑️</button>
                         </div>
                     </div>
@@ -1857,21 +2234,81 @@
     }
     
     function openPartnerModal() {
-        const name = prompt('Názov partnera:');
-        if (!name) return;
-        const website = prompt('Web (voliteľné):') || '';
-        const type = prompt('Typ (hlavny_sponzor/sponzor/partner):') || 'partner';
+        document.getElementById('partnerForm').reset();
+        document.getElementById('partnerId').value = '';
+        document.getElementById('partnerModalTitle').textContent = 'Nový partner';
+        document.getElementById('partnerActive').checked = true;
+        openModal('partnerModal');
+    }
+    
+    async function savePartner() {
+        const id = document.getElementById('partnerId').value;
+        const partner = {
+            name: document.getElementById('partnerName').value,
+            partner_type: document.getElementById('partnerType').value,
+            website: document.getElementById('partnerWebsite').value || null,
+            logo_url: document.getElementById('partnerLogo').value || null,
+            description: document.getElementById('partnerDescription').value,
+            sort_order: parseInt(document.getElementById('partnerOrder').value) || 0,
+            is_active: document.getElementById('partnerActive').checked
+        };
         
-        fetch('/api/partners', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, website, partner_type: type })
-        }).then(() => loadPartners());
+        if (!partner.name) {
+            toast('Názov je povinný', 'error');
+            return;
+        }
+        
+        try {
+            const url = id ? `/api/partners/${id}` : '/api/partners';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(partner)
+            });
+            
+            if (!res.ok) throw new Error('Chyba pri ukladaní');
+            
+            closeModal('partnerModal');
+            toast(id ? 'Partner upravený' : 'Partner pridaný', 'success');
+            loadPartners();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    async function editPartner(id) {
+        try {
+            const res = await fetch('/api/partners');
+            const partners = await res.json();
+            const p = partners.find(x => x.id === id);
+            if (!p) throw new Error('Partner nenájdený');
+            
+            document.getElementById('partnerId').value = p.id;
+            document.getElementById('partnerName').value = p.name || '';
+            document.getElementById('partnerType').value = p.partner_type || 'partner';
+            document.getElementById('partnerWebsite').value = p.website || '';
+            document.getElementById('partnerLogo').value = p.logo_url || '';
+            document.getElementById('partnerDescription').value = p.description || '';
+            document.getElementById('partnerOrder').value = p.sort_order || 0;
+            document.getElementById('partnerActive').checked = p.is_active !== false;
+            document.getElementById('partnerModalTitle').textContent = 'Upraviť partnera';
+            openModal('partnerModal');
+        } catch(e) {
+            toast('Chyba pri načítaní partnera', 'error');
+        }
     }
     
     async function deletePartner(id) {
-        // Partner delete cez PUT s is_active: false
-        alert('TODO: Delete partner');
+        if (!confirm('Naozaj vymazať partnera?')) return;
+        try {
+            await fetch(`/api/partners/${id}`, { method: 'DELETE' });
+            toast('Partner vymazaný', 'success');
+            loadPartners();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
     }
     
     // NASTAVENIA
