@@ -1887,6 +1887,11 @@
     }
 
     async function openArticleModal(id = null) {
+        // Načítaj kategórie ak ešte nie sú
+        if (!articleCategories.length) {
+            await loadArticleCategories();
+        }
+        
         // Naplň kategórie do selectu
         const catSelect = document.getElementById('articleCategory');
         catSelect.innerHTML = '<option value="">-- Bez kategórie --</option>';
@@ -1906,6 +1911,7 @@
             try {
                 const res = await fetch(`/api/articles/${id}`);
                 const a = await res.json();
+                console.log('Loaded article:', a);
                 document.getElementById('articleId').value = a.id;
                 document.getElementById('articleTitle').value = a.title || '';
                 document.getElementById('articleCategory').value = a.category_id || '';
@@ -1920,6 +1926,7 @@
                     ? '<img src="'+a.cover_image+'" style="max-height:100px;border-radius:4px">' : '';
                 document.getElementById('articleModalTitle').textContent = 'Upraviť článok';
             } catch(e) {
+                console.error('Error loading article:', e);
                 toast('Chyba pri načítaní článku', 'error');
                 return;
             }

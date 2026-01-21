@@ -11,15 +11,21 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            // Increment views
-            await supabase.rpc('increment_article_views', { article_id: id }).catch(() => {});
-            
             const { data, error } = await supabase
                 .from('articles')
                 .select(`*, article_categories(name, color)`)
                 .eq('id', id)
                 .single();
+            
             if (error) throw error;
+            
+            // Increment views (non-blocking)
+            supabase.from('articles')
+                .update({ views: (data.views || 0) + 1 })
+                .eq('id', id)
+                .then(() => {})
+                .catch(() => {});
+            
             return res.status(200).json(data);
         }
 
@@ -36,6 +42,7 @@ module.exports = async (req, res) => {
             return res.status(200).json({ success: true });
         }
     } catch (e) {
+        console.error('Article API error:', e);
         res.status(500).json({ error: e.message });
     }
 };
