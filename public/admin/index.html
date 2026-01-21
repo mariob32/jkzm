@@ -545,7 +545,6 @@
                         </div>
                         <div id="partnerLogoPreview" style="margin-top:0.5rem"></div>
                     </div>
-                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="partnerDescription" rows="3"></textarea></div>
                     <div class="form-group"><label>Poradie</label><input type="number" class="form-control" id="partnerOrder" value="0"></div>
                     <div class="form-group"><label><input type="checkbox" id="partnerActive" checked> Aktívny</label></div>
                 </form>
@@ -572,7 +571,15 @@
                             <option value="iné">Iné</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>URL súboru *</label><input type="url" class="form-control" id="docFileUrl" required placeholder="https://..."></div>
+                    <div class="form-group">
+                        <label>Súbor *</label>
+                        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+                            <input type="file" id="docFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" style="flex:1" onchange="uploadDocument(this)">
+                            <span style="color:var(--muted)">alebo</span>
+                            <input type="url" class="form-control" id="docFileUrl" placeholder="URL: https://..." style="flex:2">
+                        </div>
+                        <div id="docUploadStatus" style="margin-top:0.5rem;font-size:0.85rem"></div>
+                    </div>
                     <div class="form-group"><label>Názov súboru</label><input type="text" class="form-control" id="docFileName" placeholder="dokument.pdf"></div>
                     <div class="form-group"><label>Popis</label><textarea class="form-control" id="docDescription" rows="2"></textarea></div>
                     <div class="form-group"><label><input type="checkbox" id="docPublic" checked> Verejný</label></div>
@@ -2277,9 +2284,50 @@
     
     document.getElementById('docCategoryFilter').addEventListener('change', loadDocuments);
     
+    // Upload dokumentu
+    async function uploadDocument(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        if (file.size > 10 * 1024 * 1024) {
+            toast('Maximálna veľkosť je 10MB', 'error');
+            return;
+        }
+        
+        document.getElementById('docUploadStatus').innerHTML = '<span style="color:var(--muted)">Nahrávam...</span>';
+        
+        try {
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file: base64, filename: file.name, folder: 'documents' })
+            });
+            
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            
+            document.getElementById('docFileUrl').value = data.url;
+            document.getElementById('docFileName').value = file.name;
+            document.getElementById('docUploadStatus').innerHTML = '<span style="color:var(--success)">✓ ' + file.name + '</span>';
+            toast('Súbor nahraný!', 'success');
+        } catch(e) {
+            document.getElementById('docUploadStatus').innerHTML = '';
+            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+        }
+    }
+
     function openDocumentModal() {
         document.getElementById('documentForm').reset();
         document.getElementById('docPublic').checked = true;
+        document.getElementById('docUploadStatus').innerHTML = '';
+        document.getElementById('docFile').value = '';
         openModal('documentModal');
     }
     
@@ -2426,7 +2474,6 @@
             partner_type: document.getElementById('partnerType').value,
             website: document.getElementById('partnerWebsite').value || null,
             logo_url: document.getElementById('partnerLogo').value || null,
-            description: document.getElementById('partnerDescription').value,
             sort_order: parseInt(document.getElementById('partnerOrder').value) || 0,
             is_active: document.getElementById('partnerActive').checked
         };
@@ -2468,7 +2515,6 @@
             document.getElementById('partnerType').value = p.partner_type || 'partner';
             document.getElementById('partnerWebsite').value = p.website || '';
             document.getElementById('partnerLogo').value = p.logo_url || '';
-            document.getElementById('partnerDescription').value = p.description || '';
             document.getElementById('partnerOrder').value = p.sort_order || 0;
             document.getElementById('partnerActive').checked = p.is_active !== false;
             document.getElementById('partnerLogoFile').value = '';

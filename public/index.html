@@ -345,7 +345,7 @@
                 const allPartners = await res.json();
                 const container = document.getElementById('partnersContainer');
                 
-                console.log('All partners from API:', allPartners);
+                
                 
                 if (!Array.isArray(allPartners)) {
                     container.innerHTML = '<p style="color:var(--gray)">Chyba pri načítaní partnerov</p>';
@@ -354,7 +354,7 @@
                 
                 const partners = allPartners.filter(p => p.is_active === true || p.is_active === null || p.is_active === undefined);
                 
-                console.log('Filtered active partners:', partners);
+                
                 
                 if (!partners.length) { 
                     container.innerHTML = '<p style="color:var(--gray)">Zatiaľ žiadni partneri</p>'; 
@@ -366,10 +366,8 @@
                 const regularPartners = partners.filter(p => p.partner_type === 'partner' || !p.partner_type);
                 const mediaPartners = partners.filter(p => p.partner_type === 'medialny_partner');
                 
-                console.log('Main sponsors:', mainSponsors);
-                console.log('Sponsors:', sponsors);
-                sponsors.forEach(s => console.log('Sponsor details:', s.name, 'logo:', s.logo_url));
-                mainSponsors.forEach(s => console.log('Main sponsor details:', s.name, 'logo:', s.logo_url));
+                
+                
                 
                 let html = '';
                 
@@ -386,7 +384,7 @@
                     html += '<div class="partners-group"><div class="partners-group-title">📺 Mediálni partneri</div><div class="partners-grid">' + renderPartners(mediaPartners) + '</div></div>';
                 }
                 
-                console.log('Generated HTML:', html);
+                
                 container.innerHTML = html || '<p style="color:var(--gray)">Zatiaľ žiadni partneri</p>';
             } catch(e) { 
                 console.error('Partners error:', e);
@@ -398,7 +396,6 @@
             let result = '';
             for (let i = 0; i < partners.length; i++) {
                 const p = partners[i];
-                console.log('Rendering:', p.name, 'logo:', p.logo_url);
                 
                 let inner = '';
                 if (p.logo_url) {
