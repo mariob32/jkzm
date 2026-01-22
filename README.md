@@ -268,3 +268,25 @@ Spusti `database-cms.sql` v Supabase SQL Editor.
 - Odstránené všetky console.log
 - Implementované TODO funkcie
 - Vylepšený error handling
+
+---
+
+## 📋 O klube stránka (v5.2.0)
+
+Nová stránka `/o-klube.html` obsahuje:
+
+### Registračné údaje
+- IČO: 53536002
+- Názov: Jazdecký klub Zelená míľa Jaslovské Bohunice
+- Právna forma: Občianske združenie (o.z.)
+- SJF oblasť: Z (Západoslovenská)
+
+### 2% z dane sekcia
+- QR kód pre rýchly prístup
+- Predvyplnené údaje pre tlačivá
+- Postup pre zamestnancov, FO a PO
+- Termíny 2026
+- Odkazy na oficiálne tlačivá FS SR
+
+### Navigácia
+Odkaz "O klube" je pridaný do hlavnej navigácie aj do pätičky.
