@@ -361,15 +361,10 @@
                     let badgeHtml = '';
                     if (s.badge_text && s.badge_type) {
                         const badgeClass = badgeClasses[s.badge_type] || '';
-                        badgeHtml = `<span class="service-badge ${badgeClass}">${s.badge_text}</span>`;
+                        badgeHtml = '<span class="service-badge ' + badgeClass + '">' + s.badge_text + '</span>';
                     }
                     
-                    return `<div class="service-card">
-                        <div class="service-icon">${s.icon || '🏇'}</div>
-                        <h3>${s.title}</h3>
-                        <p>${s.description || ''}</p>
-                        ${badgeHtml}
-                    </div>`;
+                    return '<div class="service-card"><div class="service-icon">' + (s.icon || '🏇') + '</div><h3>' + s.title + '</h3><p>' + (s.description || '') + '</p>' + badgeHtml + '</div>';
                 }).join('');
             } catch(e) { 
                 document.getElementById('servicesGrid').innerHTML = '<p style="color:var(--gray)">Chyba pri načítaní služieb</p>'; 
@@ -430,7 +425,6 @@
                 console.error('Gallery error:', e);
                 document.getElementById('galleryGrid').innerHTML = '<p style="color:var(--gray)">Chyba pri načítaní galérie</p>'; 
             }
-        }
         }
         
         // Lightbox pre galériu
@@ -515,7 +509,6 @@
                 if (e.key === 'ArrowLeft') prevPhoto();
             }
         });
-        }
         
         async function loadPartners() {
             try {
