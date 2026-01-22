@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O klube - JK Zelená míľa</title>
+    <meta name="description" content="Informácie o Jazdeckom klube Zelená míľa Jaslovské Bohunice, registrácia, 2% z dane">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --secondary: #8bc34a;
+            --accent: #ff9800;
+            --dark: #1a1a2e;
+            --gray: #6b7280;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --border: #e5e7eb;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+            color: var(--white);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--white);
+        }
+        
+        .logo-icon { font-size: 2rem; }
+        .logo-text { font-size: 1.25rem; font-weight: 700; }
+        
+        nav { display: flex; gap: 1.5rem; align-items: center; }
+        nav a { 
+            color: rgba(255,255,255,0.9); 
+            text-decoration: none; 
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: var(--secondary); }
+        
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Sections */
+        section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        section h2 {
+            color: var(--primary);
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        section h2 .icon { font-size: 1.5rem; }
+        
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .info-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-card h3 {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .info-card p {
+            font-size: 1.1rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .info-card a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .info-card a:hover { text-decoration: underline; }
+        
+        /* 2% Dane Section */
+        .dane-section {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border: 2px solid var(--accent);
+        }
+        
+        .dane-section h2 {
+            color: var(--accent);
+        }
+        
+        .dane-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .dane-header .big-text {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+        
+        .dane-header p {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-top: 0.5rem;
+        }
+        
+        /* QR Section */
+        .qr-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 2rem 0;
+        }
+        
+        .qr-box {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 200px;
+        }
+        
+        .qr-box img {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 1rem;
+        }
+        
+        .qr-box p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* Údaje pre vyplnenie */
+        .udaje-box {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px dashed var(--accent);
+            max-width: 400px;
+        }
+        
+        .udaje-box h4 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .udaje-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .udaje-item:last-child { border-bottom: none; }
+        
+        .udaje-item .label { color: var(--gray); font-size: 0.9rem; }
+        .udaje-item .value { font-weight: 600; color: var(--dark); }
+        
+        /* Download buttons */
+        .download-section {
+            margin-top: 2rem;
+        }
+        
+        .download-section h3 {
+            font-size: 1.25rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        
+        .download-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+        
+        .download-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(46,125,50,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .download-card .icon {
+            font-size: 2rem;
+        }
+        
+        .download-card .info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .download-card .info p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        /* Postup tabs */
+        .postup-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .postup-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .postup-tab:hover {
+            border-color: var(--primary);
+        }
+        
+        .postup-tab.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+        
+        .postup-content {
+            display: none;
+        }
+        
+        .postup-content.active {
+            display: block;
+        }
+        
+        .postup-steps {
+            list-style: none;
+        }
+        
+        .postup-steps li {
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            background: var(--primary);
+            color: var(--white);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .step-content p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* Termíny */
+        .terminy-box {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .terminy-box h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .terminy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .termin-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .termin-item .date {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .termin-item .desc {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        /* SJF Badge */
+        .sjf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 1rem; }
+            nav { flex-wrap: wrap; justify-content: center; }
+            .hero h1 { font-size: 1.75rem; }
+            .dane-header .big-text { font-size: 3rem; }
+            .qr-section { flex-direction: column; align-items: center; }
+        }
+        
+        /* Print styles */
+        @media print {
+            header, footer, .download-section, .postup-tabs { display: none; }
+            section { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">🐴</span>
+                <span class="logo-text" id="siteName">JK Zelená míľa</span>
+            </a>
+            <nav id="mainNav">
+                <a href="/">Domov</a>
+                <a href="/#services">Služby</a>
+                <a href="/#news">Novinky</a>
+                <a href="/#gallery">Galéria</a>
+                <a href="/o-klube.html" style="color: var(--secondary);">O klube</a>
+                <a href="/#contact">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero -->
+    <div class="hero">
+        <h1>🏇 O našom klube</h1>
+        <p>Jazdecký klub Zelená míľa Jaslovské Bohunice - tradícia, kvalita a láska ku koňom</p>
+    </div>
+    
+    <div class="container">
+        <!-- Základné údaje -->
+        <section>
+            <h2><span class="icon">📋</span> Registračné údaje</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Názov organizácie</h3>
+                    <p>Jazdecký klub Zelená míľa Jaslovské Bohunice</p>
+                </div>
+                <div class="info-card">
+                    <h3>Právna forma</h3>
+                    <p>Občianske združenie (o.z.)</p>
+                </div>
+                <div class="info-card">
+                    <h3>IČO</h3>
+                    <p>53536002</p>
+                </div>
+                <div class="info-card">
+                    <h3>Sídlo</h3>
+                    <p>Areál PD Jaslovské Bohunice<br>Hlavná Jaslovce 124/127<br>919 30 Jaslovské Bohunice</p>
+                </div>
+                <div class="info-card">
+                    <h3>Región</h3>
+                    <p>Trnavský kraj, Slovensko</p>
+                </div>
+                <div class="info-card">
+                    <h3>Oblasť SJF</h3>
+                    <p>Z - Západoslovenská</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <span class="sjf-badge">🏇 Registrovaný člen SJF</span>
+                <span class="sjf-badge" style="background: linear-gradient(135deg, #388e3c, #2e7d32);">✅ Register MV SR</span>
+            </div>
+        </section>
+        
+        <!-- 2% dane -->
+        <section class="dane-section">
+            <h2><span class="icon">💝</span> Darujte nám 2% z dane</h2>
+            
+            <div class="dane-header">
+                <div class="big-text">2%</div>
+                <p>Vaše 2% z dane nás nestoja nič navyše, ale pre nás znamenajú veľa!</p>
+            </div>
+            
+            <div class="qr-section">
+                <!-- QR kód -->
+                <div class="qr-box">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jkzm.vercel.app/o-klube.html" alt="QR kód">
+                    <p>Naskenujte pre rýchly prístup k tejto stránke</p>
+                </div>
+                
+                <!-- Údaje pre vyplnenie -->
+                <div class="udaje-box">
+                    <h4>📝 Údaje pre vyplnenie tlačív</h4>
+                    <div class="udaje-item">
+                        <span class="label">IČO:</span>
+                        <span class="value">53536002</span>
+                    </div>
+                    <div class="udaje-item">
+                        <span class="label">Názov:</span>
+                        <span class="value">Jazdecký klub Zelená míľa Jaslovské Bohunice</span>
+                    </div>
+                    <div class="udaje-item">
+                        <span class="label">Právna forma:</span>
+                        <span class="value">Občianske združenie</span>
+                    </div>
+                    <div class="udaje-item">
+                        <span class="label">Rok:</span>
+                        <span class="value">2025</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Postup podľa typu -->
+            <div class="postup-tabs">
+                <div class="postup-tab active" onclick="showPostup('zamestnanec')">👷 Zamestnanec</div>
+                <div class="postup-tab" onclick="showPostup('fo')">👤 Fyzická osoba (SZČO)</div>
+                <div class="postup-tab" onclick="showPostup('po')">🏢 Právnická osoba</div>
+            </div>
+            
+            <!-- Zamestnanec -->
+            <div id="postup-zamestnanec" class="postup-content active">
+                <ul class="postup-steps">
+                    <li>
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <h4>Požiadajte zamestnávateľa o ročné zúčtovanie</h4>
+                            <p>Do 17. februára 2026 požiadajte o vykonanie ročného zúčtovania preddavkov na daň</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <h4>Získajte Potvrdenie o zaplatení dane</h4>
+                            <p>Zamestnávateľ vám vystaví potvrdenie, z ktorého zistíte výšku dane a dátum zaplatenia</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <h4>Vyplňte Vyhlásenie o poukázaní 2%</h4>
+                            <p>Stiahnite si predvyplnené tlačivo nižšie a doplňte svoje údaje</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">4</span>
+                        <div class="step-content">
+                            <h4>Doručte na daňový úrad</h4>
+                            <p>Do 30. apríla 2026 doručte obe tlačivá na daňový úrad podľa vášho bydliska</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Fyzická osoba -->
+            <div id="postup-fo" class="postup-content">
+                <ul class="postup-steps">
+                    <li>
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <h4>Vypočítajte si 2% z vašej dane</h4>
+                            <p>Minimálna suma na poukázanie je 3 €</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <h4>Vyplňte daňové priznanie</h4>
+                            <p>V daňovom priznaní typu A alebo B vyplňte údaje o poukázaní 2% priamo v príslušnej sekcii</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <h4>Podajte daňové priznanie</h4>
+                            <p>Do 31. marca 2026 (resp. v predĺženej lehote) podajte DP na daňový úrad</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Právnická osoba -->
+            <div id="postup-po" class="postup-content">
+                <ul class="postup-steps">
+                    <li>
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <h4>Vypočítajte si 1% alebo 2% z dane</h4>
+                            <p>Právnické osoby môžu poukázať 1% (resp. 2% ak darovali min. 0,5% dane). Minimálna suma je 8 € na prijímateľa.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <h4>Vyplňte údaje v daňovom priznaní PO</h4>
+                            <p>Vyhlásenie je súčasťou daňového priznania právnických osôb. Môžete si vybrať až 3 prijímateľov.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <h4>Podajte elektronicky</h4>
+                            <p>Právnické osoby majú povinnosť komunikovať s daňovým úradom elektronicky</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Termíny -->
+            <div class="terminy-box">
+                <h4>📅 Dôležité termíny pre rok 2026</h4>
+                <div class="terminy-grid">
+                    <div class="termin-item">
+                        <div class="date">17.2.2026</div>
+                        <div class="desc">Žiadosť o ročné zúčtovanie</div>
+                    </div>
+                    <div class="termin-item">
+                        <div class="date">31.3.2026</div>
+                        <div class="desc">Termín podania DP (FO, PO)</div>
+                    </div>
+                    <div class="termin-item">
+                        <div class="date">30.4.2026</div>
+                        <div class="desc">Termín pre zamestnancov</div>
+                    </div>
+                    <div class="termin-item">
+                        <div class="date">30.6.2026</div>
+                        <div class="desc">Predĺžená lehota DP</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tlačivá na stiahnutie -->
+            <div class="download-section">
+                <h3>📥 Tlačivá na stiahnutie (rok 2025)</h3>
+                <div class="download-grid">
+                    <a href="https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Zverejnovanie_dok/Vzory_tlaciv/Zavisla_cinnost_5ZD/2024/2024.12.03_V2Pv25.pdf" target="_blank" class="download-card">
+                        <span class="icon">📄</span>
+                        <div class="info">
+                            <h4>Vyhlásenie o poukázaní 2%</h4>
+                            <p>Pre zamestnancov - PDF formulár</p>
+                        </div>
+                    </a>
+                    <a href="https://www.financnasprava.sk/_img/pfsedit/Dokumenty_PFS/Zverejnovanie_dok/Vzory_tlaciv/Zavisla_cinnost_5ZD/2024/2024.12.03_POT39_5ZDv25.pdf" target="_blank" class="download-card">
+                        <span class="icon">📄</span>
+                        <div class="info">
+                            <h4>Potvrdenie o zaplatení dane</h4>
+                            <p>Žiadosť pre zamestnávateľa</p>
+                        </div>
+                    </a>
+                    <a href="https://www.financnasprava.sk/sk/elektronicke-sluzby/verejne-sluzby/katalog-danovych-a-colnych/zoznam_vzorov_vydanych_fr_sr/dan-z-prijmov-fo-typ-a" target="_blank" class="download-card">
+                        <span class="icon">📄</span>
+                        <div class="info">
+                            <h4>Daňové priznanie FO typ A</h4>
+                            <p>Pre fyzické osoby</p>
+                        </div>
+                    </a>
+                    <a href="https://www.financnasprava.sk/sk/elektronicke-sluzby/verejne-sluzby/katalog-danovych-a-colnych/zoznam_vzorov_vydanych_fr_sr/dan-z-prijmov-fo-typ-b" target="_blank" class="download-card">
+                        <span class="icon">📄</span>
+                        <div class="info">
+                            <h4>Daňové priznanie FO typ B</h4>
+                            <p>Pre SZČO a podnikateľov</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray);">
+                    💡 Tip: Ak ste v roku 2025 odpracovali ako dobrovoľník minimálne 40 hodín, môžete poukázať až 3% z dane!
+                </p>
+            </div>
+        </section>
+        
+        <!-- História -->
+        <section>
+            <h2><span class="icon">📜</span> História klubu</h2>
+            <div style="max-width: 800px;">
+                <p style="margin-bottom: 1rem;">
+                    <strong>Jazdecký klub Zelená míľa Jaslovské Bohunice</strong> je priamym nástupcom <em>Jazdeckého klubu AXA Jaslovské Bohunice</em>, ktorý bol založený v roku 2000 a pôsobil pod IČO 35627140.
+                </p>
+                <p style="margin-bottom: 1rem;">
+                    Klub je registrovaným členom <strong>Slovenskej jazdeckej federácie (SJF)</strong> a patrí do Západoslovenskej oblasti. Naše moderné zázemie sa nachádza v areáli PD Jaslovské Bohunice, kde disponujeme kvalitnými stajňami, jazdiarňou a paddockom s rozlohou približne 1 hektár.
+                </p>
+                <p>
+                    Venujeme sa výcviku jazdcov všetkých vekových kategórií, príprave na súťaže v disciplínach skoky a drezúra, a poskytujeme ustajnenie koní v profesionálnych podmienkach.
+                </p>
+            </div>
+        </section>
+        
+        <!-- Kontakt -->
+        <section>
+            <h2><span class="icon">📞</span> Kontakt</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Telefón</h3>
+                    <p><a href="tel:+421905523022">+421 905 523 022</a></p>
+                </div>
+                <div class="info-card">
+                    <h3>Email</h3>
+                    <p><a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p>
+                </div>
+                <div class="info-card">
+                    <h3>Web</h3>
+                    <p><a href="https://www.jkzm.sk" target="_blank">www.jkzm.sk</a></p>
+                </div>
+                <div class="info-card">
+                    <h3>Facebook</h3>
+                    <p><a href="https://facebook.com/JKZMJB" target="_blank">facebook.com/JKZMJB</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Jazdecký klub Zelená míľa Jaslovské Bohunice, o.z. | <a href="/">Späť na hlavnú stránku</a></p>
+    </footer>
+    
+    <script>
+        function showPostup(type) {
+            // Hide all
+            document.querySelectorAll('.postup-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.postup-tab').forEach(el => el.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById('postup-' + type).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
