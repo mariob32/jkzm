@@ -250,3 +250,21 @@ Viac info: `SJF-PREHLAD.md`
 
 ### SQL pre CMS
 Spusti `database-cms.sql` v Supabase SQL Editor.
+
+---
+
+## 🆕 Verzia 5.1.0 (2026-01-22)
+
+### Nové funkcie
+- ✅ **WYSIWYG editor** - Quill.js pre články a stránky
+- ✅ **Správa fotiek** - Multi-upload do albumov
+- ✅ **Emoji picker** - 30+ ikon pre služby
+- ✅ **Štítky služieb** - Obsadené, Pripravujeme, Novinka, Akcia
+- ✅ **URL hash** - Pamätanie sekcie po refreshi
+- ✅ **SEO optimalizácia** - Meta tagy, Open Graph
+- ✅ **PWA manifest** - Podpora pre mobilné zariadenia
+
+### Opravy
+- Odstránené všetky console.log
+- Implementované TODO funkcie
+- Vylepšený error handling

@@ -3,11 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jazdecký klub</title>
-    <meta name="description" content="Profesionálny jazdecký klub - tréningy, ustajnenie, súťaže">
+    <title id="pageTitle">Jazdecký klub Zelená míľa</title>
+    <meta name="description" id="metaDescription" content="Profesionálny jazdecký klub - tréningy, ustajnenie, súťaže. Kvalitné služby pre všetkých milovníkov koní.">
+    <meta name="keywords" content="jazdecký klub, kone, jazdectvo, tréningy, ustajnenie, súťaže, jazdecká škola">
+    <meta name="author" content="Jazdecký klub Zelená míľa">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" id="ogTitle" content="Jazdecký klub Zelená míľa">
+    <meta property="og:description" id="ogDescription" content="Profesionálny jazdecký klub - tréningy, ustajnenie, súťaže">
+    <meta property="og:image" content="/assets/logo.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2d5a27">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -297,8 +315,18 @@
                     document.getElementById('heroTitle').textContent = 'Vitajte v ' + s.site_name;
                     document.getElementById('footerName').textContent = s.site_name;
                     document.getElementById('copyrightName').textContent = s.site_name;
+                    // SEO
+                    document.title = s.site_name;
+                    document.getElementById('pageTitle')?.setAttribute('content', s.site_name);
+                    document.getElementById('ogTitle')?.setAttribute('content', s.site_name);
                 }
-                if (s.site_description) { document.getElementById('heroDesc').textContent = s.site_description; document.getElementById('footerDesc').textContent = s.site_description; }
+                if (s.site_description) { 
+                    document.getElementById('heroDesc').textContent = s.site_description; 
+                    document.getElementById('footerDesc').textContent = s.site_description;
+                    // SEO
+                    document.getElementById('metaDescription')?.setAttribute('content', s.site_description);
+                    document.getElementById('ogDescription')?.setAttribute('content', s.site_description);
+                }
                 if (s.contact_address) document.getElementById('contactAddress').textContent = s.contact_address;
                 if (s.contact_phone) { document.getElementById('contactPhone').innerHTML = '<a href="tel:'+s.contact_phone+'">'+s.contact_phone+'</a>'; document.getElementById('footerPhone').textContent = s.contact_phone; }
                 if (s.contact_email) { document.getElementById('contactEmail').innerHTML = '<a href="mailto:'+s.contact_email+'">'+s.contact_email+'</a>'; document.getElementById('footerEmail').textContent = s.contact_email; }
@@ -308,7 +336,7 @@
                 if (s.social_youtube) social += '<a href="'+s.social_youtube+'" target="_blank" rel="noopener">▶️</a>';
                 document.getElementById('socialLinks').innerHTML = social;
                 if (s.google_maps_embed) document.getElementById('mapContainer').innerHTML = s.google_maps_embed;
-            } catch(e) { console.error(e); }
+            } catch(e) { /* silent */ }
         }
         
         async function loadServices() {

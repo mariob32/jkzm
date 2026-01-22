@@ -733,6 +733,28 @@
         </div>
     </div>
 
+    <!-- Photos Modal -->
+    <div class="modal" id="photosModal">
+        <div class="modal-content" style="max-width:900px">
+            <div class="modal-header">
+                <h3 id="photosModalTitle">Fotky v albume</h3>
+                <button class="modal-close" onclick="closeModal('photosModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="currentAlbumId">
+                <div style="margin-bottom:1rem;padding:1rem;background:var(--gray-light);border-radius:var(--radius)">
+                    <label style="font-weight:600;display:block;margin-bottom:0.5rem">Pridať fotky</label>
+                    <input type="file" id="photosUpload" accept="image/*" multiple onchange="uploadPhotos(this)">
+                    <div id="photosUploadStatus" style="margin-top:0.5rem;font-size:0.85rem"></div>
+                </div>
+                <div id="photosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;max-height:400px;overflow-y:auto"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('photosModal')">Zavrieť</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Horse Modal -->
     <div class="modal" id="horseModal">
         <div class="modal-content" style="max-width:800px">
@@ -2102,7 +2124,7 @@
             try {
                 const res = await fetch(`/api/articles/${id}`);
                 const a = await res.json();
-                console.log('Loaded article:', a);
+                
                 document.getElementById('articleId').value = a.id;
                 document.getElementById('articleTitle').value = a.title || '';
                 document.getElementById('articleCategory').value = a.category_id || '';
@@ -2329,8 +2351,118 @@
         loadAlbums();
     }
     
-    function openAlbumPhotos(id) {
-        alert('Správa fotiek v albume - TODO');
+    async function openAlbumPhotos(id) {
+        document.getElementById('currentAlbumId').value = id;
+        document.getElementById('photosUploadStatus').innerHTML = '';
+        document.getElementById('photosUpload').value = '';
+        
+        try {
+            const res = await fetch(`/api/photos?album_id=${id}`);
+            const photos = await res.json();
+            
+            const grid = document.getElementById('photosGrid');
+            if (!photos.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem">Zatiaľ žiadne fotky v tomto albume</div>';
+            } else {
+                grid.innerHTML = photos.map(p => `
+                    <div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#f0f0f0">
+                        <img src="${p.url}" alt="${p.caption || ''}" style="width:100%;height:100%;object-fit:cover">
+                        <button onclick="deletePhoto('${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.9);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px">✕</button>
+                        ${p.caption ? `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;padding:4px 8px;font-size:0.75rem">${p.caption}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // Získať názov albumu
+            const albumRes = await fetch(`/api/albums/${id}`);
+            const album = await albumRes.json();
+            document.getElementById('photosModalTitle').textContent = `Fotky: ${album.title}`;
+            
+            openModal('photosModal');
+        } catch(e) {
+            toast('Chyba pri načítaní fotiek: ' + e.message, 'error');
+        }
+    }
+    
+    async function uploadPhotos(input) {
+        const files = input.files;
+        if (!files.length) return;
+        
+        const albumId = document.getElementById('currentAlbumId').value;
+        const status = document.getElementById('photosUploadStatus');
+        
+        status.innerHTML = `<span style="color:var(--muted)">Nahrávam ${files.length} fotiek...</span>`;
+        
+        let uploaded = 0;
+        let errors = 0;
+        
+        for (const file of files) {
+            if (file.size > 5 * 1024 * 1024) {
+                errors++;
+                continue;
+            }
+            
+            try {
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: base64, filename: file.name, folder: 'photos' })
+                });
+                
+                const uploadData = await uploadRes.json();
+                if (uploadData.error) throw new Error(uploadData.error);
+                
+                // Pridať foto do DB
+                await fetch('/api/photos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        album_id: albumId,
+                        url: uploadData.url,
+                        caption: file.name.replace(/\.[^/.]+$/, ''),
+                        sort_order: uploaded
+                    })
+                });
+                
+                uploaded++;
+                status.innerHTML = `<span style="color:var(--muted)">Nahrávam... ${uploaded}/${files.length}</span>`;
+            } catch(e) {
+                errors++;
+            }
+        }
+        
+        if (uploaded > 0) {
+            toast(`Nahraných ${uploaded} fotiek`, 'success');
+            openAlbumPhotos(albumId); // Obnoviť grid
+        }
+        if (errors > 0) {
+            toast(`${errors} fotiek sa nepodarilo nahrať`, 'error');
+        }
+        
+        input.value = '';
+    }
+    
+    async function deletePhoto(id) {
+        if (!confirm('Naozaj vymazať túto fotku?')) return;
+        
+        try {
+            await fetch('/api/photos', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: [id] })
+            });
+            toast('Fotka vymazaná', 'success');
+            openAlbumPhotos(document.getElementById('currentAlbumId').value);
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
     }
     
     // STRÁNKY
