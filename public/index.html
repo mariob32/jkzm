@@ -298,7 +298,7 @@
                 <div class="footer-col"><h4>Rýchle odkazy</h4><a href="#services">Služby</a><a href="#news">Novinky</a><a href="#gallery">Galéria</a><a href="/o-klube.html">O klube / 2%</a><a href="#contact">Kontakt</a></div>
                 <div class="footer-col"><h4>Kontakt</h4><p style="color:rgba(255,255,255,0.7)"><span id="footerPhone"></span><br><span id="footerEmail"></span></p></div>
             </div>
-            <div class="footer-bottom">© 2025 <span id="copyrightName">Jazdecký klub</span>. Všetky práva vyhradené. | <a href="/admin" style="color:rgba(255,255,255,0.5)">Admin</a></div>
+            <div class="footer-bottom">© 2025 <span id="copyrightName">Jazdecký klub</span>. Všetky práva vyhradené. | <a href="#" onclick="showGdpr();return false;" style="color:rgba(255,255,255,0.5)">GDPR</a> | <a href="/admin" style="color:rgba(255,255,255,0.5)">Admin</a></div>
         </div>
     </footer>
 
@@ -680,5 +680,60 @@
         <div id="lightboxCaption" style="position:absolute;bottom:2rem;color:white;text-align:center;max-width:80%;font-size:0.95rem"></div>
     </div>
 
+<!-- COOKIES BANNER -->
+    <div id="cookieBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1a1a2e; color:white; padding:1rem 1.5rem; z-index:9999; box-shadow:0 -4px 20px rgba(0,0,0,0.3);">
+        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+            <div style="flex:1; min-width:280px;">
+                <strong>🍪 Cookies</strong>
+                <p style="margin:0.25rem 0 0; font-size:0.9rem; opacity:0.9;">Táto stránka používa cookies pre správne fungovanie a analýzu návštevnosti. Pokračovaním súhlasíte s ich použitím.</p>
+            </div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <button onclick="acceptCookies()" style="background:#2e7d32; color:white; border:none; padding:0.6rem 1.25rem; border-radius:6px; cursor:pointer; font-weight:600;">Súhlasím</button>
+                <button onclick="rejectCookies()" style="background:transparent; color:white; border:1px solid rgba(255,255,255,0.3); padding:0.6rem 1.25rem; border-radius:6px; cursor:pointer;">Len nevyhnutné</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- GDPR MODAL -->
+    <div id="gdprModal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <button class="modal-close" onclick="document.getElementById('gdprModal').classList.remove('active')">×</button>
+            <h2 style="margin-bottom:1rem;">🔒 Ochrana osobných údajov</h2>
+            <div style="font-size:0.95rem; line-height:1.7;">
+                <p><strong>Prevádzkovateľ:</strong> Jazdecký klub Zelená míľa Jaslovské Bohunice, o.z.<br>
+                IČO: 53536002<br>
+                Sídlo: Nová ulica 297/41, 919 30 Jaslovské Bohunice</p>
+                
+                <h4 style="margin:1.25rem 0 0.5rem;">Aké údaje spracúvame?</h4>
+                <p>Spracúvame len údaje, ktoré nám poskytnete cez kontaktný formulár (meno, email, telefón, správa) za účelom odpovede na váš dopyt.</p>
+                
+                <h4 style="margin:1.25rem 0 0.5rem;">Cookies</h4>
+                <p>Používame len nevyhnutné cookies pre fungovanie webu a analytické cookies pre meranie návštevnosti (anonymizované).</p>
+                
+                <h4 style="margin:1.25rem 0 0.5rem;">Vaše práva</h4>
+                <p>Máte právo na prístup k údajom, ich opravu, vymazanie a námietku proti spracúvaniu. Kontaktujte nás na: <a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p>
+                
+                <button onclick="document.getElementById('gdprModal').classList.remove('active')" style="margin-top:1.5rem; background:#2e7d32; color:white; border:none; padding:0.75rem 2rem; border-radius:8px; cursor:pointer; font-weight:600;">Rozumiem</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Cookies banner
+        if (!localStorage.getItem('cookiesAccepted')) {
+            document.getElementById('cookieBanner').style.display = 'block';
+        }
+        function acceptCookies() {
+            localStorage.setItem('cookiesAccepted', 'all');
+            document.getElementById('cookieBanner').style.display = 'none';
+        }
+        function rejectCookies() {
+            localStorage.setItem('cookiesAccepted', 'essential');
+            document.getElementById('cookieBanner').style.display = 'none';
+        }
+        function showGdpr() {
+            document.getElementById('gdprModal').classList.add('active');
+        }
+    </script>
 </body>
 </html>
