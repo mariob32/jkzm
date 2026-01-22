@@ -270,3 +270,24 @@ FROM pages
 WHERE is_published = TRUE AND show_in_menu = TRUE
 ORDER BY menu_order;
 
+
+-- Služby
+CREATE TABLE IF NOT EXISTS services (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    icon VARCHAR(50) DEFAULT '🏇',
+    badge_text VARCHAR(50),
+    badge_type VARCHAR(20), -- 'full', 'soon', 'new', 'sale'
+    sort_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Vložiť základné služby
+INSERT INTO services (title, description, icon, badge_text, badge_type, sort_order) VALUES
+('Jazdecké tréningy', 'Individuálne aj skupinové tréningy pre začiatočníkov aj pokročilých jazdcov.', '🏇', NULL, NULL, 1),
+('Ustajnenie', 'Kvalitné ustajnenie v moderných boxoch s celodennou starostlivosťou.', '🏠', 'Obsadené', 'full', 2),
+('Súťaže', 'Organizujeme klubové aj regionálne súťaže všetkých úrovní.', '🏆', NULL, NULL, 3),
+('Detské tábory', 'Letné jazdecké tábory pre deti s bohatým programom.', '👶', 'Pripravujeme', 'soon', 4);
