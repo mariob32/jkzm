@@ -397,13 +397,124 @@
                 const res = await fetch('/api/albums?public_only=true');
                 const albums = await res.json();
                 const grid = document.getElementById('galleryGrid');
-                if (!Array.isArray(albums) || !albums.length) { grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1">Zatiaľ žiadne albumy</p>'; return; }
+                if (!Array.isArray(albums) || !albums.length) { 
+                    grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1">Zatiaľ žiadne albumy</p>'; 
+                    return; 
+                }
                 grid.innerHTML = albums.slice(0,6).map(a => {
-                    const count = a.photos?.length || 0;
-                    const img = a.cover_image ? '<img src="'+a.cover_image+'" alt="'+a.title+'">' : '<div class="placeholder-img" style="position:absolute;inset:0">🖼️</div>';
-                    return '<div class="gallery-item">'+img+'<div class="gallery-overlay"><h4>'+a.title+'</h4><span>'+count+' fotiek</span></div></div>';
+                    // photos môže byť array alebo objekt s count
+                    let count = 0;
+                    if (Array.isArray(a.photos)) count = a.photos.length;
+                    else if (a.photos && a.photos[0] && a.photos[0].count !== undefined) count = a.photos[0].count;
+                    
+                    const img = a.cover_image 
+                        ? '<img src="'+a.cover_image+'" alt="Album">' 
+                        : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,var(--primary),var(--secondary))">🖼️</div>';
+                    
+                    // Escape pre HTML atribúty
+                    const safeId = a.id;
+                    const safeTitle = (a.title || '').replace(/"/g, '&quot;');
+                    
+                    return '<div class="gallery-item" data-album-id="'+safeId+'" data-album-title="'+safeTitle+'">'+img+'<div class="gallery-overlay"><h4>'+(a.title || 'Album')+'</h4><span>'+count+' fotiek</span></div></div>';
                 }).join('');
-            } catch(e) { document.getElementById('galleryGrid').innerHTML = '<p style="color:var(--gray)">Chyba</p>'; }
+                
+                // Pridať event listenery
+                grid.querySelectorAll('.gallery-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const albumId = this.dataset.albumId;
+                        const albumTitle = this.dataset.albumTitle;
+                        if (albumId) openAlbum(albumId, albumTitle);
+                    });
+                });
+            } catch(e) { 
+                console.error('Gallery error:', e);
+                document.getElementById('galleryGrid').innerHTML = '<p style="color:var(--gray)">Chyba pri načítaní galérie</p>'; 
+            }
+        }
+        }
+        
+        // Lightbox pre galériu
+        let currentPhotos = [];
+        let currentPhotoIndex = 0;
+        
+        async function openAlbum(albumId, albumTitle) {
+            try {
+                console.log('Opening album:', albumId, albumTitle);
+                const res = await fetch('/api/photos?album_id=' + albumId);
+                
+                if (!res.ok) {
+                    throw new Error('API error: ' + res.status);
+                }
+                
+                const photos = await res.json();
+                console.log('Photos loaded:', photos);
+                
+                if (!photos || !Array.isArray(photos) || photos.length === 0) {
+                    alert('Album je prázdny - najprv nahrajte fotky v admin paneli');
+                    return;
+                }
+                
+                currentPhotos = photos;
+                currentPhotoIndex = 0;
+                
+                document.getElementById('lightboxTitle').textContent = albumTitle || 'Album';
+                showPhoto(0);
+                document.getElementById('lightbox').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } catch(e) {
+                console.error('Error loading album:', e);
+                alert('Chyba pri načítaní albumu: ' + e.message);
+            }
+        }
+        
+        function showPhoto(index) {
+            if (index < 0) index = currentPhotos.length - 1;
+            if (index >= currentPhotos.length) index = 0;
+            currentPhotoIndex = index;
+            
+            const photo = currentPhotos[index];
+            const isVideo = photo.url && (photo.url.includes('.mp4') || photo.url.includes('.webm') || photo.url.includes('.mov'));
+            
+            const mediaContainer = document.getElementById('lightboxMedia');
+            if (isVideo) {
+                mediaContainer.innerHTML = '<video src="' + photo.url + '" controls autoplay style="max-width:90vw;max-height:80vh"></video>';
+            } else {
+                mediaContainer.innerHTML = '<img src="' + photo.url + '" alt="' + (photo.title || '') + '" style="max-width:90vw;max-height:80vh;object-fit:contain">';
+            }
+            
+            document.getElementById('lightboxCounter').textContent = (index + 1) + ' / ' + currentPhotos.length;
+            document.getElementById('lightboxCaption').textContent = photo.title || '';
+            
+            // Zobraz/skry šípky
+            document.getElementById('lightboxPrev').style.display = currentPhotos.length > 1 ? 'flex' : 'none';
+            document.getElementById('lightboxNext').style.display = currentPhotos.length > 1 ? 'flex' : 'none';
+        }
+        
+        function nextPhoto() {
+            showPhoto(currentPhotoIndex + 1);
+        }
+        
+        function prevPhoto() {
+            showPhoto(currentPhotoIndex - 1);
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = '';
+            // Zastav video ak hralo
+            const video = document.querySelector('#lightboxMedia video');
+            if (video) video.pause();
+        }
+        
+        // Klávesové skratky pre lightbox
+        document.addEventListener('keydown', function(e) {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox && lightbox.style.display === 'flex') {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') nextPhoto();
+                if (e.key === 'ArrowLeft') prevPhoto();
+            }
+        });
         }
         
         async function loadPartners() {
@@ -499,5 +610,23 @@
             }); 
         });
     </script>
+    <!-- Lightbox -->
+    <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:1000;flex-direction:column;align-items:center;justify-content:center">
+        <button onclick="closeLightbox()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:white;font-size:2rem;cursor:pointer;z-index:1001;width:44px;height:44px;display:flex;align-items:center;justify-content:center">×</button>
+        
+        <div style="position:absolute;top:1rem;left:1rem;color:white;font-size:0.9rem">
+            <span id="lightboxTitle" style="font-weight:600"></span>
+            <span id="lightboxCounter" style="opacity:0.7;margin-left:1rem"></span>
+        </div>
+        
+        <button id="lightboxPrev" onclick="prevPhoto()" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:none;color:white;font-size:2rem;cursor:pointer;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s">❮</button>
+        
+        <div id="lightboxMedia" style="display:flex;align-items:center;justify-content:center;max-width:90vw;max-height:80vh"></div>
+        
+        <button id="lightboxNext" onclick="nextPhoto()" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:none;color:white;font-size:2rem;cursor:pointer;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s">❯</button>
+        
+        <div id="lightboxCaption" style="position:absolute;bottom:2rem;color:white;text-align:center;max-width:80%;font-size:0.95rem"></div>
+    </div>
+
 </body>
 </html>
