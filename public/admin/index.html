@@ -737,14 +737,15 @@
     <div class="modal" id="photosModal">
         <div class="modal-content" style="max-width:900px">
             <div class="modal-header">
-                <h3 id="photosModalTitle">Fotky v albume</h3>
+                <h3 id="photosModalTitle">Fotky a videá v albume</h3>
                 <button class="modal-close" onclick="closeModal('photosModal')">×</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="currentAlbumId">
                 <div style="margin-bottom:1rem;padding:1rem;background:var(--gray-light);border-radius:var(--radius)">
-                    <label style="font-weight:600;display:block;margin-bottom:0.5rem">Pridať fotky</label>
-                    <input type="file" id="photosUpload" accept="image/*" multiple onchange="uploadPhotos(this)">
+                    <label style="font-weight:600;display:block;margin-bottom:0.5rem">Pridať fotky alebo videá</label>
+                    <input type="file" id="photosUpload" accept="image/*,video/*" multiple onchange="uploadMedia(this)">
+                    <p style="font-size:0.75rem;color:var(--muted);margin-top:0.25rem">Max. 50MB na súbor. Podporované: JPG, PNG, GIF, MP4, WebM</p>
                     <div id="photosUploadStatus" style="margin-top:0.5rem;font-size:0.85rem"></div>
                 </div>
                 <div id="photosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;max-height:400px;overflow-y:auto"></div>
@@ -2362,95 +2363,158 @@
             
             const grid = document.getElementById('photosGrid');
             if (!photos.length) {
-                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem">Zatiaľ žiadne fotky v tomto albume</div>';
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem">Zatiaľ žiadne médiá v tomto albume</div>';
             } else {
-                grid.innerHTML = photos.map(p => `
-                    <div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#f0f0f0">
-                        <img src="${p.url}" alt="${p.caption || ''}" style="width:100%;height:100%;object-fit:cover">
-                        <button onclick="deletePhoto('${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.9);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px">✕</button>
-                        ${p.caption ? `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;padding:4px 8px;font-size:0.75rem">${p.caption}</div>` : ''}
-                    </div>
-                `).join('');
+                grid.innerHTML = photos.map(p => {
+                    const isVideo = p.url && (p.url.includes('.mp4') || p.url.includes('.mov') || p.url.includes('.webm') || p.url.includes('.avi'));
+                    const title = p.title || '';
+                    
+                    if (isVideo) {
+                        return `
+                            <div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#1a1a1a">
+                                <video src="${p.url}" style="width:100%;height:100%;object-fit:cover" muted></video>
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;opacity:0.8">▶️</div>
+                                <button onclick="deleteMedia('${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.9);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px">✕</button>
+                                <button onclick="playVideo('${p.url}')" style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px">Prehrať</button>
+                                ${title ? `<div style="position:absolute;bottom:0;left:0;right:30%;background:rgba(0,0,0,0.6);color:white;padding:4px 8px;font-size:0.75rem">${title}</div>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#f0f0f0">
+                                <img src="${p.url}" alt="${title}" style="width:100%;height:100%;object-fit:cover" onclick="viewImage('${p.url}')">
+                                <button onclick="deleteMedia('${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.9);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px">✕</button>
+                                ${title ? `<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;padding:4px 8px;font-size:0.75rem">${title}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                }).join('');
             }
             
             // Získať názov albumu
             const albumRes = await fetch(`/api/albums/${id}`);
             const album = await albumRes.json();
-            document.getElementById('photosModalTitle').textContent = `Fotky: ${album.title}`;
+            document.getElementById('photosModalTitle').textContent = `Médiá: ${album.title}`;
             
             openModal('photosModal');
         } catch(e) {
-            toast('Chyba pri načítaní fotiek: ' + e.message, 'error');
+            toast('Chyba pri načítaní médií: ' + e.message, 'error');
         }
     }
     
-    async function uploadPhotos(input) {
+    function viewImage(url) {
+        window.open(url, '_blank');
+    }
+    
+    function playVideo(url) {
+        window.open(url, '_blank');
+    }
+    
+    async function uploadMedia(input) {
         const files = input.files;
         if (!files.length) return;
         
         const albumId = document.getElementById('currentAlbumId').value;
         const status = document.getElementById('photosUploadStatus');
+        const smallFileLimit = 4 * 1024 * 1024; // 4MB pre base64 upload
+        const maxFileLimit = 50 * 1024 * 1024; // 50MB pre direct upload
         
-        status.innerHTML = `<span style="color:var(--muted)">Nahrávam ${files.length} fotiek...</span>`;
+        status.innerHTML = `<span style="color:var(--muted)">Nahrávam ${files.length} súborov...</span>`;
         
         let uploaded = 0;
         let errors = 0;
+        let skipped = 0;
         
         for (const file of files) {
-            if (file.size > 5 * 1024 * 1024) {
-                errors++;
+            if (file.size > maxFileLimit) {
+                skipped++;
+                status.innerHTML = `<span style="color:var(--warning)">Preskočené: ${file.name} (max 50MB)</span>`;
                 continue;
             }
             
             try {
-                const base64 = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
+                status.innerHTML = `<span style="color:var(--muted)">Nahrávam ${file.name}... (${uploaded + 1}/${files.length})</span>`;
                 
-                const uploadRes = await fetch('/api/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ file: base64, filename: file.name, folder: 'photos' })
-                });
+                const isVideo = file.type.startsWith('video/');
+                const folder = isVideo ? 'videos' : 'photos';
+                let publicUrl;
                 
-                const uploadData = await uploadRes.json();
-                if (uploadData.error) throw new Error(uploadData.error);
+                if (file.size <= smallFileLimit) {
+                    // Malé súbory - base64 upload cez API
+                    const base64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    const uploadRes = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ file: base64, filename: file.name, folder: folder })
+                    });
+                    
+                    const uploadData = await uploadRes.json();
+                    if (uploadData.error) throw new Error(uploadData.error);
+                    publicUrl = uploadData.url;
+                } else {
+                    // Veľké súbory - direct upload cez signed URL
+                    const signedRes = await fetch('/api/upload-signed', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ filename: file.name, folder: folder, contentType: file.type })
+                    });
+                    
+                    const signedData = await signedRes.json();
+                    if (signedData.error) throw new Error(signedData.error);
+                    
+                    // Direct upload to Supabase
+                    const directUpload = await fetch(signedData.signedUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': file.type },
+                        body: file
+                    });
+                    
+                    if (!directUpload.ok) throw new Error('Direct upload failed');
+                    publicUrl = signedData.publicUrl;
+                }
                 
-                // Pridať foto do DB
+                // Pridať do DB
                 await fetch('/api/photos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         album_id: albumId,
-                        url: uploadData.url,
-                        caption: file.name.replace(/\.[^/.]+$/, ''),
+                        url: publicUrl,
+                        title: file.name.replace(/\.[^/.]+$/, ''),
                         sort_order: uploaded
                     })
                 });
                 
                 uploaded++;
-                status.innerHTML = `<span style="color:var(--muted)">Nahrávam... ${uploaded}/${files.length}</span>`;
             } catch(e) {
                 errors++;
+                status.innerHTML = `<span style="color:var(--danger)">Chyba: ${file.name} - ${e.message}</span>`;
             }
         }
         
         if (uploaded > 0) {
-            toast(`Nahraných ${uploaded} fotiek`, 'success');
-            openAlbumPhotos(albumId); // Obnoviť grid
+            toast(`Nahraných ${uploaded} súborov`, 'success');
+            openAlbumPhotos(albumId);
         }
         if (errors > 0) {
-            toast(`${errors} fotiek sa nepodarilo nahrať`, 'error');
+            toast(`${errors} súborov sa nepodarilo nahrať`, 'error');
+        }
+        if (skipped > 0) {
+            toast(`${skipped} súborov preskočených (príliš veľké)`, 'warning');
         }
         
         input.value = '';
+        status.innerHTML = '';
     }
     
-    async function deletePhoto(id) {
-        if (!confirm('Naozaj vymazať túto fotku?')) return;
+    async function deleteMedia(id) {
+        if (!confirm('Naozaj vymazať?')) return;
         
         try {
             await fetch('/api/photos', {
@@ -2458,7 +2522,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ids: [id] })
             });
-            toast('Fotka vymazaná', 'success');
+            toast('Vymazané', 'success');
             openAlbumPhotos(document.getElementById('currentAlbumId').value);
         } catch(e) {
             toast('Chyba: ' + e.message, 'error');

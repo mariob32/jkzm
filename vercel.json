@@ -56,6 +56,7 @@
     { "src": "/api/documents/([^/]+)", "dest": "/api/documents-id.js?id=$1" },
     { "src": "/api/documents", "dest": "/api/documents.js" },
     { "src": "/api/upload", "dest": "/api/upload.js" },
+    { "src": "/api/upload-signed", "dest": "/api/upload-signed.js" },
     { "src": "/api/settings", "dest": "/api/settings.js" },
     
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },

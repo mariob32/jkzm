@@ -12,38 +12,20 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { file, filename, folder = 'uploads' } = req.body;
+        const { filename, folder = 'uploads', contentType } = req.body;
         
-        if (!file || !filename) {
-            return res.status(400).json({ error: 'File and filename required' });
+        if (!filename) {
+            return res.status(400).json({ error: 'Filename required' });
         }
 
-        // Dekóduj base64 - podporuje image aj video
-        const matches = file.match(/^data:([^;]+);base64,(.+)$/);
-        if (!matches) {
-            return res.status(400).json({ error: 'Invalid base64 format' });
-        }
-        
-        const mimeType = matches[1];
-        const base64Data = matches[2];
-        const buffer = Buffer.from(base64Data, 'base64');
-        
-        // Kontrola veľkosti (Vercel limit je ~4.5MB pre request body)
-        if (buffer.length > 4.5 * 1024 * 1024) {
-            return res.status(413).json({ error: 'Súbor je príliš veľký. Maximum je 4.5MB cez tento endpoint.' });
-        }
-        
         // Vygeneruj unikátny názov
         const ext = filename.split('.').pop().toLowerCase();
         const uniqueName = `${folder}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`;
         
-        // Upload do Supabase Storage
+        // Vytvor signed URL pre upload (platná 1 hodinu)
         const { data, error } = await supabase.storage
             .from('uploads')
-            .upload(uniqueName, buffer, {
-                contentType: mimeType,
-                upsert: false
-            });
+            .createSignedUploadUrl(uniqueName);
 
         if (error) throw error;
 
@@ -53,14 +35,14 @@ module.exports = async (req, res) => {
             .getPublicUrl(uniqueName);
 
         return res.status(200).json({ 
-            success: true, 
-            url: urlData.publicUrl,
+            success: true,
+            signedUrl: data.signedUrl,
+            token: data.token,
             path: uniqueName,
-            size: buffer.length,
-            type: mimeType
+            publicUrl: urlData.publicUrl
         });
     } catch (e) {
-        console.error('Upload error:', e);
+        console.error('Signed URL error:', e);
         res.status(500).json({ error: e.message });
     }
 };
