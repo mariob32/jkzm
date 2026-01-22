@@ -64,6 +64,50 @@
         .btn-secondary { background: transparent; color: var(--white); border: 2px solid var(--white); margin-left: 1rem; }
         .btn-secondary:hover { background: var(--white); color: var(--primary); text-decoration: none; }
         
+        /* 2% CTA Banner */
+        .cta-2percent {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            padding: 1.25rem 0;
+        }
+        .cta-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .cta-text { color: white; }
+        .cta-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .cta-text h3 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+        .cta-text p { font-size: 0.95rem; opacity: 0.95; margin: 0; }
+        .cta-text strong { font-weight: 700; }
+        .btn-cta {
+            display: inline-block;
+            background: white;
+            color: #f57c00;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .btn-cta:hover { background: #fff3e0; text-decoration: none; transform: translateY(-2px); }
+        
+        @media (max-width: 600px) {
+            .cta-content { justify-content: center; text-align: center; }
+            .cta-text h3 { font-size: 1.1rem; }
+            .cta-text p { font-size: 0.85rem; }
+        }
+        
         section { padding: 4rem 0; }
         .section-title { text-align: center; margin-bottom: 3rem; }
         .section-title h2 { font-size: 2.25rem; color: var(--dark); margin-bottom: 0.5rem; }
@@ -184,6 +228,20 @@
             <p id="heroDesc">Profesionálne tréningy, kvalitné ustajnenie a priateľská atmosféra pre všetkých milovníkov koní</p>
             <a href="#contact" class="btn btn-primary">Kontaktujte nás</a>
             <a href="#services" class="btn btn-secondary">Naše služby</a>
+        </div>
+    </section>
+
+    <!-- 2% DANE BANNER -->
+    <section class="cta-2percent">
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-text">
+                    <span class="cta-badge">💝 2% z dane</span>
+                    <h3>Podporte náš klub - darujte nám 2% z dane!</h3>
+                    <p>IČO: <strong>53536002</strong> • Jazdecký klub Zelená míľa Jaslovské Bohunice</p>
+                </div>
+                <a href="/o-klube.html#2percenta" class="btn-cta">Ako na to? →</a>
+            </div>
         </div>
     </section>
 
