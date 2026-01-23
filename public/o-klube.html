@@ -50,6 +50,7 @@
         }
         
         .logo-icon { font-size: 1.75rem; }
+        .logo-img { height: 45px; width: auto; display: block; }
         .logo-text { font-size: 1.1rem; font-weight: 700; }
         
         .mobile-menu {
@@ -422,7 +423,7 @@
     <header>
         <div class="header-content">
             <a href="/" class="logo">
-                <img src="/assets/logo.png" alt="Logo" style="height: 40px; width: auto;">
+                <img src="/assets/logo.png" alt="Logo" class="logo-img" onerror="this.outerHTML='<span class=\'logo-icon\'>🐴</span>'">
                 <span class="logo-text">JK Zelená míľa</span>
             </a>
             <button class="mobile-menu" onclick="toggleMenu()">☰</button>
