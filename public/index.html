@@ -160,6 +160,8 @@
         .contact-info h3 { color: var(--primary); margin-bottom: 1.5rem; }
         .contact-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
         .contact-icon { font-size: 1.5rem; color: var(--primary); }
+        .contact-item.address-box { background: #f8f9fa; padding: 1rem; border-radius: 10px; border-left: 4px solid var(--primary); }
+        .contact-item.address-box.prevádzka { border-left-color: var(--secondary); }
         .contact-map { border-radius: 12px; overflow: hidden; height: 100%; min-height: 300px; }
         .contact-map iframe { width: 100%; height: 100%; border: none; }
         
@@ -281,7 +283,8 @@
             <div class="contact-grid">
                 <div class="contact-info">
                     <h3>Kontaktné údaje</h3>
-                    <div class="contact-item"><span class="contact-icon">📍</span><div><strong>Adresa</strong><br><span id="contactAddress">-</span></div></div>
+                    <div class="contact-item address-box"><span class="contact-icon">🏠</span><div><strong>Sídlo (korešpondenčná adresa)</strong><br>Nová ulica 297/41, 919 30 Jaslovské Bohunice</div></div>
+                    <div class="contact-item address-box prevádzka"><span class="contact-icon">🐴</span><div><strong>Prevádzka (areál)</strong><br>Areál PD, Hlavná Jaslovce 124/127, 919 30 Jaslovské Bohunice</div></div>
                     <div class="contact-item"><span class="contact-icon">📞</span><div><strong>Telefón</strong><br><span id="contactPhone">-</span></div></div>
                     <div class="contact-item"><span class="contact-icon">✉️</span><div><strong>Email</strong><br><span id="contactEmail">-</span></div></div>
                     <div class="social-links" id="socialLinks"></div>
