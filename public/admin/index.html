@@ -2193,11 +2193,11 @@
         if (!file) return;
         
         if (!file.type.startsWith('image/')) {
-            toast('Prosím vyberte obrázok', 'error');
+            showToast('Prosím vyberte obrázok', 'error');
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            toast('Maximálna veľkosť je 5MB', 'error');
+            showToast('Maximálna veľkosť je 5MB', 'error');
             return;
         }
         
@@ -2222,10 +2222,10 @@
             
             document.getElementById('articleCoverImage').value = data.url;
             document.getElementById('articleImagePreview').innerHTML = '<img src="'+data.url+'" style="max-height:100px;border-radius:4px">';
-            toast('Obrázok nahraný!', 'success');
+            showToast('Obrázok nahraný!', 'success');
         } catch(e) {
             document.getElementById('articleImagePreview').innerHTML = '';
-            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+            showToast('Chyba pri nahrávaní: ' + e.message, 'error');
         }
     }
 
@@ -2273,7 +2273,7 @@
                 document.getElementById('articleModalTitle').textContent = 'Upraviť článok';
             } catch(e) {
                 console.error('Error loading article:', e);
-                toast('Chyba pri načítaní článku', 'error');
+                showToast('Chyba pri načítaní článku', 'error');
                 return;
             }
         }
@@ -2296,7 +2296,7 @@
         };
         
         if (!article.title) {
-            toast('Názov je povinný', 'error');
+            showToast('Názov je povinný', 'error');
             return;
         }
         
@@ -2321,7 +2321,7 @@
             toast(id ? 'Článok upravený' : 'Článok vytvorený', 'success');
             loadArticles();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -2377,11 +2377,11 @@
         if (!file) return;
         
         if (!file.type.startsWith('image/')) {
-            toast('Prosím vyberte obrázok', 'error');
+            showToast('Prosím vyberte obrázok', 'error');
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            toast('Maximálna veľkosť je 5MB', 'error');
+            showToast('Maximálna veľkosť je 5MB', 'error');
             return;
         }
         
@@ -2406,10 +2406,10 @@
             
             document.getElementById('albumCover').value = data.url;
             document.getElementById('albumCoverPreview').innerHTML = '<img src="'+data.url+'" style="max-height:100px;border-radius:4px">';
-            toast('Obrázok nahraný!', 'success');
+            showToast('Obrázok nahraný!', 'success');
         } catch(e) {
             document.getElementById('albumCoverPreview').innerHTML = '';
-            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+            showToast('Chyba pri nahrávaní: ' + e.message, 'error');
         }
     }
 
@@ -2433,7 +2433,7 @@
         };
         
         if (!album.title) {
-            toast('Názov je povinný', 'error');
+            showToast('Názov je povinný', 'error');
             return;
         }
         
@@ -2453,7 +2453,7 @@
             toast(id ? 'Album upravený' : 'Album vytvorený', 'success');
             loadAlbums();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -2472,7 +2472,7 @@
             document.getElementById('albumModalTitle').textContent = 'Upraviť album';
             openModal('albumModal');
         } catch(e) {
-            toast('Chyba pri načítaní albumu', 'error');
+            showToast('Chyba pri načítaní albumu', 'error');
         }
     }
     
@@ -2528,7 +2528,7 @@
             
             openModal('photosModal');
         } catch(e) {
-            toast('Chyba pri načítaní médií: ' + e.message, 'error');
+            showToast('Chyba pri načítaní médií: ' + e.message, 'error');
         }
     }
     
@@ -2652,10 +2652,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ids: [id] })
             });
-            toast('Vymazané', 'success');
+            showToast('Vymazané', 'success');
             openAlbumPhotos(document.getElementById('currentAlbumId').value);
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -2712,7 +2712,7 @@
         };
         
         if (!page.title || !page.slug) {
-            toast('Názov a URL slug sú povinné', 'error');
+            showToast('Názov a URL slug sú povinné', 'error');
             return;
         }
         
@@ -2732,7 +2732,7 @@
             toast(id ? 'Stránka upravená' : 'Stránka vytvorená', 'success');
             loadPages();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -2753,7 +2753,7 @@
             document.getElementById('pageModalTitle').textContent = 'Upraviť stránku';
             openModal('pageModal');
         } catch(e) {
-            toast('Chyba pri načítaní stránky', 'error');
+            showToast('Chyba pri načítaní stránky', 'error');
         }
     }
     
@@ -2805,7 +2805,7 @@
         if (!file) return;
         
         if (file.size > 10 * 1024 * 1024) {
-            toast('Maximálna veľkosť je 10MB', 'error');
+            showToast('Maximálna veľkosť je 10MB', 'error');
             return;
         }
         
@@ -2831,10 +2831,10 @@
             document.getElementById('docFileUrl').value = data.url;
             document.getElementById('docFileName').value = file.name;
             document.getElementById('docUploadStatus').innerHTML = '<span style="color:var(--success)">✓ ' + file.name + '</span>';
-            toast('Súbor nahraný!', 'success');
+            showToast('Súbor nahraný!', 'success');
         } catch(e) {
             document.getElementById('docUploadStatus').innerHTML = '';
-            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+            showToast('Chyba pri nahrávaní: ' + e.message, 'error');
         }
     }
 
@@ -2857,7 +2857,7 @@
         };
         
         if (!doc.title || !doc.file_url) {
-            toast('Názov a URL súboru sú povinné', 'error');
+            showToast('Názov a URL súboru sú povinné', 'error');
             return;
         }
         
@@ -2871,10 +2871,10 @@
             if (!res.ok) throw new Error('Chyba pri ukladaní');
             
             closeModal('documentModal');
-            toast('Dokument pridaný', 'success');
+            showToast('Dokument pridaný', 'success');
             loadDocuments();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -2882,10 +2882,10 @@
         if (!confirm('Naozaj vymazať dokument?')) return;
         try {
             await fetch(`/api/documents/${id}`, { method: 'DELETE' });
-            toast('Dokument vymazaný', 'success');
+            showToast('Dokument vymazaný', 'success');
             loadDocuments();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -2927,11 +2927,11 @@
         
         // Validácia
         if (!file.type.startsWith('image/')) {
-            toast('Prosím vyberte obrázok', 'error');
+            showToast('Prosím vyberte obrázok', 'error');
             return;
         }
         if (file.size > 2 * 1024 * 1024) {
-            toast('Maximálna veľkosť je 2MB', 'error');
+            showToast('Maximálna veľkosť je 2MB', 'error');
             return;
         }
         
@@ -2965,10 +2965,10 @@
             // Nastav URL do inputu
             document.getElementById('partnerLogo').value = data.url;
             document.getElementById('partnerLogoPreview').innerHTML = `<img src="${data.url}" style="max-height:60px;border-radius:4px">`;
-            toast('Logo nahrané!', 'success');
+            showToast('Logo nahrané!', 'success');
         } catch(e) {
             document.getElementById('partnerLogoPreview').innerHTML = '';
-            toast('Chyba pri nahrávaní: ' + e.message, 'error');
+            showToast('Chyba pri nahrávaní: ' + e.message, 'error');
         }
     }
 
@@ -2994,7 +2994,7 @@
         };
         
         if (!partner.name) {
-            toast('Názov je povinný', 'error');
+            showToast('Názov je povinný', 'error');
             return;
         }
         
@@ -3014,7 +3014,7 @@
             toast(id ? 'Partner upravený' : 'Partner pridaný', 'success');
             loadPartners();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -3039,7 +3039,7 @@
             document.getElementById('partnerModalTitle').textContent = 'Upraviť partnera';
             openModal('partnerModal');
         } catch(e) {
-            toast('Chyba pri načítaní partnera', 'error');
+            showToast('Chyba pri načítaní partnera', 'error');
         }
     }
     
@@ -3047,10 +3047,10 @@
         if (!confirm('Naozaj vymazať partnera?')) return;
         try {
             await fetch(`/api/partners/${id}`, { method: 'DELETE' });
-            toast('Partner vymazaný', 'success');
+            showToast('Partner vymazaný', 'success');
             loadPartners();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -3144,7 +3144,7 @@
             document.getElementById('serviceModalTitle').textContent = 'Upraviť službu';
             openModal('serviceModal');
         } catch(e) {
-            toast('Chyba pri načítaní služby', 'error');
+            showToast('Chyba pri načítaní služby', 'error');
         }
     }
     
@@ -3161,7 +3161,7 @@
         };
         
         if (!service.title) {
-            toast('Názov je povinný', 'error');
+            showToast('Názov je povinný', 'error');
             return;
         }
         
@@ -3178,7 +3178,7 @@
             closeModal('serviceModal');
             loadServices();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -3186,10 +3186,10 @@
         if (!confirm('Naozaj vymazať službu?')) return;
         try {
             await fetch(`/api/services/${id}`, { method: 'DELETE' });
-            toast('Služba vymazaná', 'success');
+            showToast('Služba vymazaná', 'success');
             loadServices();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
     
@@ -3224,7 +3224,7 @@
         } catch(e) { 
             console.error('loadSettings error:', e);
             status.textContent = '❌ Chyba: ' + e.message;
-            toast('Chyba pri načítaní nastavení: ' + e.message, 'error');
+            showToast('Chyba pri načítaní nastavení: ' + e.message, 'error');
         }
     }
     
@@ -3253,12 +3253,12 @@
             if (result.error) throw new Error(result.error);
             
             status.textContent = '✅ Uložené';
-            toast('Nastavenia uložené', 'success');
+            showToast('Nastavenia uložené', 'success');
             setTimeout(() => { status.textContent = ''; }, 3000);
         } catch(e) {
             console.error('saveSettings error:', e);
             status.textContent = '❌ Chyba';
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
 
@@ -3441,10 +3441,10 @@
             if (!res.ok) throw new Error('API error');
             
             closeModal('arenaModal');
-            toast('Aréna uložená', 'success');
+            showToast('Aréna uložená', 'success');
             loadArenas();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
 
@@ -3453,10 +3453,10 @@
         
         try {
             await fetch(`/api/arenas?id=${id}`, { method: 'DELETE' });
-            toast('Aréna vymazaná', 'success');
+            showToast('Aréna vymazaná', 'success');
             loadArenas();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
 
@@ -3596,11 +3596,11 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, status })
             });
-            toast('Status aktualizovaný', 'success');
+            showToast('Status aktualizovaný', 'success');
             loadReservations();
             updateArenaStats();
         } catch(e) {
-            toast('Chyba: ' + e.message, 'error');
+            showToast('Chyba: ' + e.message, 'error');
         }
     }
 
