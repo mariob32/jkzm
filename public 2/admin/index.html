@@ -2318,7 +2318,7 @@
             if (!res.ok) throw new Error('Chyba pri ukladaní');
             
             closeModal('articleModal');
-            toast(id ? 'Článok upravený' : 'Článok vytvorený', 'success');
+            showToast(id ? 'Článok upravený' : 'Článok vytvorený', 'success');
             loadArticles();
         } catch(e) {
             showToast('Chyba: ' + e.message, 'error');
@@ -2450,7 +2450,7 @@
             if (!res.ok) throw new Error('Chyba pri ukladaní');
             
             closeModal('albumModal');
-            toast(id ? 'Album upravený' : 'Album vytvorený', 'success');
+            showToast(id ? 'Album upravený' : 'Album vytvorený', 'success');
             loadAlbums();
         } catch(e) {
             showToast('Chyba: ' + e.message, 'error');
@@ -2629,14 +2629,14 @@
         }
         
         if (uploaded > 0) {
-            toast(`Nahraných ${uploaded} súborov`, 'success');
+            showToast(`Nahraných ${uploaded} súborov`, 'success');
             openAlbumPhotos(albumId);
         }
         if (errors > 0) {
-            toast(`${errors} súborov sa nepodarilo nahrať`, 'error');
+            showToast(`${errors} súborov sa nepodarilo nahrať`, 'error');
         }
         if (skipped > 0) {
-            toast(`${skipped} súborov preskočených (príliš veľké)`, 'warning');
+            showToast(`${skipped} súborov preskočených (príliš veľké)`, 'warning');
         }
         
         input.value = '';
@@ -2729,7 +2729,7 @@
             if (!res.ok) throw new Error('Chyba pri ukladaní');
             
             closeModal('pageModal');
-            toast(id ? 'Stránka upravená' : 'Stránka vytvorená', 'success');
+            showToast(id ? 'Stránka upravená' : 'Stránka vytvorená', 'success');
             loadPages();
         } catch(e) {
             showToast('Chyba: ' + e.message, 'error');
@@ -3011,7 +3011,7 @@
             if (!res.ok) throw new Error('Chyba pri ukladaní');
             
             closeModal('partnerModal');
-            toast(id ? 'Partner upravený' : 'Partner pridaný', 'success');
+            showToast(id ? 'Partner upravený' : 'Partner pridaný', 'success');
             loadPartners();
         } catch(e) {
             showToast('Chyba: ' + e.message, 'error');
@@ -3174,7 +3174,7 @@
                 body: JSON.stringify(service)
             });
             if (!res.ok) throw new Error('Chyba pri ukladaní');
-            toast(id ? 'Služba upravená' : 'Služba vytvorená', 'success');
+            showToast(id ? 'Služba upravená' : 'Služba vytvorená', 'success');
             closeModal('serviceModal');
             loadServices();
         } catch(e) {
