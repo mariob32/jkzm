@@ -199,6 +199,7 @@
             .news-grid { grid-template-columns: 1fr; }
             .article-modal-cover { height: 200px; }
             .article-modal-body h1 { font-size: 1.5rem; }
+            #booking > div > div { grid-template-columns: 1fr !important; }
         }
         
         .loading { text-align: center; padding: 3rem; color: var(--gray); }
@@ -274,6 +275,93 @@
         <div class="container">
             <div class="section-title"><h2>Partneri a sponzori</h2><p>Ďakujeme za podporu</p></div>
             <div class="partners-container" id="partnersContainer"><div class="loading">Načítavam partnerov...</div></div>
+        </div>
+    </section>
+
+    <!-- REZERVÁCIE -->
+    <section id="booking" style="background:#f8f9fa;padding:4rem 0">
+        <div class="container">
+            <div class="section-title"><h2>📅 Rezervácia jazdy</h2><p>Vyberte si termín a rezervujte online</p></div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1000px;margin:0 auto">
+                <!-- Výber termínu -->
+                <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
+                    <h3 style="margin-bottom:1rem;color:#2d5a27">1. Vyberte arénu a dátum</h3>
+                    
+                    <div style="margin-bottom:1rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Aréna</label>
+                        <select id="bookingArena" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                            <option value="">Načítavam arény...</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom:1rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Dátum</label>
+                        <input type="date" id="bookingDate" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                    </div>
+                    
+                    <div id="availableSlots" style="margin-top:1rem">
+                        <p style="color:#6c757d;text-align:center;padding:1rem">Vyberte arénu a dátum pre zobrazenie dostupných časov</p>
+                    </div>
+                </div>
+                
+                <!-- Rezervačný formulár -->
+                <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
+                    <h3 style="margin-bottom:1rem;color:#2d5a27">2. Vaše údaje</h3>
+                    
+                    <form id="bookingForm" onsubmit="submitBooking(event)">
+                        <input type="hidden" id="selectedSlot">
+                        
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Meno a priezvisko *</label>
+                            <input type="text" id="bookingName" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                        </div>
+                        
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Telefón *</label>
+                            <input type="tel" id="bookingPhone" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="+421...">
+                        </div>
+                        
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Email</label>
+                            <input type="email" id="bookingEmail" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                        </div>
+                        
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                            <div>
+                                <label style="display:block;margin-bottom:0.5rem;font-weight:500">Počet jazdcov</label>
+                                <select id="bookingRiders" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;margin-bottom:0.5rem;font-weight:500">Úroveň</label>
+                                <select id="bookingLevel" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                    <option value="beginner">Začiatočník</option>
+                                    <option value="intermediate">Mierne pokročilý</option>
+                                    <option value="advanced">Pokročilý</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom:1.5rem">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Poznámka</label>
+                            <textarea id="bookingNotes" rows="2" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;resize:vertical" placeholder="Špeciálne požiadavky..."></textarea>
+                        </div>
+                        
+                        <button type="submit" id="bookingSubmit" disabled style="width:100%;padding:1rem;background:#2d5a27;color:white;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background 0.3s">
+                            Odoslať rezerváciu
+                        </button>
+                        
+                        <p style="margin-top:1rem;font-size:0.85rem;color:#6c757d;text-align:center">
+                            Po odoslaní vás budeme kontaktovať pre potvrdenie rezervácie.
+                        </p>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -737,6 +825,167 @@
         function showGdpr() {
             document.getElementById('gdprModal').classList.add('active');
         }
+        
+        // =====================================================
+        // REZERVAČNÝ SYSTÉM
+        // =====================================================
+        let bookingArenas = [];
+        let selectedSlotData = null;
+        
+        // Načítaj arény
+        async function loadBookingArenas() {
+            try {
+                const res = await fetch('/api/arenas?active=true');
+                bookingArenas = await res.json();
+                
+                const select = document.getElementById('bookingArena');
+                select.innerHTML = '<option value="">-- Vyberte arénu --</option>' +
+                    bookingArenas.map(a => `<option value="${a.id}">${a.is_indoor ? '🏠' : '🌳'} ${a.name} (max ${a.capacity})</option>`).join('');
+            } catch(e) {
+                console.error('Error loading arenas:', e);
+            }
+        }
+        
+        // Načítaj dostupné sloty
+        async function loadAvailableSlots() {
+            const arenaId = document.getElementById('bookingArena').value;
+            const date = document.getElementById('bookingDate').value;
+            const container = document.getElementById('availableSlots');
+            
+            if (!arenaId || !date) {
+                container.innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Vyberte arénu a dátum</p>';
+                return;
+            }
+            
+            container.innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Načítavam...</p>';
+            
+            try {
+                const res = await fetch(`/api/reservations?arena_id=${arenaId}&date=${date}&availability=true`);
+                const data = await res.json();
+                
+                if (!data.slots || data.slots.length === 0) {
+                    container.innerHTML = `<p style="color:#dc3545;text-align:center;padding:1rem">${data.message || 'Žiadne dostupné termíny'}</p>`;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <label style="display:block;margin-bottom:0.5rem;font-weight:500">Dostupné časy:</label>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.5rem">
+                        ${data.slots.map(slot => `
+                            <button type="button" 
+                                onclick="selectSlot('${slot.start_time}', '${slot.end_time}', ${slot.available_spots})"
+                                style="padding:0.75rem;border:2px solid ${slot.is_available ? '#2d5a27' : '#dc3545'};
+                                       background:${slot.is_available ? 'white' : '#f8d7da'};
+                                       border-radius:8px;cursor:${slot.is_available ? 'pointer' : 'not-allowed'};
+                                       opacity:${slot.is_available ? '1' : '0.6'}"
+                                ${!slot.is_available ? 'disabled' : ''}>
+                                <div style="font-weight:600">${slot.start_time.substring(0,5)}</div>
+                                <div style="font-size:0.75rem;color:#6c757d">${slot.available_spots}/${slot.max_spots} voľné</div>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } catch(e) {
+                container.innerHTML = '<p style="color:#dc3545;text-align:center;padding:1rem">Chyba pri načítaní</p>';
+            }
+        }
+        
+        function selectSlot(startTime, endTime, availableSpots) {
+            selectedSlotData = { startTime, endTime, availableSpots };
+            document.getElementById('selectedSlot').value = startTime;
+            
+            // Označ vybraný slot
+            document.querySelectorAll('#availableSlots button').forEach(btn => {
+                btn.style.background = 'white';
+            });
+            event.target.closest('button').style.background = '#e8f5e9';
+            
+            // Povoľ submit
+            document.getElementById('bookingSubmit').disabled = false;
+            document.getElementById('bookingSubmit').style.background = '#2d5a27';
+            
+            // Uprav max jazdcov
+            const ridersSelect = document.getElementById('bookingRiders');
+            ridersSelect.innerHTML = '';
+            for (let i = 1; i <= Math.min(availableSpots, 4); i++) {
+                ridersSelect.innerHTML += `<option value="${i}">${i}</option>`;
+            }
+        }
+        
+        async function submitBooking(e) {
+            e.preventDefault();
+            
+            const arenaId = document.getElementById('bookingArena').value;
+            const date = document.getElementById('bookingDate').value;
+            const name = document.getElementById('bookingName').value;
+            const phone = document.getElementById('bookingPhone').value;
+            const email = document.getElementById('bookingEmail').value;
+            const riders = document.getElementById('bookingRiders').value;
+            const level = document.getElementById('bookingLevel').value;
+            const notes = document.getElementById('bookingNotes').value;
+            
+            if (!selectedSlotData || !arenaId || !date || !name || !phone) {
+                alert('Vyplňte všetky povinné údaje');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('bookingSubmit');
+            submitBtn.textContent = 'Odosielam...';
+            submitBtn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/reservations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        arena_id: parseInt(arenaId),
+                        customer_name: name,
+                        customer_phone: phone,
+                        customer_email: email,
+                        reservation_date: date,
+                        start_time: selectedSlotData.startTime,
+                        end_time: selectedSlotData.endTime,
+                        riders_count: parseInt(riders),
+                        skill_level: level,
+                        notes: notes,
+                        service_type: 'lesson'
+                    })
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    alert('✅ Rezervácia odoslaná!\n\nBudeme vás kontaktovať pre potvrdenie.');
+                    // Reset formulára
+                    document.getElementById('bookingForm').reset();
+                    selectedSlotData = null;
+                    document.getElementById('availableSlots').innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Vyberte arénu a dátum</p>';
+                    submitBtn.textContent = 'Odoslať rezerváciu';
+                } else {
+                    alert('❌ ' + (result.error || 'Chyba pri rezervácii'));
+                    submitBtn.textContent = 'Odoslať rezerváciu';
+                    submitBtn.disabled = false;
+                }
+            } catch(e) {
+                alert('❌ Chyba: ' + e.message);
+                submitBtn.textContent = 'Odoslať rezerváciu';
+                submitBtn.disabled = false;
+            }
+        }
+        
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBookingArenas();
+            
+            // Nastav minimálny dátum na dnes
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').min = today;
+            document.getElementById('bookingDate').value = today;
+            
+            // Event listeners
+            document.getElementById('bookingArena').addEventListener('change', loadAvailableSlots);
+            document.getElementById('bookingDate').addEventListener('change', loadAvailableSlots);
+        });
     </script>
 </body>
 </html>

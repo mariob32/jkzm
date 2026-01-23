@@ -162,6 +162,7 @@
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Web</div>
+                    <div class="nav-item" data-section="arenas"><span class="icon">🏟️</span>Arény a časy</div>
                     <div class="nav-item" data-section="bookings"><span class="icon">📝</span>Rezervácie</div>
                     <div class="nav-item" data-section="messages"><span class="icon">✉️</span>Správy</div>
                 </div>
@@ -330,10 +331,83 @@
                 <div class="card"><div class="card-body notifications-list" id="notificationsList"></div></div>
             </section>
 
+            <!-- ARÉNY A ČASOVÉ SLOTY -->
+            <section id="arenas" class="section">
+                <div class="header">
+                    <h1>🏟️ Arény a rozvrhy</h1>
+                    <button class="btn btn-primary" onclick="openArenaModal()">+ Nová aréna</button>
+                </div>
+                
+                <div class="stats-grid" style="margin-bottom:1.5rem">
+                    <div class="stat-card"><div class="icon green">🏟️</div><div class="value" id="totalArenas">0</div><div class="label">Arén</div></div>
+                    <div class="stat-card"><div class="icon blue">📅</div><div class="value" id="todayReservations">0</div><div class="label">Dnešných rezervácií</div></div>
+                    <div class="stat-card"><div class="icon orange">⏳</div><div class="value" id="pendingReservations">0</div><div class="label">Čakajúcich</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3>Tréningové priestory</h3></div>
+                    <div class="card-body" id="arenasContainer">
+                        <p style="color:var(--gray);text-align:center;padding:2rem">Načítavam...</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- BOOKINGS -->
             <section id="bookings" class="section">
-                <div class="header"><h1>📝 Rezervácie z webu</h1></div>
-                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum</th><th>Meno</th><th>Služba</th><th>Preferovaný termín</th><th>Status</th><th>Akcie</th></tr></thead><tbody id="bookingsTable"></tbody></table></div></div>
+                <div class="header">
+                    <h1>📝 Rezervácie</h1>
+                    <div class="header-actions">
+                        <select id="reservationArenaFilter" class="form-control" style="width:auto;display:inline-block;margin-right:0.5rem">
+                            <option value="">Všetky arény</option>
+                        </select>
+                        <select id="reservationStatusFilter" class="form-control" style="width:auto;display:inline-block;margin-right:0.5rem">
+                            <option value="">Všetky stavy</option>
+                            <option value="pending">Čakajúce</option>
+                            <option value="confirmed">Potvrdené</option>
+                            <option value="cancelled">Zrušené</option>
+                            <option value="completed">Dokončené</option>
+                        </select>
+                        <input type="date" id="reservationDateFrom" class="form-control" style="width:auto;display:inline-block;margin-right:0.5rem">
+                        <input type="date" id="reservationDateTo" class="form-control" style="width:auto;display:inline-block">
+                        <button class="btn btn-outline" onclick="loadReservations()" style="margin-left:0.5rem">🔄</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Dátum</th>
+                                    <th>Čas</th>
+                                    <th>Aréna</th>
+                                    <th>Zákazník</th>
+                                    <th>Kontakt</th>
+                                    <th>Jazdcov</th>
+                                    <th>Typ</th>
+                                    <th>Status</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsTable">
+                                <tr><td colspan="9" style="text-align:center;color:var(--gray)">Načítavam...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Kalendárový prehľad -->
+                <div class="card" style="margin-top:1.5rem">
+                    <div class="card-header">
+                        <h3>📅 Týždenný prehľad</h3>
+                        <div style="display:flex;gap:0.5rem;align-items:center">
+                            <button class="btn btn-sm btn-outline" onclick="changeWeek(-1)">◀ Predošlý</button>
+                            <span id="weekLabel" style="font-weight:500;min-width:200px;text-align:center"></span>
+                            <button class="btn btn-sm btn-outline" onclick="changeWeek(1)">Nasledujúci ▶</button>
+                        </div>
+                    </div>
+                    <div class="card-body" id="reservationsCalendar" style="overflow-x:auto"></div>
+                </div>
             </section>
 
             <!-- MESSAGES -->
@@ -464,6 +538,55 @@
 
     <!-- MODALS -->
     
+    <!-- Arena Modal -->
+    <div class="modal" id="arenaModal">
+        <div class="modal-content" style="max-width:800px">
+            <div class="modal-header"><h3 id="arenaModalTitle">Nová aréna</h3><button class="modal-close" onclick="closeModal('arenaModal')">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="arenaId">
+                <div class="form-row">
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="arenaName" required placeholder="napr. Vonkajšia aréna"></div>
+                    <div class="form-group"><label>Kapacita (max jazdcov)</label><input type="number" class="form-control" id="arenaCapacity" value="4" min="1"></div>
+                </div>
+                <div class="form-group"><label>Popis</label><textarea class="form-control" id="arenaDescription" rows="2" placeholder="Popis priestoru, rozmer, povrch..."></textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label><input type="checkbox" id="arenaIndoor"> Krytá hala</label></div>
+                    <div class="form-group"><label><input type="checkbox" id="arenaActive" checked> Aktívna</label></div>
+                </div>
+                
+                <hr style="margin:1.5rem 0">
+                <h4 style="margin-bottom:1rem">📅 Rozvrh otváracích hodín</h4>
+                <div class="alert alert-info" style="font-size:0.85rem">Nastavte pre každý deň otváracie hodiny, dĺžku slotu a max. počet jazdcov.</div>
+                
+                <table class="table" style="font-size:0.9rem">
+                    <thead>
+                        <tr>
+                            <th>Deň</th>
+                            <th>Otvorené od</th>
+                            <th>Do</th>
+                            <th>Dĺžka slotu</th>
+                            <th>Max jazdcov</th>
+                            <th>Aktívne</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTable">
+                        <tr data-day="1"><td>Pondelok</td><td><input type="time" class="form-control" id="sched_1_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_1_close" value="20:00"></td><td><select class="form-control" id="sched_1_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_1_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_1_active" checked></td></tr>
+                        <tr data-day="2"><td>Utorok</td><td><input type="time" class="form-control" id="sched_2_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_2_close" value="20:00"></td><td><select class="form-control" id="sched_2_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_2_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_2_active" checked></td></tr>
+                        <tr data-day="3"><td>Streda</td><td><input type="time" class="form-control" id="sched_3_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_3_close" value="20:00"></td><td><select class="form-control" id="sched_3_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_3_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_3_active" checked></td></tr>
+                        <tr data-day="4"><td>Štvrtok</td><td><input type="time" class="form-control" id="sched_4_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_4_close" value="20:00"></td><td><select class="form-control" id="sched_4_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_4_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_4_active" checked></td></tr>
+                        <tr data-day="5"><td>Piatok</td><td><input type="time" class="form-control" id="sched_5_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_5_close" value="20:00"></td><td><select class="form-control" id="sched_5_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_5_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_5_active" checked></td></tr>
+                        <tr data-day="6"><td>Sobota</td><td><input type="time" class="form-control" id="sched_6_open" value="09:00"></td><td><input type="time" class="form-control" id="sched_6_close" value="18:00"></td><td><select class="form-control" id="sched_6_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_6_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_6_active" checked></td></tr>
+                        <tr data-day="0"><td>Nedeľa</td><td><input type="time" class="form-control" id="sched_0_open" value="09:00"></td><td><input type="time" class="form-control" id="sched_0_close" value="16:00"></td><td><select class="form-control" id="sched_0_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_0_max" value="3" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_0_active" checked></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('arenaModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="saveArena()">💾 Uložiť</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Article Modal -->
     <div class="modal" id="articleModal">
         <div class="modal-content" style="max-width:900px">
@@ -3143,6 +3266,361 @@
     document.getElementById('trainingDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('vetDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('feedDate').value = new Date().toISOString().split('T')[0];
+
+    // =====================================================
+    // ARÉNY A REZERVÁCIE - NOVÝ SYSTÉM
+    // =====================================================
+    let arenas = [];
+    let reservations = [];
+    let currentWeekStart = new Date();
+    currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + 1);
+
+    // ---- ARÉNY ----
+    async function loadArenas() {
+        try {
+            const res = await fetch('/api/arenas?include_schedules=true');
+            arenas = await res.json();
+            renderArenas();
+            updateArenaStats();
+            populateArenaFilters();
+        } catch(e) {
+            console.error('loadArenas error:', e);
+            document.getElementById('arenasContainer').innerHTML = '<p style="color:var(--danger);text-align:center;padding:2rem">Chyba pri načítaní arén</p>';
+        }
+    }
+
+    function renderArenas() {
+        const container = document.getElementById('arenasContainer');
+        if (!container) return;
+        
+        const dayNames = ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'];
+        
+        container.innerHTML = arenas.map(arena => {
+            const schedules = arena.schedules || [];
+            const schedulesByDay = {};
+            schedules.forEach(s => { schedulesByDay[s.day_of_week] = s; });
+            
+            return `
+                <div class="fieldset" style="border-left: 4px solid ${arena.is_indoor ? '#17a2b8' : '#228B22'}; margin-bottom: 1.5rem;">
+                    <legend style="display:flex;align-items:center;gap:0.5rem">
+                        ${arena.is_indoor ? '🏠' : '🌳'} ${arena.name}
+                        <span class="badge ${arena.is_active ? 'badge-success' : 'badge-gray'}">${arena.is_active ? 'Aktívna' : 'Neaktívna'}</span>
+                    </legend>
+                    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem">
+                        <div>
+                            <p style="color:var(--gray);font-size:0.9rem;margin:0">${arena.description || ''}</p>
+                            <p style="margin:0.5rem 0;font-size:0.85rem">
+                                <strong>Kapacita:</strong> ${arena.capacity} jazdcov
+                            </p>
+                        </div>
+                        <div style="display:flex;gap:0.5rem">
+                            <button class="btn btn-sm btn-outline" onclick="openArenaModal(${arena.id})">✏️ Upraviť</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteArena(${arena.id})">🗑️</button>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:0.5rem;font-size:0.8rem">
+                        ${[1,2,3,4,5,6,0].map(day => {
+                            const sched = schedulesByDay[day];
+                            return `
+                                <div>
+                                    <div style="font-weight:600;text-align:center;padding:0.25rem;background:var(--light);border-radius:4px;margin-bottom:0.25rem">${dayNames[day]}</div>
+                                    ${sched && sched.is_active ? `
+                                        <div style="background:#e8f5e9;padding:0.5rem;border-radius:4px;text-align:center">
+                                            <div style="font-weight:500">${sched.open_time?.substring(0,5)} - ${sched.close_time?.substring(0,5)}</div>
+                                            <div style="color:var(--gray);font-size:0.75rem">${sched.slot_duration} min / max ${sched.max_riders}</div>
+                                        </div>
+                                    ` : '<div style="color:var(--gray);text-align:center;padding:0.5rem;background:#f5f5f5;border-radius:4px">Zatvorené</div>'}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('') || '<p style="color:var(--gray);text-align:center;padding:2rem">Žiadne arény. Pridajte prvú kliknutím na "+ Nová aréna".</p>';
+    }
+
+    async function updateArenaStats() {
+        const el1 = document.getElementById('totalArenas');
+        if (el1) el1.textContent = arenas.length;
+        
+        // Dnešné rezervácie
+        const today = new Date().toISOString().split('T')[0];
+        try {
+            const res = await fetch(`/api/reservations?date=${today}`);
+            const todayRes = await res.json();
+            const el2 = document.getElementById('todayReservations');
+            const el3 = document.getElementById('pendingReservations');
+            if (el2) el2.textContent = todayRes.filter(r => r.status !== 'cancelled').length;
+            if (el3) el3.textContent = todayRes.filter(r => r.status === 'pending').length;
+        } catch(e) {}
+    }
+
+    function openArenaModal(id = null) {
+        document.getElementById('arenaId').value = id || '';
+        document.getElementById('arenaModalTitle').textContent = id ? 'Upraviť arénu' : 'Nová aréna';
+        
+        // Reset rozvrhu
+        [0,1,2,3,4,5,6].forEach(day => {
+            const defaults = { open: '08:00', close: '20:00', duration: '60', max: '4', active: true };
+            if (day === 0) { defaults.open = '09:00'; defaults.close = '16:00'; defaults.max = '3'; }
+            if (day === 6) { defaults.open = '09:00'; defaults.close = '18:00'; }
+            
+            document.getElementById(`sched_${day}_open`).value = defaults.open;
+            document.getElementById(`sched_${day}_close`).value = defaults.close;
+            document.getElementById(`sched_${day}_duration`).value = defaults.duration;
+            document.getElementById(`sched_${day}_max`).value = defaults.max;
+            document.getElementById(`sched_${day}_active`).checked = defaults.active;
+        });
+        
+        if (id) {
+            const arena = arenas.find(a => a.id === id);
+            if (arena) {
+                document.getElementById('arenaName').value = arena.name;
+                document.getElementById('arenaDescription').value = arena.description || '';
+                document.getElementById('arenaCapacity').value = arena.capacity;
+                document.getElementById('arenaIndoor').checked = arena.is_indoor;
+                document.getElementById('arenaActive').checked = arena.is_active;
+                
+                // Naplň rozvrh
+                (arena.schedules || []).forEach(s => {
+                    document.getElementById(`sched_${s.day_of_week}_open`).value = s.open_time?.substring(0,5) || '08:00';
+                    document.getElementById(`sched_${s.day_of_week}_close`).value = s.close_time?.substring(0,5) || '20:00';
+                    document.getElementById(`sched_${s.day_of_week}_duration`).value = s.slot_duration || 60;
+                    document.getElementById(`sched_${s.day_of_week}_max`).value = s.max_riders || 4;
+                    document.getElementById(`sched_${s.day_of_week}_active`).checked = s.is_active !== false;
+                });
+            }
+        } else {
+            document.getElementById('arenaName').value = '';
+            document.getElementById('arenaDescription').value = '';
+            document.getElementById('arenaCapacity').value = 4;
+            document.getElementById('arenaIndoor').checked = false;
+            document.getElementById('arenaActive').checked = true;
+        }
+        
+        openModal('arenaModal');
+    }
+
+    async function saveArena() {
+        const id = document.getElementById('arenaId').value;
+        
+        // Zozbieraj rozvrhy
+        const schedules = [];
+        [0,1,2,3,4,5,6].forEach(day => {
+            const isActive = document.getElementById(`sched_${day}_active`).checked;
+            if (isActive) {
+                schedules.push({
+                    day_of_week: day,
+                    open_time: document.getElementById(`sched_${day}_open`).value,
+                    close_time: document.getElementById(`sched_${day}_close`).value,
+                    slot_duration: parseInt(document.getElementById(`sched_${day}_duration`).value),
+                    max_riders: parseInt(document.getElementById(`sched_${day}_max`).value),
+                    is_active: true
+                });
+            }
+        });
+        
+        const data = {
+            name: document.getElementById('arenaName').value,
+            description: document.getElementById('arenaDescription').value,
+            capacity: parseInt(document.getElementById('arenaCapacity').value) || 4,
+            is_indoor: document.getElementById('arenaIndoor').checked,
+            is_active: document.getElementById('arenaActive').checked,
+            schedules
+        };
+        
+        if (id) data.id = parseInt(id);
+        
+        try {
+            const res = await fetch('/api/arenas', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (!res.ok) throw new Error('API error');
+            
+            closeModal('arenaModal');
+            toast('Aréna uložená', 'success');
+            loadArenas();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    async function deleteArena(id) {
+        if (!confirm('Naozaj vymazať túto arénu vrátane všetkých rozvrhov?')) return;
+        
+        try {
+            await fetch(`/api/arenas?id=${id}`, { method: 'DELETE' });
+            toast('Aréna vymazaná', 'success');
+            loadArenas();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    // ---- REZERVÁCIE ----
+    function populateArenaFilters() {
+        const select = document.getElementById('reservationArenaFilter');
+        if (!select) return;
+        
+        select.innerHTML = '<option value="">Všetky arény</option>' +
+            arenas.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+    }
+
+    async function loadReservations() {
+        try {
+            const arenaId = document.getElementById('reservationArenaFilter')?.value || '';
+            const status = document.getElementById('reservationStatusFilter')?.value || '';
+            const dateFrom = document.getElementById('reservationDateFrom')?.value || '';
+            const dateTo = document.getElementById('reservationDateTo')?.value || '';
+            
+            let url = '/api/reservations?';
+            if (arenaId) url += `arena_id=${arenaId}&`;
+            if (status) url += `status=${status}&`;
+            if (dateFrom) url += `date_from=${dateFrom}&`;
+            if (dateTo) url += `date_to=${dateTo}&`;
+            
+            const res = await fetch(url);
+            reservations = await res.json();
+            
+            renderReservationsTable();
+            renderReservationsCalendar();
+        } catch(e) {
+            console.error('loadReservations error:', e);
+        }
+    }
+
+    function renderReservationsTable() {
+        const tbody = document.getElementById('reservationsTable');
+        if (!tbody) return;
+        
+        const statusBadge = {
+            pending: '<span class="badge badge-warning">Čakajúca</span>',
+            confirmed: '<span class="badge badge-success">Potvrdená</span>',
+            cancelled: '<span class="badge badge-danger">Zrušená</span>',
+            completed: '<span class="badge badge-info">Dokončená</span>'
+        };
+        
+        const serviceTypes = {
+            lesson: 'Jazda',
+            free_ride: 'Voľná jazda',
+            longing: 'Lonžovanie',
+            training: 'Tréning'
+        };
+        
+        tbody.innerHTML = reservations.map(r => `
+            <tr>
+                <td>${new Date(r.reservation_date).toLocaleDateString('sk')}</td>
+                <td>${r.start_time?.substring(0,5) || '-'} - ${r.end_time?.substring(0,5) || '-'}</td>
+                <td>${r.arenas?.name || 'Aréna ' + r.arena_id}</td>
+                <td><strong>${r.customer_name}</strong>${r.customer_email ? '<br><small>' + r.customer_email + '</small>' : ''}</td>
+                <td>${r.customer_phone || '-'}</td>
+                <td>${r.riders_count || 1}</td>
+                <td>${serviceTypes[r.service_type] || r.service_type || '-'}</td>
+                <td>${statusBadge[r.status] || r.status}</td>
+                <td>
+                    ${r.status === 'pending' ? `
+                        <button class="btn btn-sm btn-primary" onclick="updateReservationStatus(${r.id}, 'confirmed')" title="Potvrdiť">✓</button>
+                        <button class="btn btn-sm btn-danger" onclick="updateReservationStatus(${r.id}, 'cancelled')" title="Zrušiť">✕</button>
+                    ` : ''}
+                    ${r.status === 'confirmed' ? `
+                        <button class="btn btn-sm btn-warning" onclick="updateReservationStatus(${r.id}, 'completed')" title="Dokončiť">✓</button>
+                    ` : ''}
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--gray)">Žiadne rezervácie</td></tr>';
+    }
+
+    function renderReservationsCalendar() {
+        const container = document.getElementById('reservationsCalendar');
+        if (!container) return;
+        
+        const dayNames = ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'];
+        const days = [];
+        const startDate = new Date(currentWeekStart);
+        
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+            days.push(date);
+        }
+        
+        document.getElementById('weekLabel').textContent = 
+            `${days[0].toLocaleDateString('sk')} - ${days[6].toLocaleDateString('sk')}`;
+        
+        container.innerHTML = `
+            <table class="table" style="font-size:0.85rem">
+                <thead>
+                    <tr>
+                        <th style="width:120px">Aréna</th>
+                        ${days.map(d => `<th style="text-align:center;${d.toDateString() === new Date().toDateString() ? 'background:#e8f5e9' : ''}">${dayNames[d.getDay()]}<br><small>${d.getDate()}.${d.getMonth()+1}.</small></th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${arenas.map(arena => `
+                        <tr>
+                            <td style="border-left:3px solid ${arena.is_indoor ? '#17a2b8' : '#228B22'}">${arena.name}</td>
+                            ${days.map(d => {
+                                const dateStr = d.toISOString().split('T')[0];
+                                const dayRes = reservations.filter(r => 
+                                    r.arena_id === arena.id && 
+                                    r.reservation_date === dateStr &&
+                                    r.status !== 'cancelled'
+                                );
+                                const pending = dayRes.filter(r => r.status === 'pending').length;
+                                const confirmed = dayRes.filter(r => r.status === 'confirmed').length;
+                                return `<td style="text-align:center;${d.toDateString() === new Date().toDateString() ? 'background:#e8f5e9' : ''}">
+                                    ${dayRes.length > 0 ? 
+                                        `<span class="badge badge-${pending > 0 ? 'warning' : 'success'}">${confirmed}${pending > 0 ? '+' + pending : ''}</span>` : 
+                                        '<span style="color:#ccc">-</span>'}
+                                </td>`;
+                            }).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    function changeWeek(delta) {
+        currentWeekStart.setDate(currentWeekStart.getDate() + (delta * 7));
+        loadReservations();
+    }
+
+    async function updateReservationStatus(id, status) {
+        try {
+            await fetch('/api/reservations', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status })
+            });
+            toast('Status aktualizovaný', 'success');
+            loadReservations();
+            updateArenaStats();
+        } catch(e) {
+            toast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    // Event listeners pre filtre
+    document.getElementById('reservationArenaFilter')?.addEventListener('change', loadReservations);
+    document.getElementById('reservationStatusFilter')?.addEventListener('change', loadReservations);
+    document.getElementById('reservationDateFrom')?.addEventListener('change', loadReservations);
+    document.getElementById('reservationDateTo')?.addEventListener('change', loadReservations);
+
+    // Načítaj pri prechode na sekciu
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            if (item.dataset.section === 'arenas') {
+                setTimeout(loadArenas, 100);
+            }
+            if (item.dataset.section === 'bookings') {
+                setTimeout(() => { loadArenas(); loadReservations(); }, 100);
+            }
+        });
+    });
     </script>
 </body>
 </html>
