@@ -481,7 +481,10 @@
                     document.getElementById('metaDescription')?.setAttribute('content', s.site_description);
                     document.getElementById('ogDescription')?.setAttribute('content', s.site_description);
                 }
-                if (s.contact_address) document.getElementById('contactAddress')?.textContent = s.contact_address;
+                if (s.contact_address) {
+                    const addrEl = document.getElementById('contactAddress');
+                    if (addrEl) addrEl.textContent = s.contact_address;
+                }
                 if (s.contact_phone) { 
                     console.log('Setting phone:', s.contact_phone);
                     const phoneEl = document.getElementById('contactPhone');
