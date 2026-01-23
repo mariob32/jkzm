@@ -1088,3 +1088,29 @@ ON CONFLICT DO NOTHING;
 -- Log importu
 INSERT INTO sjf_sync_log (sync_type, records_total, records_added, notes) VALUES
 ('initial', 97, 97, 'Iniciálny import - 50 klubov, 6 staviteľov, 41 rozhodcov');
+
+-- =====================================================
+-- TABUĽKA: NASTAVENIA (SETTINGS)
+-- Konfigurácia webu a systému
+-- =====================================================
+CREATE TABLE IF NOT EXISTS settings (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(100) UNIQUE NOT NULL,
+    value TEXT,
+    category VARCHAR(50) DEFAULT 'general',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Úvodné nastavenia
+INSERT INTO settings (key, value, category) VALUES
+('site_name', 'Jazdecký klub Zelená míľa Jaslovské Bohunice', 'general'),
+('site_description', 'Jazdecký klub so zameraním na systematický tréning jazdcov a športových koní', 'general'),
+('contact_email', 'apilera@apilera.com', 'contact'),
+('contact_phone', '+421905523022', 'contact'),
+('contact_address', 'Sídlo: Nová ulica 297/41, 919 30 Jaslovské Bohunice\nPrevádzka: Areál PD, Hlavná Jaslovce 124/127, 919 30 Jaslovské Bohunice', 'contact'),
+('google_maps_embed', '<iframe src="https://maps.google.com/maps?q=Jazdecký+klub+Zelená+míľa+Jaslovské+Bohunice&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>', 'contact'),
+('social_facebook', 'https://www.facebook.com/JKZelenaMila', 'social'),
+('social_instagram', '', 'social'),
+('social_youtube', '', 'social')
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP;

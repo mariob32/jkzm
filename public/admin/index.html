@@ -438,17 +438,24 @@
                             <div class="form-group"><label>Popis</label><textarea class="form-control" id="setting_site_description" rows="3"></textarea></div>
                         </div>
                         <div id="settingsContact" class="settings-tab-content" style="display:none">
-                            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="setting_contact_email"></div>
-                            <div class="form-group"><label>Telefón</label><input type="text" class="form-control" id="setting_contact_phone"></div>
-                            <div class="form-group"><label>Adresa</label><textarea class="form-control" id="setting_contact_address" rows="2"></textarea></div>
-                            <div class="form-group"><label>Google Maps Embed</label><textarea class="form-control" id="setting_google_maps_embed" rows="3" placeholder="<iframe src=..."></textarea></div>
+                            <div class="alert alert-info">Tieto údaje sa zobrazia v sekcii Kontakt na hlavnej stránke.</div>
+                            <div class="form-row">
+                                <div class="form-group"><label>📧 Email</label><input type="email" class="form-control" id="setting_contact_email" placeholder="apilera@apilera.com"></div>
+                                <div class="form-group"><label>📞 Telefón</label><input type="text" class="form-control" id="setting_contact_phone" placeholder="+421905523022"></div>
+                            </div>
+                            <div class="form-group"><label>📍 Adresa <small>(môže byť viacriadková)</small></label><textarea class="form-control" id="setting_contact_address" rows="3" placeholder="Sídlo: ...&#10;Prevádzka: ..."></textarea></div>
+                            <div class="form-group"><label>🗺️ Google Maps Embed <small>(celý iframe kód)</small></label><textarea class="form-control" id="setting_google_maps_embed" rows="4" placeholder='<iframe src="https://maps.google.com/maps?q=...&output=embed"></iframe>'></textarea></div>
                         </div>
                         <div id="settingsSocial" class="settings-tab-content" style="display:none">
-                            <div class="form-group"><label>Facebook URL</label><input type="url" class="form-control" id="setting_social_facebook"></div>
-                            <div class="form-group"><label>Instagram URL</label><input type="url" class="form-control" id="setting_social_instagram"></div>
-                            <div class="form-group"><label>YouTube URL</label><input type="url" class="form-control" id="setting_social_youtube"></div>
+                            <div class="form-group"><label>📘 Facebook URL</label><input type="url" class="form-control" id="setting_social_facebook" placeholder="https://www.facebook.com/..."></div>
+                            <div class="form-group"><label>📷 Instagram URL</label><input type="url" class="form-control" id="setting_social_instagram" placeholder="https://www.instagram.com/..."></div>
+                            <div class="form-group"><label>🎬 YouTube URL</label><input type="url" class="form-control" id="setting_social_youtube" placeholder="https://www.youtube.com/..."></div>
                         </div>
-                        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:1rem">Uložiť nastavenia</button>
+                        <div style="margin-top:1.5rem;display:flex;gap:1rem;align-items:center">
+                            <button class="btn btn-primary" onclick="saveSettings()">💾 Uložiť nastavenia</button>
+                            <button class="btn btn-outline" onclick="loadSettings()">🔄 Obnoviť</button>
+                            <span id="settingsStatus" style="color:var(--gray);font-size:0.85rem"></span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -3074,32 +3081,60 @@
     });
     
     async function loadSettings() {
+        const status = document.getElementById('settingsStatus');
+        status.textContent = 'Načítavam...';
         try {
             const res = await fetch('/api/settings');
+            if (!res.ok) throw new Error('API error: ' + res.status);
             const settings = await res.json();
             
+            let count = 0;
             Object.entries(settings).forEach(([key, value]) => {
                 const el = document.getElementById('setting_' + key);
-                if (el) el.value = value || '';
+                if (el) {
+                    el.value = value || '';
+                    count++;
+                }
             });
-        } catch(e) { console.error(e); }
+            status.textContent = 'Načítané (' + count + ' nastavení)';
+            setTimeout(() => { status.textContent = ''; }, 3000);
+        } catch(e) { 
+            console.error('loadSettings error:', e);
+            status.textContent = '❌ Chyba: ' + e.message;
+            toast('Chyba pri načítaní nastavení: ' + e.message, 'error');
+        }
     }
     
     async function saveSettings() {
+        const status = document.getElementById('settingsStatus');
+        status.textContent = 'Ukladám...';
+        
         const settings = {};
         document.querySelectorAll('[id^="setting_"]').forEach(el => {
             const key = el.id.replace('setting_', '');
             settings[key] = el.value;
         });
         
+        console.log('Saving settings:', settings);
+        
         try {
-            await fetch('/api/settings', {
+            const res = await fetch('/api/settings', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settings)
             });
+            
+            if (!res.ok) throw new Error('API error: ' + res.status);
+            
+            const result = await res.json();
+            if (result.error) throw new Error(result.error);
+            
+            status.textContent = '✅ Uložené';
             toast('Nastavenia uložené', 'success');
+            setTimeout(() => { status.textContent = ''; }, 3000);
         } catch(e) {
+            console.error('saveSettings error:', e);
+            status.textContent = '❌ Chyba';
             toast('Chyba: ' + e.message, 'error');
         }
     }
