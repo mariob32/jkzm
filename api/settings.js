@@ -14,21 +14,38 @@ module.exports = async (req, res) => {
             if (category) query = query.eq('category', category);
             
             const { data, error } = await query;
-            if (error) throw error;
+            
+            if (error) {
+                console.error('Settings GET error:', error);
+                // Ak tabuľka neexistuje, vráť prázdny objekt
+                if (error.code === '42P01' || error.message?.includes('does not exist')) {
+                    return res.status(200).json({});
+                }
+                throw error;
+            }
             
             // Konvertuj na objekt key: value
             const settings = {};
-            if (data) {
-                data.forEach(s => { settings[s.key] = s.value; });
+            if (data && Array.isArray(data)) {
+                data.forEach(s => { 
+                    if (s.key) settings[s.key] = s.value || ''; 
+                });
             }
+            
+            console.log('Settings loaded:', Object.keys(settings).length, 'items');
             return res.status(200).json(settings);
         }
 
         if (req.method === 'PUT' || req.method === 'POST') {
-            const updates = req.body; // { key: value, key2: value2 }
+            const updates = req.body;
+            
+            if (!updates || typeof updates !== 'object') {
+                return res.status(400).json({ error: 'Invalid request body' });
+            }
+            
+            console.log('Saving settings:', Object.keys(updates));
             
             for (const [key, value] of Object.entries(updates)) {
-                // Determine category from key
                 let category = 'general';
                 if (key.startsWith('contact_') || key === 'google_maps_embed') category = 'contact';
                 if (key.startsWith('social_')) category = 'social';
@@ -44,7 +61,9 @@ module.exports = async (req, res) => {
                         onConflict: 'key' 
                     });
                     
-                if (error) console.error('Settings upsert error:', key, error);
+                if (error) {
+                    console.error('Settings upsert error for', key, ':', error);
+                }
             }
             
             return res.status(200).json({ success: true });

@@ -458,8 +458,12 @@
         
         async function loadSettings() {
             try {
+                console.log('Loading settings...');
                 const res = await fetch('/api/settings');
+                console.log('Settings response status:', res.status);
                 const s = await res.json();
+                console.log('Settings data:', s);
+                
                 if (s.site_name) {
                     document.getElementById('siteName').textContent = s.site_name;
                     document.getElementById('heroTitle').textContent = 'Vitajte v ' + s.site_name;
@@ -477,16 +481,30 @@
                     document.getElementById('metaDescription')?.setAttribute('content', s.site_description);
                     document.getElementById('ogDescription')?.setAttribute('content', s.site_description);
                 }
-                if (s.contact_address) document.getElementById('contactAddress').textContent = s.contact_address;
-                if (s.contact_phone) { document.getElementById('contactPhone').innerHTML = '<a href="tel:'+s.contact_phone+'">'+s.contact_phone+'</a>'; document.getElementById('footerPhone').textContent = s.contact_phone; }
-                if (s.contact_email) { document.getElementById('contactEmail').innerHTML = '<a href="mailto:'+s.contact_email+'">'+s.contact_email+'</a>'; document.getElementById('footerEmail').textContent = s.contact_email; }
+                if (s.contact_address) document.getElementById('contactAddress')?.textContent = s.contact_address;
+                if (s.contact_phone) { 
+                    console.log('Setting phone:', s.contact_phone);
+                    const phoneEl = document.getElementById('contactPhone');
+                    if (phoneEl) phoneEl.innerHTML = '<a href="tel:'+s.contact_phone+'">'+s.contact_phone+'</a>'; 
+                    const footerPhoneEl = document.getElementById('footerPhone');
+                    if (footerPhoneEl) footerPhoneEl.textContent = s.contact_phone; 
+                }
+                if (s.contact_email) { 
+                    console.log('Setting email:', s.contact_email);
+                    const emailEl = document.getElementById('contactEmail');
+                    if (emailEl) emailEl.innerHTML = '<a href="mailto:'+s.contact_email+'">'+s.contact_email+'</a>'; 
+                    const footerEmailEl = document.getElementById('footerEmail');
+                    if (footerEmailEl) footerEmailEl.textContent = s.contact_email; 
+                }
                 let social = '';
                 if (s.social_facebook) social += '<a href="'+s.social_facebook+'" target="_blank" rel="noopener">📘</a>';
                 if (s.social_instagram) social += '<a href="'+s.social_instagram+'" target="_blank" rel="noopener">📷</a>';
                 if (s.social_youtube) social += '<a href="'+s.social_youtube+'" target="_blank" rel="noopener">▶️</a>';
                 document.getElementById('socialLinks').innerHTML = social;
                 if (s.google_maps_embed) document.getElementById('mapContainer').innerHTML = s.google_maps_embed;
-            } catch(e) { /* silent */ }
+            } catch(e) { 
+                console.error('loadSettings error:', e);
+            }
         }
         
         async function loadServices() {
