@@ -335,6 +335,8 @@
                     <input type="hidden" id="selectedDate">
                     <input type="hidden" id="selectedTime">
                     
+                    <div id="bookingMessageArea"></div>
+                    
                     <div style="margin-bottom:1rem">
                         <label style="display:block;margin-bottom:0.5rem;font-weight:500">Meno a priezvisko *</label>
                         <input type="text" id="bookingName" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
@@ -1141,11 +1143,12 @@
             const notes = document.getElementById('bookingNotes').value;
             
             if (!selectedSlotData || !arenaId || !date || !name || !phone) {
-                alert('Vyplňte všetky povinné údaje a vyberte čas');
+                showBookingMessage('Vyplňte všetky povinné údaje a vyberte čas', 'error');
                 return;
             }
             
             const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Odosielam...';
             submitBtn.disabled = true;
             
@@ -1171,20 +1174,65 @@
                 const result = await res.json();
                 
                 if (res.ok) {
-                    alert('✅ Rezervácia odoslaná!\n\nBudeme vás kontaktovať pre potvrdenie.');
-                    closeBookingForm();
-                    document.getElementById('bookingForm').reset();
+                    // Zobraz úspešnú správu
+                    showBookingSuccess(name, date, selectedSlotData.startTime);
                     loadWeekCalendar();
                 } else {
-                    alert('❌ ' + (result.error || 'Chyba pri rezervácii'));
-                    submitBtn.textContent = 'Odoslať rezerváciu';
+                    showBookingMessage(result.error || 'Chyba pri rezervácii', 'error');
+                    submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
                 }
-            } catch(e) {
-                alert('❌ Chyba: ' + e.message);
-                submitBtn.textContent = 'Odoslať rezerváciu';
+            } catch(err) {
+                showBookingMessage('Chyba pripojenia: ' + err.message, 'error');
+                submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             }
+        }
+        
+        function showBookingSuccess(name, date, time) {
+            const dateFormatted = new Date(date).toLocaleDateString('sk-SK');
+            const container = document.getElementById('bookingFormContainer');
+            
+            container.innerHTML = `
+                <div style="text-align:center;padding:2rem">
+                    <div style="font-size:4rem;margin-bottom:1rem">✅</div>
+                    <h3 style="color:#2d5a27;margin-bottom:1rem">Rezervácia úspešne odoslaná!</h3>
+                    <p style="margin-bottom:0.5rem;font-size:1.1rem"><strong>${name}</strong></p>
+                    <p style="margin-bottom:1.5rem;color:#666;font-size:1rem">${dateFormatted} o ${time.substring(0,5)}</p>
+                    <div style="background:#e8f5e9;padding:1.25rem;border-radius:8px;margin-bottom:2rem;border:1px solid #c8e6c9">
+                        <p style="margin:0;color:#2d5a27;font-size:0.95rem">📞 Budeme vás kontaktovať pre potvrdenie rezervácie.</p>
+                    </div>
+                    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+                        <button onclick="resetAndNewBooking()" style="padding:0.75rem 1.5rem;background:#2d5a27;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500">
+                            ➕ Nová rezervácia
+                        </button>
+                        <button onclick="closeBookingForm()" style="padding:0.75rem 1.5rem;background:white;color:#2d5a27;border:2px solid #2d5a27;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500">
+                            ✓ Hotovo
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showBookingMessage(message, type) {
+            const container = document.getElementById('bookingMessageArea');
+            if (container) {
+                container.innerHTML = `<div style="padding:1rem;margin-bottom:1rem;border-radius:8px;background:${type === 'error' ? '#f8d7da' : '#d4edda'};color:${type === 'error' ? '#721c24' : '#155724'};border:1px solid ${type === 'error' ? '#f5c6cb' : '#c3e6cb'}">
+                    ${type === 'error' ? '❌' : '✅'} ${message}
+                </div>`;
+                setTimeout(() => container.innerHTML = '', 5000);
+            } else {
+                alert((type === 'error' ? '❌ ' : '✅ ') + message);
+            }
+        }
+        
+        function resetAndNewBooking() {
+            // Obnov kalendár a formulár
+            selectedSlotData = null;
+            document.getElementById('bookingFormContainer').style.display = 'none';
+            
+            // Scroll na kalendár
+            document.getElementById('weekCalendar').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
         
         // Init
