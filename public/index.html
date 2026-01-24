@@ -1270,5 +1270,63 @@
             });
         });
     </script>
+    
+    <!-- Plávajúci talizman -->
+    <a href="#" id="talisman" title="JK Zelená míľa - Späť hore" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        opacity: 0.9;
+    ">
+        <img src="/assets/talisman.png" alt="JK Zelená míľa" style="
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        ">
+    </a>
+    
+    <style>
+        #talisman:hover {
+            transform: scale(1.1);
+            opacity: 1;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+        }
+        #talisman:hover img {
+            transform: rotate(5deg);
+        }
+        @media (max-width: 768px) {
+            #talisman {
+                width: 55px !important;
+                height: 55px !important;
+                bottom: 15px !important;
+                right: 15px !important;
+            }
+        }
+        @media (max-width: 480px) {
+            #talisman {
+                width: 45px !important;
+                height: 45px !important;
+                bottom: 10px !important;
+                right: 10px !important;
+            }
+        }
+    </style>
+    
+    <script>
+        // Talizman - scroll na vrch
+        document.getElementById('talisman').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
 </body>
 </html>
