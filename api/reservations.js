@@ -9,11 +9,11 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            const { id, arena_id, date, date_from, date_to, status, availability } = req.query;
+            const { id, arena_id, date, date_from, date_to, status, availability, skill_level } = req.query;
             
             // Špeciálny endpoint pre dostupnosť
             if (availability === 'true' && arena_id && date) {
-                return await getAvailability(res, arena_id, date);
+                return await getAvailability(res, arena_id, date, skill_level);
             }
             
             if (id) {
@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
             }
             
             // Kontrola dostupnosti
-            const availCheck = await checkAvailability(arena_id, reservation_date, start_time, end_time || addHour(start_time), riders_count || 1);
+            const availCheck = await checkAvailability(arena_id, reservation_date, start_time, end_time || addHour(start_time), riders_count || 1, skill_level);
             if (!availCheck.available) {
                 return res.status(400).json({ error: availCheck.reason || 'Termín nie je dostupný' });
             }
@@ -137,7 +137,7 @@ function addHour(time) {
 }
 
 // Získaj dostupné sloty pre deň
-async function getAvailability(res, arena_id, date) {
+async function getAvailability(res, arena_id, date, skill_level = null) {
     const dayOfWeek = new Date(date).getDay();
     
     // Získaj rozvrh pre daný deň
@@ -169,6 +169,14 @@ async function getAvailability(res, arena_id, date) {
     const closeTime = exception?.close_time || schedule.close_time;
     const slotDuration = schedule.slot_duration || 60;
     const maxRiders = schedule.max_riders || 4;
+    const allowedLevels = schedule.allowed_levels || 'all';
+    
+    // Kontrola či je úroveň povolená
+    let levelAllowed = true;
+    if (skill_level && allowedLevels !== 'all') {
+        const levels = allowedLevels.split(',');
+        levelAllowed = levels.includes(skill_level);
+    }
     
     // Generuj sloty
     const slots = [];
@@ -196,7 +204,9 @@ async function getAvailability(res, arena_id, date) {
             end_time: endStr,
             available_spots: availableSpots,
             max_spots: maxRiders,
-            is_available: availableSpots > 0
+            is_available: availableSpots > 0 && levelAllowed,
+            allowed_levels: allowedLevels,
+            level_allowed: levelAllowed
         });
         
         currentTime += slotDuration;
@@ -204,12 +214,17 @@ async function getAvailability(res, arena_id, date) {
     
     return res.status(200).json({ 
         slots, 
-        schedule: { open: openTime, close: closeTime, slot_duration: slotDuration }
+        schedule: { 
+            open: openTime, 
+            close: closeTime, 
+            slot_duration: slotDuration,
+            allowed_levels: allowedLevels
+        }
     });
 }
 
 // Kontrola dostupnosti pre konkrétny čas
-async function checkAvailability(arena_id, date, start_time, end_time, riders_count) {
+async function checkAvailability(arena_id, date, start_time, end_time, riders_count, skill_level = null) {
     const dayOfWeek = new Date(date).getDay();
     
     // Kontrola rozvrhu
@@ -223,6 +238,17 @@ async function checkAvailability(arena_id, date, start_time, end_time, riders_co
     
     if (!schedule) {
         return { available: false, reason: 'V tento deň je aréna zatvorená' };
+    }
+    
+    // Kontrola úrovne jazdca
+    const allowedLevels = schedule.allowed_levels || 'all';
+    if (skill_level && allowedLevels !== 'all') {
+        const levels = allowedLevels.split(',');
+        if (!levels.includes(skill_level)) {
+            const levelNames = {beginner:'Začiatočník',intermediate:'Mierne pokročilý',advanced:'Pokročilý'};
+            const allowedNames = levels.map(l => levelNames[l] || l).join(', ');
+            return { available: false, reason: `Tento termín je len pre: ${allowedNames}` };
+        }
     }
     
     // Kontrola výnimiek

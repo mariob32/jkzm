@@ -566,17 +566,18 @@
                             <th>Do</th>
                             <th>Dĺžka slotu</th>
                             <th>Max jazdcov</th>
+                            <th>Povolené úrovne</th>
                             <th>Aktívne</th>
                         </tr>
                     </thead>
                     <tbody id="scheduleTable">
-                        <tr data-day="1"><td>Pondelok</td><td><input type="time" class="form-control" id="sched_1_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_1_close" value="20:00"></td><td><select class="form-control" id="sched_1_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_1_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_1_active" checked></td></tr>
-                        <tr data-day="2"><td>Utorok</td><td><input type="time" class="form-control" id="sched_2_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_2_close" value="20:00"></td><td><select class="form-control" id="sched_2_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_2_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_2_active" checked></td></tr>
-                        <tr data-day="3"><td>Streda</td><td><input type="time" class="form-control" id="sched_3_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_3_close" value="20:00"></td><td><select class="form-control" id="sched_3_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_3_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_3_active" checked></td></tr>
-                        <tr data-day="4"><td>Štvrtok</td><td><input type="time" class="form-control" id="sched_4_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_4_close" value="20:00"></td><td><select class="form-control" id="sched_4_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_4_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_4_active" checked></td></tr>
-                        <tr data-day="5"><td>Piatok</td><td><input type="time" class="form-control" id="sched_5_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_5_close" value="20:00"></td><td><select class="form-control" id="sched_5_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_5_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_5_active" checked></td></tr>
-                        <tr data-day="6"><td>Sobota</td><td><input type="time" class="form-control" id="sched_6_open" value="09:00"></td><td><input type="time" class="form-control" id="sched_6_close" value="18:00"></td><td><select class="form-control" id="sched_6_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_6_max" value="4" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_6_active" checked></td></tr>
-                        <tr data-day="0"><td>Nedeľa</td><td><input type="time" class="form-control" id="sched_0_open" value="09:00"></td><td><input type="time" class="form-control" id="sched_0_close" value="16:00"></td><td><select class="form-control" id="sched_0_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_0_max" value="3" min="1"></td><td style="text-align:center"><input type="checkbox" id="sched_0_active" checked></td></tr>
+                        <tr data-day="1"><td>Pondelok</td><td><input type="time" class="form-control" id="sched_1_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_1_close" value="20:00"></td><td><select class="form-control" id="sched_1_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_1_max" value="4" min="1" style="width:60px"></td><td><select class="form-control" id="sched_1_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_1_active" checked></td></tr>
+                        <tr data-day="2"><td>Utorok</td><td><input type="time" class="form-control" id="sched_2_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_2_close" value="20:00"></td><td><select class="form-control" id="sched_2_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_2_max" value="4" min="1" style="width:60px"></td><td><select class="form-control" id="sched_2_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_2_active" checked></td></tr>
+                        <tr data-day="3"><td>Streda</td><td><input type="time" class="form-control" id="sched_3_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_3_close" value="20:00"></td><td><select class="form-control" id="sched_3_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_3_max" value="4" min="1" style="width:60px"></td><td><select class="form-control" id="sched_3_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_3_active" checked></td></tr>
+                        <tr data-day="4"><td>Štvrtok</td><td><input type="time" class="form-control" id="sched_4_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_4_close" value="20:00"></td><td><select class="form-control" id="sched_4_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_4_max" value="4" min="1" style="width:60px"></td><td><select class="form-control" id="sched_4_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_4_active" checked></td></tr>
+                        <tr data-day="5"><td>Piatok</td><td><input type="time" class="form-control" id="sched_5_open" value="08:00"></td><td><input type="time" class="form-control" id="sched_5_close" value="20:00"></td><td><select class="form-control" id="sched_5_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_5_max" value="4" min="1" style="width:60px"></td><td><select class="form-control" id="sched_5_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_5_active" checked></td></tr>
+                        <tr data-day="6"><td>Sobota</td><td><input type="time" class="form-control" id="sched_6_open" value="09:00"></td><td><input type="time" class="form-control" id="sched_6_close" value="18:00"></td><td><select class="form-control" id="sched_6_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_6_max" value="4" min="1" style="width:60px"></td><td><select class="form-control" id="sched_6_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_6_active" checked></td></tr>
+                        <tr data-day="0"><td>Nedeľa</td><td><input type="time" class="form-control" id="sched_0_open" value="09:00"></td><td><input type="time" class="form-control" id="sched_0_close" value="16:00"></td><td><select class="form-control" id="sched_0_duration"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option></select></td><td><input type="number" class="form-control" id="sched_0_max" value="3" min="1" style="width:60px"></td><td><select class="form-control" id="sched_0_levels" multiple style="height:60px;font-size:0.8rem"><option value="beginner" selected>Začiatočník</option><option value="intermediate" selected>Mierne pokročilý</option><option value="advanced" selected>Pokročilý</option></select></td><td style="text-align:center"><input type="checkbox" id="sched_0_active" checked></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -3370,6 +3371,10 @@
             document.getElementById(`sched_${day}_duration`).value = defaults.duration;
             document.getElementById(`sched_${day}_max`).value = defaults.max;
             document.getElementById(`sched_${day}_active`).checked = defaults.active;
+            
+            // Reset úrovní na všetky vybrané
+            const levelsSelect = document.getElementById(`sched_${day}_levels`);
+            Array.from(levelsSelect.options).forEach(opt => opt.selected = true);
         });
         
         if (id) {
@@ -3388,6 +3393,18 @@
                     document.getElementById(`sched_${s.day_of_week}_duration`).value = s.slot_duration || 60;
                     document.getElementById(`sched_${s.day_of_week}_max`).value = s.max_riders || 4;
                     document.getElementById(`sched_${s.day_of_week}_active`).checked = s.is_active !== false;
+                    
+                    // Nastav povolené úrovne
+                    const levelsSelect = document.getElementById(`sched_${s.day_of_week}_levels`);
+                    const allowedLevels = s.allowed_levels || 'all';
+                    if (allowedLevels === 'all') {
+                        Array.from(levelsSelect.options).forEach(opt => opt.selected = true);
+                    } else {
+                        const levels = allowedLevels.split(',');
+                        Array.from(levelsSelect.options).forEach(opt => {
+                            opt.selected = levels.includes(opt.value);
+                        });
+                    }
                 });
             }
         } else {
@@ -3409,12 +3426,18 @@
         [0,1,2,3,4,5,6].forEach(day => {
             const isActive = document.getElementById(`sched_${day}_active`).checked;
             if (isActive) {
+                // Získaj vybrané úrovne
+                const levelsSelect = document.getElementById(`sched_${day}_levels`);
+                const selectedLevels = Array.from(levelsSelect.selectedOptions).map(o => o.value);
+                const allowedLevels = selectedLevels.length === 3 ? 'all' : selectedLevels.join(',');
+                
                 schedules.push({
                     day_of_week: day,
                     open_time: document.getElementById(`sched_${day}_open`).value,
                     close_time: document.getElementById(`sched_${day}_close`).value,
                     slot_duration: parseInt(document.getElementById(`sched_${day}_duration`).value),
                     max_riders: parseInt(document.getElementById(`sched_${day}_max`).value),
+                    allowed_levels: allowedLevels,
                     is_active: true
                 });
             }

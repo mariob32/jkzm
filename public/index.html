@@ -871,6 +871,7 @@
         async function loadAvailableSlots() {
             const arenaId = document.getElementById('bookingArena').value;
             const date = document.getElementById('bookingDate').value;
+            const level = document.getElementById('bookingLevel').value;
             const container = document.getElementById('availableSlots');
             
             if (!arenaId || !date) {
@@ -881,7 +882,7 @@
             container.innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Načítavam...</p>';
             
             try {
-                const res = await fetch(`/api/reservations?arena_id=${arenaId}&date=${date}&availability=true`);
+                const res = await fetch(`/api/reservations?arena_id=${arenaId}&date=${date}&availability=true&skill_level=${level}`);
                 const data = await res.json();
                 
                 if (!data.slots || data.slots.length === 0) {
@@ -889,7 +890,16 @@
                     return;
                 }
                 
+                // Info o povolených úrovniach
+                const levelNames = {beginner:'Začiatočník',intermediate:'Mierne pokročilý',advanced:'Pokročilý'};
+                let levelInfo = '';
+                if (data.schedule?.allowed_levels && data.schedule.allowed_levels !== 'all') {
+                    const allowedNames = data.schedule.allowed_levels.split(',').map(l => levelNames[l] || l).join(', ');
+                    levelInfo = `<p style="color:#856404;background:#fff3cd;padding:0.5rem;border-radius:4px;margin-bottom:0.5rem;font-size:0.85rem">⚠️ Tento deň je len pre: <strong>${allowedNames}</strong></p>`;
+                }
+                
                 container.innerHTML = `
+                    ${levelInfo}
                     <label style="display:block;margin-bottom:0.5rem;font-weight:500">Dostupné časy:</label>
                     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.5rem">
                         ${data.slots.map(slot => `
@@ -899,9 +909,11 @@
                                        background:${slot.is_available ? 'white' : '#f8d7da'};
                                        border-radius:8px;cursor:${slot.is_available ? 'pointer' : 'not-allowed'};
                                        opacity:${slot.is_available ? '1' : '0.6'}"
-                                ${!slot.is_available ? 'disabled' : ''}>
+                                ${!slot.is_available ? 'disabled' : ''}
+                                title="${!slot.level_allowed ? 'Nie je povolené pre vašu úroveň' : ''}">
                                 <div style="font-weight:600">${slot.start_time.substring(0,5)}</div>
                                 <div style="font-size:0.75rem;color:#6c757d">${slot.available_spots}/${slot.max_spots} voľné</div>
+                                ${!slot.level_allowed ? '<div style="font-size:0.65rem;color:#dc3545">🚫</div>' : ''}
                             </button>
                         `).join('')}
                     </div>
@@ -1006,6 +1018,7 @@
             // Event listeners
             document.getElementById('bookingArena').addEventListener('change', loadAvailableSlots);
             document.getElementById('bookingDate').addEventListener('change', loadAvailableSlots);
+            document.getElementById('bookingLevel').addEventListener('change', loadAvailableSlots);
         });
     </script>
 </body>

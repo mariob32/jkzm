@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS arena_schedules (
     close_time TIME NOT NULL,
     slot_duration INTEGER DEFAULT 60,
     max_riders INTEGER DEFAULT 4,
+    allowed_levels TEXT DEFAULT 'all',  -- 'all' alebo comma-separated: 'beginner,intermediate,advanced'
     is_active BOOLEAN DEFAULT TRUE,
     UNIQUE(arena_id, day_of_week)
 );
