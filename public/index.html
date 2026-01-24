@@ -283,84 +283,106 @@
         <div class="container">
             <div class="section-title"><h2>📅 Rezervácia jazdy</h2><p>Vyberte si termín a rezervujte online</p></div>
             
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1000px;margin:0 auto">
-                <!-- Výber termínu -->
-                <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
-                    <h3 style="margin-bottom:1rem;color:#2d5a27">1. Vyberte arénu a dátum</h3>
-                    
-                    <div style="margin-bottom:1rem">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Aréna</label>
-                        <select id="bookingArena" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                            <option value="">Načítavam arény...</option>
-                        </select>
-                    </div>
-                    
-                    <div style="margin-bottom:1rem">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Dátum</label>
-                        <input type="date" id="bookingDate" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                    </div>
-                    
-                    <div id="availableSlots" style="margin-top:1rem">
-                        <p style="color:#6c757d;text-align:center;padding:1rem">Vyberte arénu a dátum pre zobrazenie dostupných časov</p>
+            <!-- Týždenný kalendár -->
+            <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:2rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem">
+                    <h3 style="margin:0;color:#2d5a27">📆 Prehľad týždňa</h3>
+                    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+                        <div style="display:flex;align-items:center;gap:0.5rem">
+                            <label style="font-weight:500;font-size:0.9rem">Moja úroveň:</label>
+                            <select id="calendarLevelFilter" style="padding:0.5rem;border:2px solid #e9ecef;border-radius:6px;font-size:0.9rem">
+                                <option value="all">Všetky úrovne</option>
+                                <option value="beginner">Začiatočník</option>
+                                <option value="intermediate">Mierne pokročilý</option>
+                                <option value="advanced">Pokročilý</option>
+                            </select>
+                        </div>
+                        <div style="display:flex;gap:0.5rem">
+                            <button onclick="changeWeek(-1)" style="padding:0.5rem 1rem;border:1px solid #ddd;background:white;border-radius:6px;cursor:pointer">← Predošlý</button>
+                            <button onclick="changeWeek(0)" style="padding:0.5rem 1rem;border:1px solid #2d5a27;background:#e8f5e9;border-radius:6px;cursor:pointer">Dnes</button>
+                            <button onclick="changeWeek(1)" style="padding:0.5rem 1rem;border:1px solid #ddd;background:white;border-radius:6px;cursor:pointer">Ďalší →</button>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Rezervačný formulár -->
-                <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1)">
-                    <h3 style="margin-bottom:1rem;color:#2d5a27">2. Vaše údaje</h3>
-                    
-                    <form id="bookingForm" onsubmit="submitBooking(event)">
-                        <input type="hidden" id="selectedSlot">
-                        
-                        <div style="margin-bottom:1rem">
-                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Meno a priezvisko *</label>
-                            <input type="text" id="bookingName" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                        </div>
-                        
-                        <div style="margin-bottom:1rem">
-                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Telefón *</label>
-                            <input type="tel" id="bookingPhone" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="+421...">
-                        </div>
-                        
-                        <div style="margin-bottom:1rem">
-                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Email</label>
-                            <input type="email" id="bookingEmail" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                        </div>
-                        
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-                            <div>
-                                <label style="display:block;margin-bottom:0.5rem;font-weight:500">Počet jazdcov</label>
-                                <select id="bookingRiders" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="display:block;margin-bottom:0.5rem;font-weight:500">Úroveň</label>
-                                <select id="bookingLevel" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                                    <option value="beginner">Začiatočník</option>
-                                    <option value="intermediate">Mierne pokročilý</option>
-                                    <option value="advanced">Pokročilý</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom:1.5rem">
-                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Poznámka</label>
-                            <textarea id="bookingNotes" rows="2" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;resize:vertical" placeholder="Špeciálne požiadavky..."></textarea>
-                        </div>
-                        
-                        <button type="submit" id="bookingSubmit" disabled style="width:100%;padding:1rem;background:#2d5a27;color:white;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background 0.3s">
-                            Odoslať rezerváciu
-                        </button>
-                        
-                        <p style="margin-top:1rem;font-size:0.85rem;color:#6c757d;text-align:center">
-                            Po odoslaní vás budeme kontaktovať pre potvrdenie rezervácie.
-                        </p>
-                    </form>
+                <!-- Legenda -->
+                <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;font-size:0.8rem">
+                    <span style="display:flex;align-items:center;gap:0.3rem"><span style="width:12px;height:12px;background:#4caf50;border-radius:3px"></span> Všetky úrovne</span>
+                    <span style="display:flex;align-items:center;gap:0.3rem"><span style="width:12px;height:12px;background:#ff9800;border-radius:3px"></span> Len začiatočníci</span>
+                    <span style="display:flex;align-items:center;gap:0.3rem"><span style="width:12px;height:12px;background:#2196f3;border-radius:3px"></span> Len pokročilí</span>
+                    <span style="display:flex;align-items:center;gap:0.3rem"><span style="width:12px;height:12px;background:#9c27b0;border-radius:3px"></span> Obmedzené</span>
+                    <span style="display:flex;align-items:center;gap:0.3rem"><span style="width:12px;height:12px;background:#e0e0e0;border-radius:3px"></span> Zatvorené</span>
                 </div>
+                
+                <div id="weekCalendar" style="overflow-x:auto">
+                    <p style="text-align:center;padding:2rem;color:#6c757d">Načítavam kalendár...</p>
+                </div>
+            </div>
+            
+            <!-- Rezervačný formulár (skrytý, zobrazí sa po výbere) -->
+            <div id="bookingFormContainer" style="display:none;background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);max-width:500px;margin:0 auto">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                    <h3 style="margin:0;color:#2d5a27">✏️ Rezervácia</h3>
+                    <button onclick="closeBookingForm()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#6c757d">×</button>
+                </div>
+                
+                <div id="selectedSlotInfo" style="background:#e8f5e9;padding:1rem;border-radius:8px;margin-bottom:1rem">
+                    <!-- Info o vybranom slote -->
+                </div>
+                
+                <form id="bookingForm" onsubmit="submitBooking(event)">
+                    <input type="hidden" id="selectedArenaId">
+                    <input type="hidden" id="selectedDate">
+                    <input type="hidden" id="selectedTime">
+                    
+                    <div style="margin-bottom:1rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Meno a priezvisko *</label>
+                        <input type="text" id="bookingName" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                    </div>
+                    
+                    <div style="margin-bottom:1rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Telefón *</label>
+                        <input type="tel" id="bookingPhone" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="+421...">
+                    </div>
+                    
+                    <div style="margin-bottom:1rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Email</label>
+                        <input type="email" id="bookingEmail" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                        <div>
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Počet jazdcov</label>
+                            <select id="bookingRiders" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Úroveň</label>
+                            <select id="bookingLevel" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                <option value="beginner">Začiatočník</option>
+                                <option value="intermediate">Mierne pokročilý</option>
+                                <option value="advanced">Pokročilý</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:1.5rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Poznámka</label>
+                        <textarea id="bookingNotes" rows="2" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;resize:vertical" placeholder="Špeciálne požiadavky..."></textarea>
+                    </div>
+                    
+                    <button type="submit" style="width:100%;padding:1rem;background:#2d5a27;color:white;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer">
+                        Odoslať rezerváciu
+                    </button>
+                    
+                    <p style="margin-top:1rem;font-size:0.85rem;color:#6c757d;text-align:center">
+                        Po odoslaní vás budeme kontaktovať pre potvrdenie.
+                    </p>
+                </form>
             </div>
         </div>
     </section>
@@ -848,94 +870,250 @@
         }
         
         // =====================================================
-        // REZERVAČNÝ SYSTÉM
+        // REZERVAČNÝ SYSTÉM - KALENDÁR
         // =====================================================
         let bookingArenas = [];
-        let selectedSlotData = null;
+        let currentWeekStart = getMonday(new Date());
+        let calendarData = {};
         
-        // Načítaj arény
-        async function loadBookingArenas() {
+        function getMonday(d) {
+            d = new Date(d);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+        
+        function formatDate(d) {
+            return d.toISOString().split('T')[0];
+        }
+        
+        function formatDateSk(d) {
+            return `${d.getDate()}.${d.getMonth()+1}.`;
+        }
+        
+        const dayNames = ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'];
+        const dayNamesFull = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
+        const levelNames = {beginner:'Zač',intermediate:'Str',advanced:'Pok'};
+        const levelNamesFull = {beginner:'Začiatočník',intermediate:'Mierne pokročilý',advanced:'Pokročilý'};
+        
+        function changeWeek(offset) {
+            if (offset === 0) {
+                currentWeekStart = getMonday(new Date());
+            } else {
+                currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
+            }
+            loadWeekCalendar();
+        }
+        
+        async function loadWeekCalendar() {
+            const container = document.getElementById('weekCalendar');
+            const levelFilter = document.getElementById('calendarLevelFilter').value;
+            
+            container.innerHTML = '<p style="text-align:center;padding:2rem;color:#6c757d">Načítavam kalendár...</p>';
+            
             try {
-                const res = await fetch('/api/arenas?active=true');
-                bookingArenas = await res.json();
+                // Načítaj arény s rozvrhmi
+                const arenasRes = await fetch('/api/arenas?active=true&include_schedules=true');
+                bookingArenas = await arenasRes.json();
                 
-                const select = document.getElementById('bookingArena');
-                select.innerHTML = '<option value="">-- Vyberte arénu --</option>' +
-                    bookingArenas.map(a => `<option value="${a.id}">${a.is_indoor ? '🏠' : '🌳'} ${a.name} (max ${a.capacity})</option>`).join('');
+                if (!bookingArenas.length) {
+                    container.innerHTML = '<p style="text-align:center;padding:2rem;color:#6c757d">Žiadne aktívne arény</p>';
+                    return;
+                }
+                
+                // Generuj dni týždňa
+                const days = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(currentWeekStart);
+                    d.setDate(d.getDate() + i);
+                    days.push(d);
+                }
+                
+                const today = formatDate(new Date());
+                
+                // Vytvor tabuľku
+                let html = `<table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+                    <thead>
+                        <tr style="background:#f8f9fa">
+                            <th style="padding:0.75rem;text-align:left;border-bottom:2px solid #dee2e6;min-width:120px">Aréna</th>
+                            ${days.map(d => {
+                                const isToday = formatDate(d) === today;
+                                const isPast = d < new Date(today);
+                                return `<th style="padding:0.75rem;text-align:center;border-bottom:2px solid #dee2e6;${isToday ? 'background:#e8f5e9;' : ''}${isPast ? 'color:#aaa;' : ''}">
+                                    <div style="font-weight:600">${dayNames[d.getDay()]}</div>
+                                    <div style="font-size:0.75rem">${formatDateSk(d)}</div>
+                                </th>`;
+                            }).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                
+                // Pre každú arénu
+                for (const arena of bookingArenas) {
+                    html += `<tr>
+                        <td style="padding:0.75rem;border-bottom:1px solid #eee;font-weight:500">
+                            ${arena.is_indoor ? '🏠' : '🌳'} ${arena.name}
+                        </td>`;
+                    
+                    // Pre každý deň
+                    for (const day of days) {
+                        const dateStr = formatDate(day);
+                        const isPast = day < new Date(today);
+                        const dayOfWeek = day.getDay();
+                        
+                        // Nájdi rozvrh pre tento deň
+                        const schedule = (arena.schedules || []).find(s => s.day_of_week === dayOfWeek && s.is_active);
+                        
+                        if (!schedule || isPast) {
+                            html += `<td style="padding:0.5rem;border-bottom:1px solid #eee;text-align:center;background:#f5f5f5">
+                                <span style="color:#aaa;font-size:0.75rem">${isPast ? '-' : 'Zatvorené'}</span>
+                            </td>`;
+                            continue;
+                        }
+                        
+                        // Zisti povolené úrovne
+                        const allowedLevels = schedule.allowed_levels || 'all';
+                        let levelAllowed = true;
+                        if (levelFilter !== 'all' && allowedLevels !== 'all') {
+                            const levels = allowedLevels.split(',');
+                            levelAllowed = levels.includes(levelFilter);
+                        }
+                        
+                        // Farba podľa úrovní
+                        let bgColor = '#e8f5e9'; // zelená - všetky
+                        let borderColor = '#4caf50';
+                        if (allowedLevels !== 'all') {
+                            const levels = allowedLevels.split(',');
+                            if (levels.length === 1) {
+                                if (levels[0] === 'beginner') { bgColor = '#fff3e0'; borderColor = '#ff9800'; }
+                                else if (levels[0] === 'advanced') { bgColor = '#e3f2fd'; borderColor = '#2196f3'; }
+                                else { bgColor = '#f3e5f5'; borderColor = '#9c27b0'; }
+                            } else {
+                                bgColor = '#f3e5f5'; borderColor = '#9c27b0';
+                            }
+                        }
+                        
+                        // Ak nie je povolená úroveň, zošedni
+                        if (!levelAllowed) {
+                            bgColor = '#f5f5f5';
+                            borderColor = '#ccc';
+                        }
+                        
+                        // Zobraz info
+                        const timeStr = `${schedule.open_time.substring(0,5)}-${schedule.close_time.substring(0,5)}`;
+                        const levelTags = allowedLevels === 'all' ? 'Všetci' : allowedLevels.split(',').map(l => levelNames[l] || l).join(', ');
+                        
+                        html += `<td style="padding:0.5rem;border-bottom:1px solid #eee;text-align:center">
+                            <div onclick="openBookingForm(${arena.id}, '${dateStr}', '${arena.name}', '${timeStr}', '${allowedLevels}')" 
+                                 style="background:${bgColor};border:2px solid ${borderColor};border-radius:6px;padding:0.5rem;cursor:${levelAllowed ? 'pointer' : 'not-allowed'};opacity:${levelAllowed ? '1' : '0.5'};transition:transform 0.2s"
+                                 ${levelAllowed ? 'onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'"' : ''}>
+                                <div style="font-weight:600;font-size:0.8rem">${timeStr}</div>
+                                <div style="font-size:0.7rem;color:#666">${levelTags}</div>
+                                <div style="font-size:0.65rem;color:#888">max ${schedule.max_riders}</div>
+                            </div>
+                        </td>`;
+                    }
+                    
+                    html += '</tr>';
+                }
+                
+                html += '</tbody></table>';
+                container.innerHTML = html;
+                
             } catch(e) {
-                console.error('Error loading arenas:', e);
+                console.error('Calendar error:', e);
+                container.innerHTML = '<p style="text-align:center;padding:2rem;color:#dc3545">Chyba pri načítaní kalendára</p>';
             }
         }
         
-        // Načítaj dostupné sloty
-        async function loadAvailableSlots() {
-            const arenaId = document.getElementById('bookingArena').value;
-            const date = document.getElementById('bookingDate').value;
-            const level = document.getElementById('bookingLevel').value;
-            const container = document.getElementById('availableSlots');
+        // Otvor rezervačný formulár
+        async function openBookingForm(arenaId, date, arenaName, timeRange, allowedLevels) {
+            const levelFilter = document.getElementById('calendarLevelFilter').value;
             
-            if (!arenaId || !date) {
-                container.innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Vyberte arénu a dátum</p>';
-                return;
+            // Skontroluj či je úroveň povolená
+            if (levelFilter !== 'all' && allowedLevels !== 'all') {
+                const levels = allowedLevels.split(',');
+                if (!levels.includes(levelFilter)) {
+                    alert('Tento termín nie je dostupný pre vašu úroveň.');
+                    return;
+                }
             }
             
-            container.innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Načítavam...</p>';
+            // Zobraz formulár
+            document.getElementById('bookingFormContainer').style.display = 'block';
+            document.getElementById('selectedArenaId').value = arenaId;
+            document.getElementById('selectedDate').value = date;
+            
+            // Nastav úroveň podľa filtra
+            if (levelFilter !== 'all') {
+                document.getElementById('bookingLevel').value = levelFilter;
+            }
+            
+            // Info o výbere
+            const dayName = dayNamesFull[new Date(date).getDay()];
+            const dateFormatted = new Date(date).toLocaleDateString('sk-SK');
+            const levelInfo = allowedLevels === 'all' ? 'Všetky úrovne' : allowedLevels.split(',').map(l => levelNamesFull[l] || l).join(', ');
+            
+            document.getElementById('selectedSlotInfo').innerHTML = `
+                <div style="font-weight:600;margin-bottom:0.5rem">${arenaName}</div>
+                <div style="font-size:0.9rem">${dayName}, ${dateFormatted}</div>
+                <div style="font-size:0.85rem;color:#666">Čas: ${timeRange} • ${levelInfo}</div>
+            `;
+            
+            // Načítaj dostupné časy pre tento deň
+            await loadDaySlots(arenaId, date);
+            
+            // Scrollni na formulár
+            document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        async function loadDaySlots(arenaId, date) {
+            const level = document.getElementById('bookingLevel').value;
             
             try {
                 const res = await fetch(`/api/reservations?arena_id=${arenaId}&date=${date}&availability=true&skill_level=${level}`);
                 const data = await res.json();
                 
                 if (!data.slots || data.slots.length === 0) {
-                    container.innerHTML = `<p style="color:#dc3545;text-align:center;padding:1rem">${data.message || 'Žiadne dostupné termíny'}</p>`;
+                    document.getElementById('selectedSlotInfo').innerHTML += `
+                        <div style="margin-top:1rem;color:#dc3545">${data.message || 'Žiadne dostupné časy'}</div>`;
                     return;
                 }
                 
-                // Info o povolených úrovniach
-                const levelNames = {beginner:'Začiatočník',intermediate:'Mierne pokročilý',advanced:'Pokročilý'};
-                let levelInfo = '';
-                if (data.schedule?.allowed_levels && data.schedule.allowed_levels !== 'all') {
-                    const allowedNames = data.schedule.allowed_levels.split(',').map(l => levelNames[l] || l).join(', ');
-                    levelInfo = `<p style="color:#856404;background:#fff3cd;padding:0.5rem;border-radius:4px;margin-bottom:0.5rem;font-size:0.85rem">⚠️ Tento deň je len pre: <strong>${allowedNames}</strong></p>`;
-                }
-                
-                container.innerHTML = `
-                    ${levelInfo}
-                    <label style="display:block;margin-bottom:0.5rem;font-weight:500">Dostupné časy:</label>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.5rem">
-                        ${data.slots.map(slot => `
-                            <button type="button" 
-                                onclick="selectSlot('${slot.start_time}', '${slot.end_time}', ${slot.available_spots})"
-                                style="padding:0.75rem;border:2px solid ${slot.is_available ? '#2d5a27' : '#dc3545'};
-                                       background:${slot.is_available ? 'white' : '#f8d7da'};
-                                       border-radius:8px;cursor:${slot.is_available ? 'pointer' : 'not-allowed'};
-                                       opacity:${slot.is_available ? '1' : '0.6'}"
-                                ${!slot.is_available ? 'disabled' : ''}
-                                title="${!slot.level_allowed ? 'Nie je povolené pre vašu úroveň' : ''}">
-                                <div style="font-weight:600">${slot.start_time.substring(0,5)}</div>
-                                <div style="font-size:0.75rem;color:#6c757d">${slot.available_spots}/${slot.max_spots} voľné</div>
-                                ${!slot.level_allowed ? '<div style="font-size:0.65rem;color:#dc3545">🚫</div>' : ''}
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
+                // Pridaj výber času
+                document.getElementById('selectedSlotInfo').innerHTML += `
+                    <div style="margin-top:1rem">
+                        <label style="font-weight:500;display:block;margin-bottom:0.5rem">Vyberte čas:</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+                            ${data.slots.map(slot => `
+                                <button type="button" onclick="selectTimeSlot('${slot.start_time}', '${slot.end_time}', ${slot.available_spots}, this)"
+                                    class="time-slot-btn"
+                                    style="padding:0.5rem 1rem;border:2px solid ${slot.is_available ? '#2d5a27' : '#dc3545'};
+                                           background:${slot.is_available ? 'white' : '#f8d7da'};
+                                           border-radius:6px;cursor:${slot.is_available ? 'pointer' : 'not-allowed'};
+                                           opacity:${slot.is_available ? '1' : '0.5'}"
+                                    ${!slot.is_available ? 'disabled' : ''}>
+                                    <div style="font-weight:600">${slot.start_time.substring(0,5)}</div>
+                                    <div style="font-size:0.7rem;color:#666">${slot.available_spots}/${slot.max_spots}</div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                    
             } catch(e) {
-                container.innerHTML = '<p style="color:#dc3545;text-align:center;padding:1rem">Chyba pri načítaní</p>';
+                console.error('Error loading slots:', e);
             }
         }
         
-        function selectSlot(startTime, endTime, availableSpots) {
+        let selectedSlotData = null;
+        
+        function selectTimeSlot(startTime, endTime, availableSpots, btn) {
             selectedSlotData = { startTime, endTime, availableSpots };
-            document.getElementById('selectedSlot').value = startTime;
+            document.getElementById('selectedTime').value = startTime;
             
-            // Označ vybraný slot
-            document.querySelectorAll('#availableSlots button').forEach(btn => {
-                btn.style.background = 'white';
-            });
-            event.target.closest('button').style.background = '#e8f5e9';
-            
-            // Povoľ submit
-            document.getElementById('bookingSubmit').disabled = false;
-            document.getElementById('bookingSubmit').style.background = '#2d5a27';
+            // Označ vybraný
+            document.querySelectorAll('.time-slot-btn').forEach(b => b.style.background = 'white');
+            btn.style.background = '#e8f5e9';
             
             // Uprav max jazdcov
             const ridersSelect = document.getElementById('bookingRiders');
@@ -945,11 +1123,16 @@
             }
         }
         
+        function closeBookingForm() {
+            document.getElementById('bookingFormContainer').style.display = 'none';
+            selectedSlotData = null;
+        }
+        
         async function submitBooking(e) {
             e.preventDefault();
             
-            const arenaId = document.getElementById('bookingArena').value;
-            const date = document.getElementById('bookingDate').value;
+            const arenaId = document.getElementById('selectedArenaId').value;
+            const date = document.getElementById('selectedDate').value;
             const name = document.getElementById('bookingName').value;
             const phone = document.getElementById('bookingPhone').value;
             const email = document.getElementById('bookingEmail').value;
@@ -958,11 +1141,11 @@
             const notes = document.getElementById('bookingNotes').value;
             
             if (!selectedSlotData || !arenaId || !date || !name || !phone) {
-                alert('Vyplňte všetky povinné údaje');
+                alert('Vyplňte všetky povinné údaje a vyberte čas');
                 return;
             }
             
-            const submitBtn = document.getElementById('bookingSubmit');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
             submitBtn.textContent = 'Odosielam...';
             submitBtn.disabled = true;
             
@@ -989,11 +1172,9 @@
                 
                 if (res.ok) {
                     alert('✅ Rezervácia odoslaná!\n\nBudeme vás kontaktovať pre potvrdenie.');
-                    // Reset formulára
+                    closeBookingForm();
                     document.getElementById('bookingForm').reset();
-                    selectedSlotData = null;
-                    document.getElementById('availableSlots').innerHTML = '<p style="color:#6c757d;text-align:center;padding:1rem">Vyberte arénu a dátum</p>';
-                    submitBtn.textContent = 'Odoslať rezerváciu';
+                    loadWeekCalendar();
                 } else {
                     alert('❌ ' + (result.error || 'Chyba pri rezervácii'));
                     submitBtn.textContent = 'Odoslať rezerváciu';
@@ -1008,17 +1189,15 @@
         
         // Init
         document.addEventListener('DOMContentLoaded', () => {
-            loadBookingArenas();
+            loadWeekCalendar();
             
-            // Nastav minimálny dátum na dnes
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('bookingDate').min = today;
-            document.getElementById('bookingDate').value = today;
-            
-            // Event listeners
-            document.getElementById('bookingArena').addEventListener('change', loadAvailableSlots);
-            document.getElementById('bookingDate').addEventListener('change', loadAvailableSlots);
-            document.getElementById('bookingLevel').addEventListener('change', loadAvailableSlots);
+            // Event listener pre filter
+            document.getElementById('calendarLevelFilter').addEventListener('change', loadWeekCalendar);
+            document.getElementById('bookingLevel').addEventListener('change', () => {
+                const arenaId = document.getElementById('selectedArenaId').value;
+                const date = document.getElementById('selectedDate').value;
+                if (arenaId && date) loadDaySlots(arenaId, date);
+            });
         });
     </script>
 </body>
