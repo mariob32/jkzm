@@ -327,8 +327,44 @@
 
             <!-- NOTIFICATIONS -->
             <section id="notifications" class="section">
-                <div class="header"><h1>🔔 Upozornenia</h1></div>
-                <div class="card"><div class="card-body notifications-list" id="notificationsList"></div></div>
+                <div class="header">
+                    <h1>🔔 Upozornenia a úlohy</h1>
+                    <button class="btn btn-primary" onclick="openNotificationModal()">+ Nové upozornenie</button>
+                </div>
+                
+                <div class="stats-grid" style="margin-bottom:1.5rem">
+                    <div class="stat-card"><div class="icon orange">⏳</div><div class="value" id="pendingNotifications">0</div><div class="label">Čakajúcich</div></div>
+                    <div class="stat-card"><div class="icon green">✅</div><div class="value" id="completedNotifications">0</div><div class="label">Dokončených</div></div>
+                    <div class="stat-card"><div class="icon red">⚠️</div><div class="value" id="urgentNotifications">0</div><div class="label">Urgentných</div></div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Zoznam upozornení</h3>
+                        <select id="notificationStatusFilter" class="form-control" style="width:auto">
+                            <option value="">Všetky</option>
+                            <option value="pending">Čakajúce</option>
+                            <option value="completed">Dokončené</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Typ</th>
+                                    <th>Názov</th>
+                                    <th>Priorita</th>
+                                    <th>Tréner</th>
+                                    <th>Kôň</th>
+                                    <th>Termín</th>
+                                    <th>Status</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notificationsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <!-- ARÉNY A ČASOVÉ SLOTY -->
@@ -539,6 +575,62 @@
     <!-- MODALS -->
     
     <!-- Arena Modal -->
+    <!-- Notification Modal -->
+    <div class="modal" id="notificationModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="notificationModalTitle">Nové upozornenie</h3><button class="modal-close" onclick="closeModal('notificationModal')">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="notificationId">
+                <div class="form-row">
+                    <div class="form-group"><label>Typ</label>
+                        <select class="form-control" id="notificationType">
+                            <option value="info">ℹ️ Informácia</option>
+                            <option value="task">📋 Úloha</option>
+                            <option value="reminder">⏰ Pripomienka</option>
+                            <option value="alert">⚠️ Upozornenie</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Priorita</label>
+                        <select class="form-control" id="notificationPriority">
+                            <option value="low">Nízka</option>
+                            <option value="normal" selected>Normálna</option>
+                            <option value="high">Vysoká</option>
+                            <option value="urgent">Urgentná</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="notificationTitle" required placeholder="Stručný názov"></div>
+                <div class="form-group"><label>Popis</label><textarea class="form-control" id="notificationMessage" rows="3" placeholder="Podrobnejší popis..."></textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Priradiť trénerovi</label>
+                        <select class="form-control" id="notificationTrainer">
+                            <option value="">-- Nepriradené --</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Súvisiaci kôň</label>
+                        <select class="form-control" id="notificationHorse">
+                            <option value="">-- Žiadny --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Termín splnenia</label><input type="date" class="form-control" id="notificationDueDate"></div>
+                    <div class="form-group"><label>Status</label>
+                        <select class="form-control" id="notificationStatus">
+                            <option value="pending">Čakajúce</option>
+                            <option value="in_progress">Prebieha</option>
+                            <option value="completed">Dokončené</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('notificationModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="saveNotification()">💾 Uložiť</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="arenaModal">
         <div class="modal-content" style="max-width:800px">
             <div class="modal-header"><h3 id="arenaModalTitle">Nová aréna</h3><button class="modal-close" onclick="closeModal('arenaModal')">×</button></div>
@@ -3637,6 +3729,184 @@
     document.getElementById('reservationDateFrom')?.addEventListener('change', loadReservations);
     document.getElementById('reservationDateTo')?.addEventListener('change', loadReservations);
 
+    // =====================================================
+    // NOTIFIKÁCIE
+    // =====================================================
+    let notifications = [];
+
+    async function loadNotifications() {
+        try {
+            const status = document.getElementById('notificationStatusFilter')?.value || '';
+            let url = '/api/notifications';
+            if (status) url += `?status=${status}`;
+            
+            const res = await fetch(url);
+            notifications = await res.json();
+            renderNotificationsTable();
+            updateNotificationStats();
+        } catch(e) {
+            console.error('loadNotifications error:', e);
+        }
+    }
+
+    function renderNotificationsTable() {
+        const tbody = document.getElementById('notificationsTable');
+        if (!tbody) return;
+
+        const typeIcons = { info: 'ℹ️', task: '📋', reminder: '⏰', alert: '⚠️' };
+        const priorityBadges = { low: 'badge-gray', normal: 'badge-info', high: 'badge-warning', urgent: 'badge-danger' };
+        const statusBadges = { pending: 'badge-warning', in_progress: 'badge-info', completed: 'badge-success' };
+        const statusLabels = { pending: 'Čakajúce', in_progress: 'Prebieha', completed: 'Dokončené' };
+
+        tbody.innerHTML = notifications.map(n => `
+            <tr>
+                <td>${typeIcons[n.type] || '📌'} ${n.type}</td>
+                <td><strong>${n.title}</strong>${n.message ? `<br><small style="color:var(--gray)">${n.message.substring(0, 50)}...</small>` : ''}</td>
+                <td><span class="badge ${priorityBadges[n.priority] || 'badge-gray'}">${n.priority}</span></td>
+                <td>${n.trainers ? `${n.trainers.first_name} ${n.trainers.last_name}` : '-'}</td>
+                <td>${n.horses?.name || '-'}</td>
+                <td>${n.due_date ? new Date(n.due_date).toLocaleDateString('sk') : '-'}</td>
+                <td><span class="badge ${statusBadges[n.status] || 'badge-gray'}">${statusLabels[n.status] || n.status}</span></td>
+                <td>
+                    ${n.status !== 'completed' ? `<button class="btn btn-sm btn-success" onclick="completeNotification(${n.id})" title="Dokončiť">✓</button>` : ''}
+                    <button class="btn btn-sm btn-outline" onclick="editNotification(${n.id})">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteNotification(${n.id})">🗑️</button>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne upozornenia</td></tr>';
+    }
+
+    function updateNotificationStats() {
+        const pending = notifications.filter(n => n.status === 'pending').length;
+        const completed = notifications.filter(n => n.status === 'completed').length;
+        const urgent = notifications.filter(n => n.priority === 'urgent' && n.status !== 'completed').length;
+        
+        const el1 = document.getElementById('pendingNotifications');
+        const el2 = document.getElementById('completedNotifications');
+        const el3 = document.getElementById('urgentNotifications');
+        if (el1) el1.textContent = pending;
+        if (el2) el2.textContent = completed;
+        if (el3) el3.textContent = urgent;
+    }
+
+    async function openNotificationModal(id = null) {
+        document.getElementById('notificationId').value = id || '';
+        document.getElementById('notificationModalTitle').textContent = id ? 'Upraviť upozornenie' : 'Nové upozornenie';
+        
+        // Načítaj trénerov a kone pre selecty
+        try {
+            const [trainersRes, horsesRes] = await Promise.all([
+                fetch('/api/trainers'),
+                fetch('/api/horses')
+            ]);
+            const trainers = await trainersRes.json();
+            const horses = await horsesRes.json();
+            
+            document.getElementById('notificationTrainer').innerHTML = '<option value="">-- Nepriradené --</option>' +
+                trainers.map(t => `<option value="${t.id}">${t.first_name} ${t.last_name}</option>`).join('');
+            document.getElementById('notificationHorse').innerHTML = '<option value="">-- Žiadny --</option>' +
+                horses.map(h => `<option value="${h.id}">${h.name}</option>`).join('');
+        } catch(e) {
+            console.error('Error loading selects:', e);
+        }
+        
+        if (id) {
+            const n = notifications.find(x => x.id === id);
+            if (n) {
+                document.getElementById('notificationType').value = n.type || 'info';
+                document.getElementById('notificationPriority').value = n.priority || 'normal';
+                document.getElementById('notificationTitle').value = n.title || '';
+                document.getElementById('notificationMessage').value = n.message || '';
+                document.getElementById('notificationTrainer').value = n.assigned_trainer_id || '';
+                document.getElementById('notificationHorse').value = n.assigned_horse_id || '';
+                document.getElementById('notificationDueDate').value = n.due_date || '';
+                document.getElementById('notificationStatus').value = n.status || 'pending';
+            }
+        } else {
+            document.getElementById('notificationType').value = 'info';
+            document.getElementById('notificationPriority').value = 'normal';
+            document.getElementById('notificationTitle').value = '';
+            document.getElementById('notificationMessage').value = '';
+            document.getElementById('notificationTrainer').value = '';
+            document.getElementById('notificationHorse').value = '';
+            document.getElementById('notificationDueDate').value = '';
+            document.getElementById('notificationStatus').value = 'pending';
+        }
+        
+        openModal('notificationModal');
+    }
+
+    function editNotification(id) {
+        openNotificationModal(id);
+    }
+
+    async function saveNotification() {
+        const id = document.getElementById('notificationId').value;
+        const data = {
+            type: document.getElementById('notificationType').value,
+            priority: document.getElementById('notificationPriority').value,
+            title: document.getElementById('notificationTitle').value,
+            message: document.getElementById('notificationMessage').value,
+            assigned_trainer_id: document.getElementById('notificationTrainer').value || null,
+            assigned_horse_id: document.getElementById('notificationHorse').value || null,
+            due_date: document.getElementById('notificationDueDate').value || null,
+            status: document.getElementById('notificationStatus').value
+        };
+        
+        if (!data.title) {
+            showToast('Zadajte názov', 'error');
+            return;
+        }
+        
+        try {
+            if (id) {
+                await fetch(`/api/notifications/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } else {
+                await fetch('/api/notifications', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            }
+            showToast('Upozornenie uložené', 'success');
+            closeModal('notificationModal');
+            loadNotifications();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    async function completeNotification(id) {
+        try {
+            await fetch(`/api/notifications/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'completed' })
+            });
+            showToast('Označené ako dokončené', 'success');
+            loadNotifications();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    async function deleteNotification(id) {
+        if (!confirm('Naozaj vymazať toto upozornenie?')) return;
+        try {
+            await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+            showToast('Upozornenie vymazané', 'success');
+            loadNotifications();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    document.getElementById('notificationStatusFilter')?.addEventListener('change', loadNotifications);
+
     // Načítaj pri prechode na sekciu
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -3645,6 +3915,9 @@
             }
             if (item.dataset.section === 'bookings') {
                 setTimeout(() => { loadArenas(); loadReservations(); }, 100);
+            }
+            if (item.dataset.section === 'notifications') {
+                setTimeout(loadNotifications, 100);
             }
         });
     });
