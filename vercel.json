@@ -38,6 +38,7 @@
     { "src": "/api/competition-results", "dest": "/api/competition-results.js" },
     { "src": "/api/memberships/([^/]+)", "dest": "/api/memberships-id.js?id=$1" },
     { "src": "/api/memberships", "dest": "/api/memberships.js" },
+    { "src": "/api/vaccinations/([^/]+)", "dest": "/api/vaccinations-id.js?id=$1" },
     { "src": "/api/vaccinations", "dest": "/api/vaccinations.js" },
     { "src": "/api/notifications/([^/]+)", "dest": "/api/notifications-id.js?id=$1" },
     { "src": "/api/notifications", "dest": "/api/notifications.js" },
@@ -73,6 +74,15 @@
     { "src": "/api/training-spaces/([^/]+)", "dest": "/api/training-spaces-id.js?id=$1" },
     { "src": "/api/training-spaces", "dest": "/api/training-spaces.js" },
     { "src": "/api/time-slots", "dest": "/api/time-slots.js" },
+    
+    { "src": "/api/feeding-items/([^/]+)", "dest": "/api/feeding-items-id.js?id=$1" },
+    { "src": "/api/feeding-items", "dest": "/api/feeding-items.js" },
+    { "src": "/api/competition-entries/([^/]+)", "dest": "/api/competition-entries-id.js?id=$1" },
+    { "src": "/api/competition-entries", "dest": "/api/competition-entries.js" },
+    { "src": "/api/competition-results/([^/]+)", "dest": "/api/competition-results-id.js?id=$1" },
+    { "src": "/api/photos/([^/]+)", "dest": "/api/photos-id.js?id=$1" },
+    { "src": "/api/admin-users/([^/]+)", "dest": "/api/admin-users-id.js?id=$1" },
+    { "src": "/api/admin-users", "dest": "/api/admin-users.js" },
     
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },

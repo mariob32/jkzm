@@ -22,33 +22,40 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            const { horse_id } = req.query;
+            const { competition_id, rider_id, status } = req.query;
             
-            let query = supabase.from('vaccinations').select('*, horses(id, name)');
-            if (horse_id) query = query.eq('horse_id', horse_id);
+            let query = supabase
+                .from('competition_entries')
+                .select('*, competitions(id, name, date), riders(id, first_name, last_name), horses(id, name)');
             
-            const { data, error } = await query.order('vaccination_date', { ascending: false });
+            if (competition_id) query = query.eq('competition_id', competition_id);
+            if (rider_id) query = query.eq('rider_id', rider_id);
+            if (status) query = query.eq('status', status);
+            
+            const { data, error } = await query.order('created_at', { ascending: false });
             if (error) throw error;
             return res.status(200).json(data || []);
         }
 
         if (req.method === 'POST') {
-            const { horse_id, vaccine_type, vaccination_date, next_date, batch_number, vet_name, vet_license, notes } = req.body;
+            const { competition_id, rider_id, horse_id, discipline, category, start_number, entry_fee, payment_status, status, notes } = req.body;
             
-            if (!horse_id || !vaccine_type || !vaccination_date) {
-                return res.status(400).json({ error: 'horse_id, vaccine_type a vaccination_date sú povinné' });
+            if (!competition_id) {
+                return res.status(400).json({ error: 'competition_id je povinné' });
             }
             
             const { data, error } = await supabase
-                .from('vaccinations')
+                .from('competition_entries')
                 .insert([{
+                    competition_id,
+                    rider_id,
                     horse_id,
-                    vaccine_type,
-                    vaccination_date,
-                    next_date,
-                    batch_number,
-                    vet_name,
-                    vet_license,
+                    discipline,
+                    category,
+                    start_number,
+                    entry_fee: entry_fee ? parseFloat(entry_fee) : null,
+                    payment_status: payment_status || 'pending',
+                    status: status || 'registered',
                     notes
                 }])
                 .select()
@@ -60,7 +67,7 @@ module.exports = async (req, res) => {
 
         return res.status(405).json({ error: 'Metóda nie je povolená' });
     } catch (error) {
-        console.error('Vaccinations error:', error);
+        console.error('Competition entries error:', error);
         res.status(500).json({ error: 'Chyba servera', details: error.message });
     }
 };

@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -22,36 +23,49 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            const { horse_id } = req.query;
+            const { data, error } = await supabase
+                .from('admin_users')
+                .select('id, username, email, role, is_active, last_login, created_at')
+                .order('created_at', { ascending: false });
             
-            let query = supabase.from('vaccinations').select('*, horses(id, name)');
-            if (horse_id) query = query.eq('horse_id', horse_id);
-            
-            const { data, error } = await query.order('vaccination_date', { ascending: false });
             if (error) throw error;
             return res.status(200).json(data || []);
         }
 
         if (req.method === 'POST') {
-            const { horse_id, vaccine_type, vaccination_date, next_date, batch_number, vet_name, vet_license, notes } = req.body;
+            const { username, email, password, role } = req.body;
             
-            if (!horse_id || !vaccine_type || !vaccination_date) {
-                return res.status(400).json({ error: 'horse_id, vaccine_type a vaccination_date sú povinné' });
+            if (!username || !password) {
+                return res.status(400).json({ error: 'Používateľské meno a heslo sú povinné' });
             }
             
+            if (password.length < 6) {
+                return res.status(400).json({ error: 'Heslo musí mať minimálne 6 znakov' });
+            }
+            
+            // Kontrola duplicity
+            const { data: existing } = await supabase
+                .from('admin_users')
+                .select('id')
+                .eq('username', username)
+                .single();
+            
+            if (existing) {
+                return res.status(409).json({ error: 'Používateľ s týmto menom už existuje' });
+            }
+            
+            const password_hash = await bcrypt.hash(password, 10);
+            
             const { data, error } = await supabase
-                .from('vaccinations')
+                .from('admin_users')
                 .insert([{
-                    horse_id,
-                    vaccine_type,
-                    vaccination_date,
-                    next_date,
-                    batch_number,
-                    vet_name,
-                    vet_license,
-                    notes
+                    username,
+                    email,
+                    password_hash,
+                    role: role || 'admin',
+                    is_active: true
                 }])
-                .select()
+                .select('id, username, email, role, is_active, created_at')
                 .single();
             
             if (error) throw error;
@@ -60,7 +74,7 @@ module.exports = async (req, res) => {
 
         return res.status(405).json({ error: 'Metóda nie je povolená' });
     } catch (error) {
-        console.error('Vaccinations error:', error);
+        console.error('Admin users error:', error);
         res.status(500).json({ error: 'Chyba servera', details: error.message });
     }
 };
