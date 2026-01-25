@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
             
             let query = supabase
                 .from('tasks')
-                .select('*, horses:horse_id(id, name, stable_name), assignee:assigned_to(id, name, email)')
+                .select('*, horses:horse_id(id, name, stable_name)')
                 .order('due_date', { ascending: true, nullsFirst: false })
                 .order('created_at', { ascending: false });
             
