@@ -1057,9 +1057,9 @@
             <div class="modal-header"><h3>Nový dokument</h3><button class="modal-close" onclick="closeModal('documentModal')">×</button></div>
             <div class="modal-body">
                 <form id="documentForm">
-                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="docTitle" required></div>
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="webDocTitle" required></div>
                     <div class="form-group"><label>Kategória</label>
-                        <select class="form-control" id="docCategory">
+                        <select class="form-control" id="webDocCategory">
                             <option value="prihlášky">Prihlášky</option>
                             <option value="pravidlá">Pravidlá</option>
                             <option value="výsledky">Výsledky</option>
@@ -1069,20 +1069,20 @@
                     <div class="form-group">
                         <label>Súbor *</label>
                         <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-                            <input type="file" id="docFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" style="flex:1" onchange="uploadDocument(this)">
+                            <input type="file" id="webDocFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" style="flex:1" onchange="uploadWebDocument(this)">
                             <span style="color:var(--muted)">alebo</span>
-                            <input type="url" class="form-control" id="docFileUrl" placeholder="URL: https://..." style="flex:2">
+                            <input type="url" class="form-control" id="webDocFileUrl" placeholder="URL: https://..." style="flex:2">
                         </div>
-                        <div id="docUploadStatus" style="margin-top:0.5rem;font-size:0.85rem"></div>
+                        <div id="webDocUploadStatus" style="margin-top:0.5rem;font-size:0.85rem"></div>
                     </div>
-                    <div class="form-group"><label>Názov súboru</label><input type="text" class="form-control" id="docFileName" placeholder="dokument.pdf"></div>
-                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="docDescription" rows="2"></textarea></div>
-                    <div class="form-group"><label><input type="checkbox" id="docPublic" checked> Verejný</label></div>
+                    <div class="form-group"><label>Názov súboru</label><input type="text" class="form-control" id="webDocFileName" placeholder="dokument.pdf"></div>
+                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="webDocDescription" rows="2"></textarea></div>
+                    <div class="form-group"><label><input type="checkbox" id="webDocPublic" checked> Verejný</label></div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('documentModal')">Zrušiť</button>
-                <button class="btn btn-primary" onclick="saveDocument()">Uložiť</button>
+                <button class="btn btn-primary" onclick="saveWebDocument()">Uložiť</button>
             </div>
         </div>
     </div>
@@ -3936,7 +3936,7 @@
     document.getElementById('docCategoryFilter').addEventListener('change', loadDocuments);
     
     // Upload dokumentu
-    async function uploadDocument(input) {
+    async function uploadWebDocument(input) {
         const file = input.files[0];
         if (!file) return;
         
@@ -3945,7 +3945,7 @@
             return;
         }
         
-        document.getElementById('docUploadStatus').innerHTML = '<span style="color:var(--muted)">Nahrávam...</span>';
+        document.getElementById('webDocUploadStatus').innerHTML = '<span style="color:var(--muted)">Nahrávam...</span>';
         
         try {
             const base64 = await new Promise((resolve, reject) => {
@@ -3964,32 +3964,32 @@
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             
-            document.getElementById('docFileUrl').value = data.url;
-            document.getElementById('docFileName').value = file.name;
-            document.getElementById('docUploadStatus').innerHTML = '<span style="color:var(--success)">✓ ' + file.name + '</span>';
+            document.getElementById('webDocFileUrl').value = data.url;
+            document.getElementById('webDocFileName').value = file.name;
+            document.getElementById('webDocUploadStatus').innerHTML = '<span style="color:var(--success)">✓ ' + file.name + '</span>';
             showToast('Súbor nahraný!', 'success');
         } catch(e) {
-            document.getElementById('docUploadStatus').innerHTML = '';
+            document.getElementById('webDocUploadStatus').innerHTML = '';
             showToast('Chyba pri nahrávaní: ' + e.message, 'error');
         }
     }
 
     function openDocumentModal() {
         document.getElementById('documentForm').reset();
-        document.getElementById('docPublic').checked = true;
-        document.getElementById('docUploadStatus').innerHTML = '';
-        document.getElementById('docFile').value = '';
+        document.getElementById('webDocPublic').checked = true;
+        document.getElementById('webDocUploadStatus').innerHTML = '';
+        document.getElementById('webDocFile').value = '';
         openModal('documentModal');
     }
     
-    async function saveDocument() {
+    async function saveWebDocument() {
         const doc = {
-            title: document.getElementById('docTitle').value,
-            category: document.getElementById('docCategory').value,
-            file_url: document.getElementById('docFileUrl').value,
-            file_name: document.getElementById('docFileName').value,
-            description: document.getElementById('docDescription').value,
-            is_public: document.getElementById('docPublic').checked
+            title: document.getElementById('webDocTitle').value,
+            category: document.getElementById('webDocCategory').value,
+            file_url: document.getElementById('webDocFileUrl').value,
+            file_name: document.getElementById('webDocFileName').value,
+            description: document.getElementById('webDocDescription').value,
+            is_public: document.getElementById('webDocPublic').checked
         };
         
         if (!doc.title || !doc.file_url) {

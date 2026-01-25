@@ -1,17 +1,14 @@
 {
-  "version": "6.7.0",
-  "build": "2026-01-25T12:00:00Z",
+  "version": "6.7.1",
+  "build": "2026-01-25T12:50:00Z",
   "features": [
-    "Horse Detail Modal with tabs (Info, Documents, Stable History, Vet Records)",
-    "File upload in Documents (max 4MB)",
-    "Document binding to horses from horse detail",
-    "Print horse card",
-    "Improved document categories"
+    "Fixed document save - removed duplicate element IDs",
+    "Horse Detail Modal with tabs",
+    "File upload in Documents"
   ],
   "changelog": {
+    "6.7.1": "Fixed document save - duplicate IDs conflict resolved",
     "6.7.0": "Detail koňa s tabmi, upload súborov v dokumentoch, tlač karty koňa",
-    "6.6.0": "Záznamová kniha maštale, Návštevná kniha, Dokumenty s väzbami, Tlač",
-    "6.5.3": "Fixed empty horse dropdowns in modals",
-    "6.5.2": "Fixed vaccination/vet record save"
+    "6.6.0": "Záznamová kniha maštale, Návštevná kniha, Dokumenty s väzbami"
   }
 }
