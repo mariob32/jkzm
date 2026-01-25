@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervácia | JK Zelená míľa</title>
+    <meta name="description" content="Rezervujte si jazdu v jazdeckom klube Zelená míľa Jaslovské Bohunice">
+    <link rel="icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2d5a27;
+            --primary-light: #4a8c3f;
+            --secondary: #8B4513;
+            --accent: #f4a460;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+        
+        header {
+            background: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        .logo img { height: 50px; }
+        nav { display: flex; gap: 1.5rem; }
+        nav a { color: var(--dark); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: var(--primary); }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .hero p { opacity: 0.9; font-size: 1.1rem; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 900px) {
+            .booking-grid { grid-template-columns: 1fr; }
+        }
+        
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 1.25rem 1.5rem;
+        }
+        .card-header h2 { font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-body { padding: 1.5rem; }
+        
+        .step { margin-bottom: 1.5rem; }
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        
+        .date-picker {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .date-btn {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            background: var(--white);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 70px;
+        }
+        .date-btn:hover { border-color: var(--primary); }
+        .date-btn.selected { border-color: var(--primary); background: #e8f5e9; }
+        .date-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+        .date-btn .day { font-size: 0.75rem; color: var(--gray); }
+        .date-btn .date { font-weight: 700; font-size: 1.1rem; }
+        
+        .space-selector { display: flex; flex-direction: column; gap: 0.75rem; }
+        .space-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .space-option:hover { border-color: var(--primary); }
+        .space-option.selected { border-color: var(--primary); background: #e8f5e9; }
+        .space-color {
+            width: 12px;
+            height: 40px;
+            border-radius: 6px;
+        }
+        .space-info { flex: 1; }
+        .space-info h4 { margin: 0; font-size: 1rem; }
+        .space-info p { margin: 0; font-size: 0.85rem; color: var(--gray); }
+        .space-badge {
+            padding: 0.25rem 0.75rem;
+            background: #e8f5e9;
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+        .time-slot {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .time-slot:hover:not(.disabled) { border-color: var(--primary); }
+        .time-slot.selected { border-color: var(--primary); background: #e8f5e9; }
+        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; background: #f5f5f5; }
+        .time-slot .time { font-weight: 600; font-size: 1rem; }
+        .time-slot .info { font-size: 0.75rem; color: var(--gray); }
+        .time-slot .price { font-weight: 600; color: var(--primary); margin-top: 0.25rem; }
+        .time-slot .spots { font-size: 0.7rem; color: var(--success); }
+        .time-slot .spots.low { color: var(--warning); }
+        .time-slot .spots.none { color: var(--danger); }
+        
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group label span { color: var(--danger); }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); }
+        select.form-control { cursor: pointer; }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .btn-primary:hover { background: var(--primary-light); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .summary-card {
+            position: sticky;
+            top: 100px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-top: 2px solid var(--primary);
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .alert-info { background: #d1ecf1; color: #0c5460; }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        footer a { color: var(--accent); }
+        
+        .no-slots {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+        .no-slots .icon { font-size: 3rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <img src="/assets/logo.png" alt="Logo" onerror="this.outerHTML='🐴'">
+                JK Zelená míľa
+            </a>
+            <nav>
+                <a href="/">Domov</a>
+                <a href="/#services">Služby</a>
+                <a href="/o-klube.html">O klube</a>
+                <a href="/#contact">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>📅 Rezervácia jazdy</h1>
+        <p>Vyberte si termín a rezervujte si jazdu online</p>
+    </div>
+
+    <div class="container">
+        <div class="booking-grid">
+            <div class="booking-form">
+                <!-- Krok 1: Výber dátumu -->
+                <div class="card" style="margin-bottom: 1.5rem">
+                    <div class="card-body">
+                        <div class="step">
+                            <div class="step-title">
+                                <span class="step-number">1</span>
+                                Vyberte dátum
+                            </div>
+                            <div class="date-picker" id="datePicker">
+                                <div class="loading">Načítavam...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Krok 2: Výber priestoru -->
+                <div class="card" style="margin-bottom: 1.5rem">
+                    <div class="card-body">
+                        <div class="step">
+                            <div class="step-title">
+                                <span class="step-number">2</span>
+                                Vyberte priestor
+                            </div>
+                            <div class="space-selector" id="spaceSelector">
+                                <div class="loading">Vyberte najprv dátum</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Krok 3: Výber času -->
+                <div class="card" style="margin-bottom: 1.5rem">
+                    <div class="card-body">
+                        <div class="step">
+                            <div class="step-title">
+                                <span class="step-number">3</span>
+                                Vyberte čas
+                            </div>
+                            <div class="time-slots" id="timeSlots">
+                                <div class="loading">Vyberte najprv priestor</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Krok 4: Kontaktné údaje -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="step">
+                            <div class="step-title">
+                                <span class="step-number">4</span>
+                                Vaše údaje
+                            </div>
+                            <form id="bookingForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Meno a priezvisko <span>*</span></label>
+                                        <input type="text" class="form-control" id="customerName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Telefón <span>*</span></label>
+                                        <input type="tel" class="form-control" id="customerPhone" required placeholder="+421...">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" id="customerEmail" placeholder="pre potvrdenie rezervácie">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Počet osôb</label>
+                                        <select class="form-control" id="participants">
+                                            <option value="1">1 osoba</option>
+                                            <option value="2">2 osoby</option>
+                                            <option value="3">3 osoby</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Skúsenosti</label>
+                                        <select class="form-control" id="experienceLevel">
+                                            <option value="beginner">Začiatočník</option>
+                                            <option value="intermediate">Mierne pokročilý</option>
+                                            <option value="advanced">Pokročilý</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Poznámka</label>
+                                    <textarea class="form-control" id="notes" rows="2" placeholder="Špeciálne požiadavky, alergie..."></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Súhrn -->
+            <div class="summary-card">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🧾 Súhrn rezervácie</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="summaryContent">
+                            <p style="color: var(--gray); text-align: center;">Vyberte dátum, priestor a čas</p>
+                        </div>
+                        <div id="bookingAlert" style="margin-top: 1rem"></div>
+                        <button class="btn btn-primary" id="submitBtn" onclick="submitBooking()" disabled style="margin-top: 1rem">
+                            Odoslať rezerváciu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Jazdecký klub Zelená míľa Jaslovské Bohunice</p>
+        <p><a href="/">Späť na hlavnú stránku</a></p>
+    </footer>
+
+    <script>
+        // State
+        let selectedDate = null;
+        let selectedSpace = null;
+        let selectedSlot = null;
+        let availabilityData = null;
+
+        const dayNames = ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'];
+        const dayNamesFull = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
+        const slotTypes = { group: 'Skupinový', private: 'Súkromný', kids: 'Detský', training: 'Tréning' };
+
+        // Inicializácia
+        document.addEventListener('DOMContentLoaded', () => {
+            generateDatePicker();
+        });
+
+        function generateDatePicker() {
+            const container = document.getElementById('datePicker');
+            const today = new Date();
+            let html = '';
+            
+            for (let i = 0; i < 14; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                
+                html += `
+                    <div class="date-btn" data-date="${dateStr}" onclick="selectDate('${dateStr}')">
+                        <div class="day">${dayNames[date.getDay()]}</div>
+                        <div class="date">${date.getDate()}</div>
+                        <div class="day">${date.toLocaleDateString('sk', { month: 'short' })}</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        async function selectDate(dateStr) {
+            selectedDate = dateStr;
+            selectedSpace = null;
+            selectedSlot = null;
+            
+            // Update UI
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.date === dateStr);
+            });
+            
+            // Load availability
+            document.getElementById('spaceSelector').innerHTML = '<div class="loading">Načítavam dostupnosť...</div>';
+            document.getElementById('timeSlots').innerHTML = '<div class="loading">Vyberte najprv priestor</div>';
+            
+            try {
+                const res = await fetch(`/api/availability?date=${dateStr}`);
+                availabilityData = await res.json();
+                renderSpaces();
+            } catch (e) {
+                document.getElementById('spaceSelector').innerHTML = '<div class="alert alert-error">Chyba pri načítaní. Skúste znova.</div>';
+            }
+            
+            updateSummary();
+        }
+
+        function renderSpaces() {
+            const container = document.getElementById('spaceSelector');
+            
+            if (!availabilityData || !availabilityData.spaces || availabilityData.spaces.length === 0) {
+                container.innerHTML = '<div class="no-slots"><div class="icon">📅</div><p>Pre tento deň nie sú dostupné žiadne termíny</p></div>';
+                return;
+            }
+            
+            container.innerHTML = availabilityData.spaces.map(space => `
+                <div class="space-option ${space.is_blocked ? 'disabled' : ''}" 
+                     data-space-id="${space.id}" 
+                     onclick="${space.is_blocked ? '' : `selectSpace(${space.id})`}">
+                    <div class="space-color" style="background: ${space.color}"></div>
+                    <div class="space-info">
+                        <h4>${space.is_indoor ? '🏠' : '🌳'} ${space.name}</h4>
+                        <p>${space.description || ''}</p>
+                    </div>
+                    <div class="space-badge">
+                        ${space.is_blocked ? 'Nedostupné' : space.total_available + ' termínov'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectSpace(spaceId) {
+            selectedSpace = spaceId;
+            selectedSlot = null;
+            
+            document.querySelectorAll('.space-option').forEach(opt => {
+                opt.classList.toggle('selected', parseInt(opt.dataset.spaceId) === spaceId);
+            });
+            
+            renderTimeSlots();
+            updateSummary();
+        }
+
+        function renderTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            
+            if (!selectedSpace || !availabilityData) {
+                container.innerHTML = '<div class="loading">Vyberte najprv priestor</div>';
+                return;
+            }
+            
+            const space = availabilityData.spaces.find(s => s.id === selectedSpace);
+            if (!space || !space.slots || space.slots.length === 0) {
+                container.innerHTML = '<div class="no-slots"><div class="icon">🕐</div><p>Pre tento priestor nie sú dnes dostupné žiadne časy</p></div>';
+                return;
+            }
+            
+            container.innerHTML = space.slots.map(slot => {
+                const spotsClass = slot.available_spots === 0 ? 'none' : slot.available_spots === 1 ? 'low' : '';
+                return `
+                    <div class="time-slot ${slot.is_available ? '' : 'disabled'}" 
+                         data-slot-id="${slot.id}"
+                         onclick="${slot.is_available ? `selectSlot(${slot.id})` : ''}">
+                        <div class="time">${slot.start_time} - ${slot.end_time}</div>
+                        <div class="info">${slotTypes[slot.slot_type] || slot.slot_type}</div>
+                        <div class="price">${slot.price ? slot.price + ' €' : '-'}</div>
+                        <div class="spots ${spotsClass}">
+                            ${slot.is_available ? `${slot.available_spots} voľných miest` : 'Obsadené'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectSlot(slotId) {
+            selectedSlot = slotId;
+            
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.toggle('selected', parseInt(slot.dataset.slotId) === slotId);
+            });
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const container = document.getElementById('summaryContent');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!selectedDate || !selectedSpace || !selectedSlot) {
+                container.innerHTML = '<p style="color: var(--gray); text-align: center;">Vyberte dátum, priestor a čas</p>';
+                submitBtn.disabled = true;
+                return;
+            }
+            
+            const space = availabilityData.spaces.find(s => s.id === selectedSpace);
+            const slot = space.slots.find(s => s.id === selectedSlot);
+            const date = new Date(selectedDate);
+            const participants = parseInt(document.getElementById('participants').value) || 1;
+            const totalPrice = (slot.price || 0) * participants;
+            
+            container.innerHTML = `
+                <div class="summary-row">
+                    <span>📅 Dátum</span>
+                    <strong>${dayNamesFull[date.getDay()]}, ${date.toLocaleDateString('sk')}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>${space.is_indoor ? '🏠' : '🌳'} Priestor</span>
+                    <strong>${space.name}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>🕐 Čas</span>
+                    <strong>${slot.start_time} - ${slot.end_time}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>👥 Osôb</span>
+                    <strong>${participants}</strong>
+                </div>
+                <div class="summary-row total">
+                    <span>Celkom</span>
+                    <span>${totalPrice > 0 ? totalPrice + ' €' : 'Dohodneme'}</span>
+                </div>
+            `;
+            
+            submitBtn.disabled = false;
+        }
+
+        // Update summary when participants change
+        document.getElementById('participants').addEventListener('change', updateSummary);
+
+        async function submitBooking() {
+            const alertDiv = document.getElementById('bookingAlert');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            
+            if (!name || !phone) {
+                alertDiv.innerHTML = '<div class="alert alert-error">Vyplňte meno a telefón</div>';
+                return;
+            }
+            
+            if (!selectedDate || !selectedSpace || !selectedSlot) {
+                alertDiv.innerHTML = '<div class="alert alert-error">Vyberte dátum, priestor a čas</div>';
+                return;
+            }
+            
+            const space = availabilityData.spaces.find(s => s.id === selectedSpace);
+            const slot = space.slots.find(s => s.id === selectedSlot);
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Odosielam...';
+            alertDiv.innerHTML = '';
+            
+            try {
+                const res = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        space_id: selectedSpace,
+                        slot_id: selectedSlot,
+                        booking_date: selectedDate,
+                        start_time: slot.start_time,
+                        end_time: slot.end_time,
+                        customer_name: name,
+                        customer_email: document.getElementById('customerEmail').value.trim(),
+                        customer_phone: phone,
+                        participants: parseInt(document.getElementById('participants').value) || 1,
+                        experience_level: document.getElementById('experienceLevel').value,
+                        notes: document.getElementById('notes').value.trim(),
+                        use_club_horse: true
+                    })
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok && result.success) {
+                    alertDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ Rezervácia odoslaná!</strong><br>
+                            Budeme vás kontaktovať na ${phone} pre potvrdenie termínu.
+                        </div>
+                    `;
+                    submitBtn.innerHTML = '✓ Odoslané';
+                    
+                    // Reset form
+                    document.getElementById('bookingForm').reset();
+                    
+                    // Refresh availability
+                    setTimeout(() => selectDate(selectedDate), 2000);
+                } else {
+                    throw new Error(result.error || 'Nepodarilo sa odoslať rezerváciu');
+                }
+            } catch (e) {
+                alertDiv.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Odoslať rezerváciu';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "sjf-import",
+  "version": "1.0.0",
+  "description": "SJF Registry Import Tool",
+  "main": "sjf-import.js",
+  "scripts": {
+    "import:clubs": "node sjf-import.js --clubs",
+    "import:persons": "node sjf-import.js --persons",
+    "import:horses": "node sjf-import.js --horses",
+    "stats": "node sjf-import.js --stats"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
