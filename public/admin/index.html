@@ -5313,218 +5313,6 @@
     document.getElementById('reservationDateFrom')?.addEventListener('change', loadReservations);
     document.getElementById('reservationDateTo')?.addEventListener('change', loadReservations);
 
-    // =====================================================
-    // NOTIFIKÁCIE
-    // =====================================================
-    let notifications = [];
-
-    async function loadNotifications() {
-        try {
-            const status = document.getElementById('notificationStatusFilter')?.value || '';
-            let url = '/api/notifications';
-            if (status) url += `?status=${status}`;
-            
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
-            notifications = await res.json();
-            renderNotificationsTable();
-            updateNotificationStats();
-        } catch(e) {
-            console.error('loadNotifications error:', e);
-        }
-    }
-
-    function renderNotificationsTable() {
-        const tbody = document.getElementById('notificationsTable');
-        if (!tbody) return;
-
-        const sourceLabels = { manual: 'Manualne', rule: 'Automaticke', system: 'System' };
-        const priorityBadges = { low: 'badge-gray', normal: 'badge-info', high: 'badge-warning', urgent: 'badge-danger' };
-        const priorityLabels = { low: 'Nizka', normal: 'Normalna', high: 'Vysoka', urgent: 'Urgentna' };
-        const statusBadges = { pending: 'badge-warning', active: 'badge-info', resolved: 'badge-success', dismissed: 'badge-gray' };
-        const statusLabels = { pending: 'Aktivne', active: 'Aktivne', resolved: 'Vyriesene', dismissed: 'Skryte' };
-
-        tbody.innerHTML = notifications.map(n => {
-            const horseName = n.horses ? (n.horses.stable_name || n.horses.name) : '-';
-            return `
-            <tr class="${n.is_read ? '' : 'table-row-highlight'}">
-                <td><span class="badge ${n.source === 'rule' ? 'badge-info' : 'badge-gray'}">${sourceLabels[n.source] || n.source}</span></td>
-                <td><strong>${n.title || ''}</strong>${n.message ? `<br><small style="color:var(--gray)">${n.message.substring(0, 60)}${n.message.length > 60 ? '...' : ''}</small>` : ''}</td>
-                <td><span class="badge ${priorityBadges[n.priority] || 'badge-gray'}">${priorityLabels[n.priority] || n.priority}</span></td>
-                <td>${horseName}</td>
-                <td>${n.due_date ? n.due_date : '-'}</td>
-                <td><span class="badge ${statusBadges[n.status] || 'badge-gray'}">${statusLabels[n.status] || n.status}</span></td>
-                <td>
-                    ${!n.is_read ? `<button class="btn btn-sm btn-outline" onclick="markNotificationRead('${n.id}')" title="Oznacit ako precitane">Precitat</button>` : ''}
-                    ${n.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="resolveNotification('${n.id}')" title="Vyriesit">Vyriesit</button>` : ''}
-                    <button class="btn btn-sm btn-danger" onclick="dismissNotification('${n.id}')" title="Skryt">Skryt</button>
-                </td>
-            </tr>`;
-        }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Ziadne upozornenia</td></tr>';
-    }
-
-    function updateNotificationStats() {
-        const pending = notifications.filter(n => n.status === 'pending' && !n.is_dismissed).length;
-        const highPriority = notifications.filter(n => (n.priority === 'high' || n.priority === 'urgent') && n.status === 'pending').length;
-        const fromRules = notifications.filter(n => n.source === 'rule').length;
-        
-        const el1 = document.getElementById('pendingNotifications');
-        const el2 = document.getElementById('urgentNotifications');
-        const el3 = document.getElementById('systemNotifications');
-        if (el1) el1.textContent = pending;
-        if (el2) el2.textContent = highPriority;
-        if (el3) el3.textContent = fromRules;
-        
-        // Update badge in nav
-        const badge = document.getElementById('alertBadge');
-        if (badge) badge.textContent = pending;
-    }
-
-    async function markNotificationRead(id) {
-        try {
-            await fetch('/api/notifications', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                body: JSON.stringify({ id, is_read: true })
-            });
-            loadNotifications();
-        } catch(e) { console.error(e); }
-    }
-
-    async function resolveNotification(id) {
-        try {
-            await fetch('/api/notifications', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                body: JSON.stringify({ id, status: 'resolved', is_read: true })
-            });
-            loadNotifications();
-        } catch(e) { console.error(e); }
-    }
-
-    async function dismissNotification(id) {
-        if (!confirm('Naozaj skryt toto upozornenie?')) return;
-        try {
-            await fetch('/api/notifications', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                body: JSON.stringify({ id, status: 'dismissed', is_dismissed: true })
-            });
-            loadNotifications();
-        } catch(e) { console.error(e); }
-    }
-
-    async function openNotificationModal(id = null) {
-        document.getElementById('notificationId').value = id || '';
-        document.getElementById('notificationModalTitle').textContent = id ? 'Upravit upozornenie' : 'Nove upozornenie';
-        
-        try {
-            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
-            const horsesList = await horsesRes.json();
-            
-            document.getElementById('notificationHorse').innerHTML = '<option value="">-- Ziadny --</option>' +
-                (horsesList || []).map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
-        } catch(e) {
-            console.error('Error loading horses:', e);
-        }
-        
-        // Reset form
-        document.getElementById('notificationPriority').value = 'normal';
-        document.getElementById('notificationTitle').value = '';
-        document.getElementById('notificationMessage').value = '';
-        document.getElementById('notificationHorse').value = '';
-        document.getElementById('notificationDueDate').value = '';
-        
-        if (id) {
-            const n = notifications.find(x => x.id === id);
-            if (n) {
-                document.getElementById('notificationPriority').value = n.priority || 'normal';
-                document.getElementById('notificationTitle').value = n.title || '';
-                document.getElementById('notificationMessage').value = n.message || '';
-                document.getElementById('notificationHorse').value = n.assigned_horse_id || '';
-                document.getElementById('notificationDueDate').value = n.due_date || '';
-            }
-        } else {
-            document.getElementById('notificationType').value = 'info';
-            document.getElementById('notificationPriority').value = 'normal';
-            document.getElementById('notificationTitle').value = '';
-            document.getElementById('notificationMessage').value = '';
-            document.getElementById('notificationTrainer').value = '';
-            document.getElementById('notificationHorse').value = '';
-            document.getElementById('notificationDueDate').value = '';
-            document.getElementById('notificationStatus').value = 'pending';
-        }
-        
-        openModal('notificationModal');
-    }
-
-    function editNotification(id) {
-        openNotificationModal(id);
-    }
-
-    async function saveNotification() {
-        const id = document.getElementById('notificationId').value;
-        const data = {
-            title: document.getElementById('notificationTitle').value,
-            message: document.getElementById('notificationMessage').value,
-            priority: document.getElementById('notificationPriority').value,
-            assigned_horse_id: document.getElementById('notificationHorse').value || null,
-            due_date: document.getElementById('notificationDueDate').value || null
-        };
-        
-        if (!data.title) {
-            alert('Zadajte nazov');
-            return;
-        }
-        
-        try {
-            if (id) {
-                data.id = id;
-                await fetch('/api/notifications', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                    body: JSON.stringify(data)
-                });
-            } else {
-                await fetch('/api/notifications', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                    body: JSON.stringify(data)
-                });
-            }
-            closeModal('notificationModal');
-            loadNotifications();
-        } catch(e) {
-            alert('Chyba: ' + e.message);
-        }
-    }
-
-    async function completeNotification(id) {
-        try {
-            await fetch(`/api/notifications/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'completed' })
-            });
-            showToast('Označené ako dokončené', 'success');
-            loadNotifications();
-        } catch(e) {
-            showToast('Chyba: ' + e.message, 'error');
-        }
-    }
-
-    async function deleteNotification(id) {
-        if (!confirm('Naozaj vymazať toto upozornenie?')) return;
-        try {
-            await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
-            showToast('Upozornenie vymazané', 'success');
-            loadNotifications();
-        } catch(e) {
-            showToast('Chyba: ' + e.message, 'error');
-        }
-    }
-
-    document.getElementById('notificationStatusFilter')?.addEventListener('change', loadNotifications);
-
     // Načítaj pri prechode na sekciu
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -6649,35 +6437,6 @@
         }
     }
     
-    // ===== RUN NOTIFICATION RULES =====
-    async function runNotificationRules() {
-        try {
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = 'Prebieha...';
-            
-            const res = await fetch('/api/system-run-rules', {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-            });
-            
-            const result = await res.json();
-            
-            if (res.ok) {
-                alert(result.message || 'Upozornenia boli obnovene');
-                loadNotifications();
-            } else {
-                throw new Error(result.error || 'Chyba');
-            }
-        } catch(e) {
-            alert('Chyba: ' + e.message);
-        } finally {
-            const btn = event.target;
-            btn.disabled = false;
-            btn.textContent = 'Obnovit upozornenia';
-        }
-    }
-
     // ===== NOTIFICATIONS =====
     let notifications = [];
 
@@ -6809,6 +6568,35 @@
             loadNotifications();
         } catch(e) {
             alert('Chyba: ' + e.message);
+        }
+    }
+
+    // ===== RUN NOTIFICATION RULES =====
+    async function runNotificationRules() {
+        try {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Prebieha...';
+            
+            const res = await fetch('/api/system-run-rules', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            });
+            
+            const result = await res.json();
+            
+            if (res.ok) {
+                alert(result.message || 'Upozornenia boli obnovene');
+                loadNotifications();
+            } else {
+                throw new Error(result.error || 'Chyba');
+            }
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        } finally {
+            const btn = event.target;
+            btn.disabled = false;
+            btn.textContent = 'Obnovit upozornenia';
         }
     }
 
