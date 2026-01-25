@@ -142,6 +142,7 @@
                     <div class="nav-item" data-section="riders"><span class="icon">🏇</span>Jazdci</div>
                     <div class="nav-item" data-section="trainers"><span class="icon">👨‍🏫</span>Tréneri</div>
                     <div class="nav-item" data-section="employees"><span class="icon">👷</span>Zamestnanci</div>
+                    <div class="nav-item" data-section="docs-central"><span class="icon">📁</span>Dokumenty</div>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Prevádzka</div>
@@ -150,6 +151,8 @@
                     <div class="nav-item" data-section="trainings"><span class="icon">📝</span>Interné záznamy</div>
                     <div class="nav-item" data-section="vet"><span class="icon">🏥</span>Veterinárne záznamy</div>
                     <div class="nav-item" data-section="feeding"><span class="icon">🌾</span>Kŕmenie</div>
+                    <div class="nav-item" data-section="stable-log"><span class="icon">📖</span>Maštaľná kniha</div>
+                    <div class="nav-item" data-section="visit-log"><span class="icon">📋</span>Návštevná kniha</div>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Šport</div>
@@ -285,6 +288,83 @@
             <section id="feeding" class="section">
                 <div class="header"><h1>Krmenie</h1><div class="header-actions"><input type="date" class="form-control" id="feedingDate" style="width:auto"><button class="btn btn-primary" onclick="openModal('feedingModal')">+ Pridat zaznam</button></div></div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Datum</th><th>Cas</th><th>Krmil</th><th>Poznamka</th><th>Polozky</th><th>Akcie</th></tr></thead><tbody id="feedingTable"></tbody></table></div></div>
+            </section>
+
+            <!-- MAŠTAĽNÁ KNIHA -->
+            <section id="stable-log" class="section">
+                <div class="header">
+                    <h1>📖 Záznamová kniha maštale</h1>
+                    <div class="header-actions">
+                        <input type="date" class="form-control" id="stableLogFrom" style="width:auto">
+                        <input type="date" class="form-control" id="stableLogTo" style="width:auto">
+                        <select class="form-control" id="stableLogType" style="width:150px">
+                            <option value="">Všetky typy</option>
+                            <option value="arrival">Príjem</option>
+                            <option value="departure">Odchod</option>
+                            <option value="transfer">Presun</option>
+                            <option value="return">Návrat</option>
+                            <option value="quarantine_start">Karanténa začiatok</option>
+                            <option value="quarantine_end">Karanténa koniec</option>
+                            <option value="death">Úhyn</option>
+                        </select>
+                        <select class="form-control" id="stableLogHorse" style="width:150px"><option value="">Všetky kone</option></select>
+                        <button class="btn btn-outline" onclick="filterStableLog()">Filtrovať</button>
+                        <button class="btn btn-outline" onclick="printStableLog()">🖨️ Tlač</button>
+                        <button class="btn btn-primary" onclick="openStableLogModal()">+ Nový záznam</button>
+                    </div>
+                </div>
+                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum</th><th>Kôň</th><th>Typ udalosti</th><th>Miesto</th><th>Zodpovedná osoba</th><th>Poznámka</th><th>Akcie</th></tr></thead><tbody id="stableLogTable"></tbody></table></div></div>
+            </section>
+
+            <!-- NÁVŠTEVNÁ KNIHA -->
+            <section id="visit-log" class="section">
+                <div class="header">
+                    <h1>📋 Návštevná kniha</h1>
+                    <div class="header-actions">
+                        <input type="date" class="form-control" id="visitLogFrom" style="width:auto">
+                        <input type="date" class="form-control" id="visitLogTo" style="width:auto">
+                        <input type="text" class="form-control" id="visitLogSearch" placeholder="Hľadať..." style="width:150px">
+                        <button class="btn btn-outline" onclick="filterVisitLog()">Filtrovať</button>
+                        <button class="btn btn-outline" onclick="printVisitLog()">🖨️ Tlač</button>
+                        <button class="btn btn-primary" onclick="openVisitLogModal()">+ Nový záznam</button>
+                    </div>
+                </div>
+                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum/Čas</th><th>Návštevník</th><th>Organizácia</th><th>Účel</th><th>Sprievod</th><th>Odchod</th><th>BOZP</th><th>Akcie</th></tr></thead><tbody id="visitLogTable"></tbody></table></div></div>
+            </section>
+
+            <!-- CENTRÁLNE DOKUMENTY -->
+            <section id="docs-central" class="section">
+                <div class="header">
+                    <h1>📁 Centrálna evidencia dokumentov</h1>
+                    <div class="header-actions">
+                        <input type="date" class="form-control" id="docsFrom" style="width:auto">
+                        <input type="date" class="form-control" id="docsTo" style="width:auto">
+                        <select class="form-control" id="docsCategory" style="width:150px">
+                            <option value="">Všetky kategórie</option>
+                            <option value="passport">Pas</option>
+                            <option value="vet_report">Veterinárna správa</option>
+                            <option value="death_certificate">Úhyn</option>
+                            <option value="rendering">Kafiléria</option>
+                            <option value="fei_document">FEI doklad</option>
+                            <option value="sjf_document">SJF doklad</option>
+                            <option value="license">Licencia</option>
+                            <option value="consent">Súhlas</option>
+                            <option value="receipt">Príjemka</option>
+                            <option value="request">Žiadanka</option>
+                            <option value="mail_incoming">Pošta došlá</option>
+                            <option value="mail_outgoing">Pošta odoslaná</option>
+                            <option value="contract">Zmluva</option>
+                            <option value="permit">Povolenie</option>
+                            <option value="inspection">Kontrola</option>
+                            <option value="other">Iné</option>
+                        </select>
+                        <input type="text" class="form-control" id="docsSearch" placeholder="Hľadať..." style="width:150px">
+                        <button class="btn btn-outline" onclick="filterDocs()">Filtrovať</button>
+                        <button class="btn btn-outline" onclick="printDocs()">🖨️ Tlač</button>
+                        <button class="btn btn-primary" onclick="openDocModal()">+ Pridať dokument</button>
+                    </div>
+                </div>
+                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum</th><th>Názov</th><th>Kategória</th><th>Väzba</th><th>Súbor</th><th>Akcie</th></tr></thead><tbody id="docsTable"></tbody></table></div></div>
             </section>
 
             <!-- COMPETITIONS -->
@@ -1414,6 +1494,138 @@
                 </form>
             </div>
             <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('paymentModal')">Zrušiť</button><button class="btn btn-primary" onclick="savePayment()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- STABLE LOG MODAL -->
+    <div class="modal" id="stableLogModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="stableLogModalTitle">Nový záznam - Maštaľná kniha</h3><button class="modal-close" onclick="closeModal('stableLogModal')">×</button></div>
+            <div class="modal-body">
+                <form id="stableLogForm">
+                    <input type="hidden" id="stableLogId">
+                    <div class="form-row">
+                        <div class="form-group"><label>Kôň</label><select class="form-control" id="stableLogHorseSelect"></select></div>
+                        <div class="form-group"><label>Typ udalosti *</label><select class="form-control" id="stableLogEventType" required>
+                            <option value="">Vyberte...</option>
+                            <option value="arrival">Príjem do maštale</option>
+                            <option value="departure">Odchod z maštale</option>
+                            <option value="transfer">Dočasný presun</option>
+                            <option value="return">Návrat</option>
+                            <option value="quarantine_start">Karanténa - začiatok</option>
+                            <option value="quarantine_end">Karanténa - koniec</option>
+                            <option value="death">Úhyn</option>
+                        </select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Dátum *</label><input type="date" class="form-control" id="stableLogDate" required></div>
+                        <div class="form-group"><label>Čas</label><input type="time" class="form-control" id="stableLogTime"></div>
+                        <div class="form-group"><label>Dátum do</label><input type="date" class="form-control" id="stableLogDateTo"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Miesto odkiaľ</label><input type="text" class="form-control" id="stableLogFrom" placeholder="napr. JK Zelená míľa"></div>
+                        <div class="form-group"><label>Miesto kam</label><input type="text" class="form-control" id="stableLogTo" placeholder="napr. Veterinárna klinika"></div>
+                    </div>
+                    <div class="form-group"><label>Dôvod</label><input type="text" class="form-control" id="stableLogReason" placeholder="napr. Preteky, Liečba, Tréning"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Zodpovedná osoba *</label><input type="text" class="form-control" id="stableLogResponsible" required placeholder="Meno a priezvisko"></div>
+                        <div class="form-group"><label>Zamestnanec (voliteľné)</label><select class="form-control" id="stableLogEmployee"><option value="">-- Nevybrané --</option></select></div>
+                    </div>
+                    <div class="form-group"><label>Poznámka</label><textarea class="form-control" id="stableLogNotes" rows="2"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('stableLogModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveStableLog()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- VISIT LOG MODAL -->
+    <div class="modal" id="visitLogModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="visitLogModalTitle">Nový záznam - Návštevná kniha</h3><button class="modal-close" onclick="closeModal('visitLogModal')">×</button></div>
+            <div class="modal-body">
+                <form id="visitLogForm">
+                    <input type="hidden" id="visitLogId">
+                    <div class="form-row">
+                        <div class="form-group"><label>Meno návštevníka *</label><input type="text" class="form-control" id="visitLogName" required></div>
+                        <div class="form-group"><label>Organizácia / Firma</label><input type="text" class="form-control" id="visitLogOrg"></div>
+                    </div>
+                    <div class="form-group"><label>Účel návštevy *</label><input type="text" class="form-control" id="visitLogPurpose" required placeholder="napr. Servis, Veterinár, Kontrola, Návšteva"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Telefón</label><input type="tel" class="form-control" id="visitLogPhone"></div>
+                        <div class="form-group"><label>Email</label><input type="email" class="form-control" id="visitLogEmail"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Dátum príchodu *</label><input type="date" class="form-control" id="visitLogArrivalDate" required></div>
+                        <div class="form-group"><label>Čas príchodu *</label><input type="time" class="form-control" id="visitLogArrivalTime" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Dátum odchodu</label><input type="date" class="form-control" id="visitLogDepartureDate"></div>
+                        <div class="form-group"><label>Čas odchodu</label><input type="time" class="form-control" id="visitLogDepartureTime"></div>
+                    </div>
+                    <div class="form-group"><label>Sprievod / Zodpovedná osoba z klubu *</label><input type="text" class="form-control" id="visitLogEscort" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label><input type="checkbox" id="visitLogSafety"> BOZP poučenie</label></div>
+                        <div class="form-group"><label>Podpis (text)</label><input type="text" class="form-control" id="visitLogSignature" placeholder="Pre tlač"></div>
+                    </div>
+                    <div class="form-group"><label>Poznámka</label><textarea class="form-control" id="visitLogNotes" rows="2"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('visitLogModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveVisitLog()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- DOCUMENT MODAL -->
+    <div class="modal" id="docModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="docModalTitle">Pridať dokument</h3><button class="modal-close" onclick="closeModal('docModal')">×</button></div>
+            <div class="modal-body">
+                <form id="docForm">
+                    <input type="hidden" id="docId">
+                    <div class="form-group"><label>Názov dokumentu *</label><input type="text" class="form-control" id="docTitle" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Kategória *</label><select class="form-control" id="docCategory" required>
+                            <option value="">Vyberte...</option>
+                            <option value="passport">Pas</option>
+                            <option value="vet_report">Veterinárna správa</option>
+                            <option value="death_certificate">Úhyn</option>
+                            <option value="rendering">Kafiléria</option>
+                            <option value="fei_document">FEI doklad</option>
+                            <option value="sjf_document">SJF doklad</option>
+                            <option value="license">Licencia</option>
+                            <option value="consent">Súhlas</option>
+                            <option value="receipt">Príjemka</option>
+                            <option value="request">Žiadanka</option>
+                            <option value="mail_incoming">Pošta došlá</option>
+                            <option value="mail_outgoing">Pošta odoslaná</option>
+                            <option value="contract">Zmluva</option>
+                            <option value="permit">Povolenie</option>
+                            <option value="inspection">Kontrola</option>
+                            <option value="other">Iné</option>
+                        </select></div>
+                        <div class="form-group"><label>Dátum dokumentu</label><input type="date" class="form-control" id="docDate"></div>
+                    </div>
+                    <div class="form-group"><label>Popis</label><textarea class="form-control" id="docDescription" rows="2"></textarea></div>
+                    <div class="form-group"><label>Súbor URL</label><input type="text" class="form-control" id="docFileUrl" placeholder="https://..."></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Väzba na koňa</label><select class="form-control" id="docHorse"><option value="">-- Nevybrané --</option></select></div>
+                        <div class="form-group"><label><input type="checkbox" id="docIsClub"> Dokument klubu/prevádzky</label></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Väzba na záznam maštale</label><select class="form-control" id="docStableLog"><option value="">-- Nevybrané --</option></select></div>
+                        <div class="form-group"><label>Väzba na návštevu</label><select class="form-control" id="docVisitLog"><option value="">-- Nevybrané --</option></select></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('docModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveDoc()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- PRINT MODAL -->
+    <div class="modal" id="printModal">
+        <div class="modal-content" style="max-width:900px;max-height:90vh;overflow:auto">
+            <div class="modal-header"><h3 id="printModalTitle">Tlač</h3><button class="modal-close" onclick="closeModal('printModal')">×</button></div>
+            <div class="modal-body" id="printContent" style="background:white;padding:2rem"></div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('printModal')">Zavrieť</button><button class="btn btn-primary" onclick="window.print()">🖨️ Tlačiť</button></div>
         </div>
     </div>
 
@@ -4820,8 +5032,559 @@
             if (item.dataset.section === 'admin-users') {
                 setTimeout(loadAdminUsers, 100);
             }
+            if (item.dataset.section === 'stable-log') {
+                setTimeout(loadStableLog, 100);
+            }
+            if (item.dataset.section === 'visit-log') {
+                setTimeout(loadVisitLog, 100);
+            }
+            if (item.dataset.section === 'docs-central') {
+                setTimeout(loadDocsCentral, 100);
+            }
         });
     });
+
+    // ===== STABLE LOG (MAŠTAĽNÁ KNIHA) =====
+    let stableLogs = [];
+    
+    async function loadStableLog() {
+        const from = document.getElementById('stableLogFrom')?.value || '';
+        const to = document.getElementById('stableLogTo')?.value || '';
+        const type = document.getElementById('stableLogType')?.value || '';
+        const horse = document.getElementById('stableLogHorse')?.value || '';
+        
+        let url = '/api/stable-log?';
+        if (from) url += `date_from=${from}&`;
+        if (to) url += `date_to=${to}&`;
+        if (type) url += `event_type=${type}&`;
+        if (horse) url += `horse_id=${horse}&`;
+        
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            stableLogs = await res.json();
+            if (!Array.isArray(stableLogs)) stableLogs = [];
+            renderStableLog();
+            populateStableLogHorseFilter();
+        } catch(e) {
+            console.error('loadStableLog error:', e);
+            stableLogs = [];
+        }
+    }
+    
+    function populateStableLogHorseFilter() {
+        const select = document.getElementById('stableLogHorse');
+        if (!select) return;
+        const opts = '<option value="">Všetky kone</option>' + horses.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
+        select.innerHTML = opts;
+    }
+    
+    const eventTypeLabels = {
+        arrival: 'Príjem', departure: 'Odchod', transfer: 'Presun',
+        return: 'Návrat', quarantine_start: 'Karanténa začiatok',
+        quarantine_end: 'Karanténa koniec', death: 'Úhyn'
+    };
+    
+    function renderStableLog() {
+        document.getElementById('stableLogTable').innerHTML = stableLogs.map(s => {
+            const horse = s.horses || horses.find(h => h.id === s.horse_id);
+            return `<tr>
+                <td><strong>${s.event_date}</strong>${s.event_time ? `<br><small>${s.event_time}</small>` : ''}</td>
+                <td>${horse ? (horse.stable_name || horse.name) : '-'}</td>
+                <td><span class="badge badge-${s.event_type === 'death' ? 'danger' : 'info'}">${eventTypeLabels[s.event_type] || s.event_type}</span></td>
+                <td>${s.location_from || ''} ${s.location_to ? '→ ' + s.location_to : ''}</td>
+                <td>${s.responsible_person || '-'}</td>
+                <td>${s.notes || '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editStableLog('${s.id}')">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteStableLog('${s.id}')">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Žiadne záznamy</td></tr>';
+    }
+    
+    function filterStableLog() { loadStableLog(); }
+    
+    function openStableLogModal() {
+        document.getElementById('stableLogId').value = '';
+        document.getElementById('stableLogHorseSelect').innerHTML = '<option value="">-- Nevybrané --</option>' + horses.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
+        document.getElementById('stableLogEmployee').innerHTML = '<option value="">-- Nevybrané --</option>' + employees.filter(e => e.status === 'active').map(e => `<option value="${e.id}">${e.first_name} ${e.last_name}</option>`).join('');
+        document.getElementById('stableLogEventType').value = '';
+        document.getElementById('stableLogDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('stableLogTime').value = '';
+        document.getElementById('stableLogDateTo').value = '';
+        document.getElementById('stableLogFrom').value = '';
+        document.getElementById('stableLogTo').value = '';
+        document.getElementById('stableLogReason').value = '';
+        document.getElementById('stableLogResponsible').value = '';
+        document.getElementById('stableLogNotes').value = '';
+        document.getElementById('stableLogModalTitle').textContent = 'Nový záznam - Maštaľná kniha';
+        showModalOnly('stableLogModal');
+    }
+    
+    function editStableLog(id) {
+        const s = stableLogs.find(x => x.id === id);
+        if (!s) return;
+        document.getElementById('stableLogId').value = s.id;
+        document.getElementById('stableLogHorseSelect').innerHTML = '<option value="">-- Nevybrané --</option>' + horses.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
+        document.getElementById('stableLogHorseSelect').value = s.horse_id || '';
+        document.getElementById('stableLogEmployee').innerHTML = '<option value="">-- Nevybrané --</option>' + employees.filter(e => e.status === 'active').map(e => `<option value="${e.id}">${e.first_name} ${e.last_name}</option>`).join('');
+        document.getElementById('stableLogEmployee').value = s.employee_id || '';
+        document.getElementById('stableLogEventType').value = s.event_type || '';
+        document.getElementById('stableLogDate').value = s.event_date || '';
+        document.getElementById('stableLogTime').value = s.event_time || '';
+        document.getElementById('stableLogDateTo').value = s.date_to || '';
+        document.getElementById('stableLogFrom').value = s.location_from || '';
+        document.getElementById('stableLogTo').value = s.location_to || '';
+        document.getElementById('stableLogReason').value = s.reason || '';
+        document.getElementById('stableLogResponsible').value = s.responsible_person || '';
+        document.getElementById('stableLogNotes').value = s.notes || '';
+        document.getElementById('stableLogModalTitle').textContent = 'Upraviť záznam';
+        showModalOnly('stableLogModal');
+    }
+    
+    async function saveStableLog() {
+        const id = document.getElementById('stableLogId').value;
+        const data = {
+            horse_id: document.getElementById('stableLogHorseSelect').value || null,
+            event_type: document.getElementById('stableLogEventType').value,
+            event_date: document.getElementById('stableLogDate').value,
+            event_time: document.getElementById('stableLogTime').value || null,
+            date_to: document.getElementById('stableLogDateTo').value || null,
+            location_from: document.getElementById('stableLogFrom').value || null,
+            location_to: document.getElementById('stableLogTo').value || null,
+            reason: document.getElementById('stableLogReason').value || null,
+            responsible_person: document.getElementById('stableLogResponsible').value,
+            employee_id: document.getElementById('stableLogEmployee').value || null,
+            notes: document.getElementById('stableLogNotes').value || null
+        };
+        
+        if (!data.event_type || !data.event_date || !data.responsible_person) {
+            showToast('Vyplňte povinné polia', 'error');
+            return;
+        }
+        
+        try {
+            const res = await fetch(id ? `/api/stable-log/${id}` : '/api/stable-log', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Chyba servera');
+            showToast('Záznam uložený', 'success');
+            closeModal('stableLogModal');
+            loadStableLog();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    async function deleteStableLog(id) {
+        if (!confirm('Naozaj zmazať tento záznam?')) return;
+        try {
+            await fetch(`/api/stable-log/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast('Záznam zmazaný', 'success');
+            loadStableLog();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    function printStableLog() {
+        const from = document.getElementById('stableLogFrom')?.value || 'N/A';
+        const to = document.getElementById('stableLogTo')?.value || 'N/A';
+        let html = `
+            <div style="text-align:center;margin-bottom:2rem">
+                <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
+                <h2>Záznamová kniha maštale</h2>
+                <p>Obdobie: ${from} - ${to}</p>
+            </div>
+            <table style="width:100%;border-collapse:collapse" border="1">
+                <thead><tr style="background:#f0f0f0">
+                    <th style="padding:8px">Dátum</th><th style="padding:8px">Kôň</th><th style="padding:8px">Udalosť</th>
+                    <th style="padding:8px">Miesto</th><th style="padding:8px">Zodpovedná osoba</th><th style="padding:8px">Poznámka</th>
+                </tr></thead>
+                <tbody>
+        `;
+        stableLogs.forEach(s => {
+            const horse = s.horses || horses.find(h => h.id === s.horse_id);
+            html += `<tr>
+                <td style="padding:8px">${s.event_date}${s.event_time ? ' ' + s.event_time : ''}</td>
+                <td style="padding:8px">${horse ? (horse.stable_name || horse.name) : '-'}</td>
+                <td style="padding:8px">${eventTypeLabels[s.event_type] || s.event_type}</td>
+                <td style="padding:8px">${s.location_from || ''} ${s.location_to ? '→ ' + s.location_to : ''}</td>
+                <td style="padding:8px">${s.responsible_person || '-'}</td>
+                <td style="padding:8px">${s.notes || '-'}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>
+            <div style="margin-top:3rem;display:flex;justify-content:space-between">
+                <div>Dátum: _______________</div>
+                <div>Podpis: _______________</div>
+            </div>`;
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printModalTitle').textContent = 'Tlač - Maštaľná kniha';
+        showModalOnly('printModal');
+    }
+
+    // ===== VISIT LOG (NÁVŠTEVNÁ KNIHA) =====
+    let visitLogs = [];
+    
+    async function loadVisitLog() {
+        const from = document.getElementById('visitLogFrom')?.value || '';
+        const to = document.getElementById('visitLogTo')?.value || '';
+        const search = document.getElementById('visitLogSearch')?.value || '';
+        
+        let url = '/api/visit-log?';
+        if (from) url += `date_from=${from}&`;
+        if (to) url += `date_to=${to}&`;
+        if (search) url += `search=${encodeURIComponent(search)}&`;
+        
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            visitLogs = await res.json();
+            if (!Array.isArray(visitLogs)) visitLogs = [];
+            renderVisitLog();
+        } catch(e) {
+            console.error('loadVisitLog error:', e);
+            visitLogs = [];
+        }
+    }
+    
+    function renderVisitLog() {
+        document.getElementById('visitLogTable').innerHTML = visitLogs.map(v => `<tr>
+            <td><strong>${v.arrival_date}</strong><br><small>${v.arrival_time}</small></td>
+            <td>${v.visitor_name}</td>
+            <td>${v.organization || '-'}</td>
+            <td>${v.purpose}</td>
+            <td>${v.escort_person}</td>
+            <td>${v.departure_date ? v.departure_date + ' ' + (v.departure_time || '') : '-'}</td>
+            <td>${v.safety_briefing ? '✅' : '❌'}</td>
+            <td>
+                <button class="btn btn-sm btn-outline" onclick="editVisitLog('${v.id}')">✏️</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteVisitLog('${v.id}')">🗑️</button>
+            </td>
+        </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne záznamy</td></tr>';
+    }
+    
+    function filterVisitLog() { loadVisitLog(); }
+    
+    function openVisitLogModal() {
+        document.getElementById('visitLogId').value = '';
+        document.getElementById('visitLogName').value = '';
+        document.getElementById('visitLogOrg').value = '';
+        document.getElementById('visitLogPurpose').value = '';
+        document.getElementById('visitLogPhone').value = '';
+        document.getElementById('visitLogEmail').value = '';
+        document.getElementById('visitLogArrivalDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('visitLogArrivalTime').value = new Date().toTimeString().slice(0,5);
+        document.getElementById('visitLogDepartureDate').value = '';
+        document.getElementById('visitLogDepartureTime').value = '';
+        document.getElementById('visitLogEscort').value = '';
+        document.getElementById('visitLogSafety').checked = false;
+        document.getElementById('visitLogSignature').value = '';
+        document.getElementById('visitLogNotes').value = '';
+        document.getElementById('visitLogModalTitle').textContent = 'Nový záznam - Návštevná kniha';
+        showModalOnly('visitLogModal');
+    }
+    
+    function editVisitLog(id) {
+        const v = visitLogs.find(x => x.id === id);
+        if (!v) return;
+        document.getElementById('visitLogId').value = v.id;
+        document.getElementById('visitLogName').value = v.visitor_name || '';
+        document.getElementById('visitLogOrg').value = v.organization || '';
+        document.getElementById('visitLogPurpose').value = v.purpose || '';
+        document.getElementById('visitLogPhone').value = v.contact_phone || '';
+        document.getElementById('visitLogEmail').value = v.contact_email || '';
+        document.getElementById('visitLogArrivalDate').value = v.arrival_date || '';
+        document.getElementById('visitLogArrivalTime').value = v.arrival_time || '';
+        document.getElementById('visitLogDepartureDate').value = v.departure_date || '';
+        document.getElementById('visitLogDepartureTime').value = v.departure_time || '';
+        document.getElementById('visitLogEscort').value = v.escort_person || '';
+        document.getElementById('visitLogSafety').checked = v.safety_briefing || false;
+        document.getElementById('visitLogSignature').value = v.signature_text || '';
+        document.getElementById('visitLogNotes').value = v.notes || '';
+        document.getElementById('visitLogModalTitle').textContent = 'Upraviť záznam';
+        showModalOnly('visitLogModal');
+    }
+    
+    async function saveVisitLog() {
+        const id = document.getElementById('visitLogId').value;
+        const data = {
+            visitor_name: document.getElementById('visitLogName').value,
+            organization: document.getElementById('visitLogOrg').value || null,
+            purpose: document.getElementById('visitLogPurpose').value,
+            contact_phone: document.getElementById('visitLogPhone').value || null,
+            contact_email: document.getElementById('visitLogEmail').value || null,
+            arrival_date: document.getElementById('visitLogArrivalDate').value,
+            arrival_time: document.getElementById('visitLogArrivalTime').value,
+            departure_date: document.getElementById('visitLogDepartureDate').value || null,
+            departure_time: document.getElementById('visitLogDepartureTime').value || null,
+            escort_person: document.getElementById('visitLogEscort').value,
+            safety_briefing: document.getElementById('visitLogSafety').checked,
+            signature_text: document.getElementById('visitLogSignature').value || null,
+            notes: document.getElementById('visitLogNotes').value || null
+        };
+        
+        if (!data.visitor_name || !data.purpose || !data.arrival_date || !data.arrival_time || !data.escort_person) {
+            showToast('Vyplňte povinné polia', 'error');
+            return;
+        }
+        
+        try {
+            const res = await fetch(id ? `/api/visit-log/${id}` : '/api/visit-log', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Chyba servera');
+            showToast('Záznam uložený', 'success');
+            closeModal('visitLogModal');
+            loadVisitLog();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    async function deleteVisitLog(id) {
+        if (!confirm('Naozaj zmazať tento záznam?')) return;
+        try {
+            await fetch(`/api/visit-log/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast('Záznam zmazaný', 'success');
+            loadVisitLog();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    function printVisitLog() {
+        const from = document.getElementById('visitLogFrom')?.value || 'N/A';
+        const to = document.getElementById('visitLogTo')?.value || 'N/A';
+        let html = `
+            <div style="text-align:center;margin-bottom:2rem">
+                <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
+                <h2>Návštevná kniha</h2>
+                <p>Obdobie: ${from} - ${to}</p>
+            </div>
+            <table style="width:100%;border-collapse:collapse" border="1">
+                <thead><tr style="background:#f0f0f0">
+                    <th style="padding:8px">Príchod</th><th style="padding:8px">Meno</th><th style="padding:8px">Organizácia</th>
+                    <th style="padding:8px">Účel</th><th style="padding:8px">Sprievod</th><th style="padding:8px">Odchod</th><th style="padding:8px">Podpis</th>
+                </tr></thead>
+                <tbody>
+        `;
+        visitLogs.forEach(v => {
+            html += `<tr>
+                <td style="padding:8px">${v.arrival_date} ${v.arrival_time}</td>
+                <td style="padding:8px">${v.visitor_name}</td>
+                <td style="padding:8px">${v.organization || '-'}</td>
+                <td style="padding:8px">${v.purpose}</td>
+                <td style="padding:8px">${v.escort_person}</td>
+                <td style="padding:8px">${v.departure_date ? v.departure_date + ' ' + (v.departure_time || '') : ''}</td>
+                <td style="padding:8px">${v.signature_text || ''}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>
+            <div style="margin-top:3rem;display:flex;justify-content:space-between">
+                <div>Dátum: _______________</div>
+                <div>Overil: _______________</div>
+            </div>`;
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printModalTitle').textContent = 'Tlač - Návštevná kniha';
+        showModalOnly('printModal');
+    }
+
+    // ===== DOCUMENTS CENTRAL =====
+    let docsCentral = [];
+    
+    async function loadDocsCentral() {
+        const from = document.getElementById('docsFrom')?.value || '';
+        const to = document.getElementById('docsTo')?.value || '';
+        const category = document.getElementById('docsCategory')?.value || '';
+        const search = document.getElementById('docsSearch')?.value || '';
+        
+        let url = '/api/documents-v2?';
+        if (from) url += `date_from=${from}&`;
+        if (to) url += `date_to=${to}&`;
+        if (category) url += `category=${category}&`;
+        if (search) url += `search=${encodeURIComponent(search)}&`;
+        
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            docsCentral = await res.json();
+            if (!Array.isArray(docsCentral)) docsCentral = [];
+            renderDocsCentral();
+        } catch(e) {
+            console.error('loadDocsCentral error:', e);
+            docsCentral = [];
+        }
+    }
+    
+    const docCategoryLabels = {
+        passport: 'Pas', vet_report: 'Vet. správa', death_certificate: 'Úhyn', rendering: 'Kafiléria',
+        fei_document: 'FEI', sjf_document: 'SJF', license: 'Licencia', consent: 'Súhlas',
+        receipt: 'Príjemka', request: 'Žiadanka', mail_incoming: 'Pošta došlá', mail_outgoing: 'Pošta odoslaná',
+        contract: 'Zmluva', permit: 'Povolenie', inspection: 'Kontrola', other: 'Iné'
+    };
+    
+    function renderDocsCentral() {
+        document.getElementById('docsTable').innerHTML = docsCentral.map(d => {
+            const horse = d.horses || horses.find(h => h.id === d.horse_id);
+            let link = '-';
+            if (horse) link = `🐴 ${horse.stable_name || horse.name}`;
+            else if (d.is_club_document) link = '🏢 Klub';
+            else if (d.stable_log_id) link = '📖 Maštaľ';
+            else if (d.visit_log_id) link = '📋 Návšteva';
+            
+            return `<tr>
+                <td>${d.document_date || '-'}</td>
+                <td><strong>${d.title}</strong>${d.description ? `<br><small>${d.description.slice(0,50)}...</small>` : ''}</td>
+                <td><span class="badge badge-info">${docCategoryLabels[d.category] || d.category}</span></td>
+                <td>${link}</td>
+                <td>${d.file_url ? `<a href="${d.file_url}" target="_blank">📄 Súbor</a>` : '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editDoc('${d.id}')">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteDoc('${d.id}')">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadne dokumenty</td></tr>';
+    }
+    
+    function filterDocs() { loadDocsCentral(); }
+    
+    async function openDocModal() {
+        document.getElementById('docId').value = '';
+        document.getElementById('docTitle').value = '';
+        document.getElementById('docCategory').value = '';
+        document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('docDescription').value = '';
+        document.getElementById('docFileUrl').value = '';
+        document.getElementById('docHorse').innerHTML = '<option value="">-- Nevybrané --</option>' + horses.map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
+        document.getElementById('docIsClub').checked = false;
+        
+        // Load stable logs for select
+        try {
+            const res = await fetch('/api/stable-log', { headers: { 'Authorization': `Bearer ${token}` } });
+            const logs = await res.json();
+            document.getElementById('docStableLog').innerHTML = '<option value="">-- Nevybrané --</option>' + (logs || []).map(s => `<option value="${s.id}">${s.event_date} - ${eventTypeLabels[s.event_type] || s.event_type}</option>`).join('');
+        } catch(e) {}
+        
+        // Load visit logs for select
+        try {
+            const res = await fetch('/api/visit-log', { headers: { 'Authorization': `Bearer ${token}` } });
+            const logs = await res.json();
+            document.getElementById('docVisitLog').innerHTML = '<option value="">-- Nevybrané --</option>' + (logs || []).map(v => `<option value="${v.id}">${v.arrival_date} - ${v.visitor_name}</option>`).join('');
+        } catch(e) {}
+        
+        document.getElementById('docModalTitle').textContent = 'Pridať dokument';
+        showModalOnly('docModal');
+    }
+    
+    async function editDoc(id) {
+        const d = docsCentral.find(x => x.id === id);
+        if (!d) return;
+        
+        await openDocModal();
+        document.getElementById('docId').value = d.id;
+        document.getElementById('docTitle').value = d.title || '';
+        document.getElementById('docCategory').value = d.category || '';
+        document.getElementById('docDate').value = d.document_date || '';
+        document.getElementById('docDescription').value = d.description || '';
+        document.getElementById('docFileUrl').value = d.file_url || '';
+        document.getElementById('docHorse').value = d.horse_id || '';
+        document.getElementById('docIsClub').checked = d.is_club_document || false;
+        document.getElementById('docStableLog').value = d.stable_log_id || '';
+        document.getElementById('docVisitLog').value = d.visit_log_id || '';
+        document.getElementById('docModalTitle').textContent = 'Upraviť dokument';
+    }
+    
+    async function saveDoc() {
+        const id = document.getElementById('docId').value;
+        const data = {
+            title: document.getElementById('docTitle').value,
+            category: document.getElementById('docCategory').value,
+            document_date: document.getElementById('docDate').value || null,
+            description: document.getElementById('docDescription').value || null,
+            file_url: document.getElementById('docFileUrl').value || null,
+            horse_id: document.getElementById('docHorse').value || null,
+            is_club_document: document.getElementById('docIsClub').checked,
+            stable_log_id: document.getElementById('docStableLog').value || null,
+            visit_log_id: document.getElementById('docVisitLog').value || null
+        };
+        
+        if (!data.title || !data.category) {
+            showToast('Vyplňte názov a kategóriu', 'error');
+            return;
+        }
+        
+        try {
+            const res = await fetch(id ? `/api/documents-v2/${id}` : '/api/documents-v2', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Chyba servera');
+            showToast('Dokument uložený', 'success');
+            closeModal('docModal');
+            loadDocsCentral();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    async function deleteDoc(id) {
+        if (!confirm('Naozaj zmazať tento dokument?')) return;
+        try {
+            await fetch(`/api/documents-v2/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast('Dokument zmazaný', 'success');
+            loadDocsCentral();
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+    
+    function printDocs() {
+        const from = document.getElementById('docsFrom')?.value || 'N/A';
+        const to = document.getElementById('docsTo')?.value || 'N/A';
+        let html = `
+            <div style="text-align:center;margin-bottom:2rem">
+                <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
+                <h2>Zoznam dokumentov</h2>
+                <p>Obdobie: ${from} - ${to}</p>
+            </div>
+            <table style="width:100%;border-collapse:collapse" border="1">
+                <thead><tr style="background:#f0f0f0">
+                    <th style="padding:8px">Dátum</th><th style="padding:8px">Názov</th><th style="padding:8px">Kategória</th><th style="padding:8px">Väzba</th>
+                </tr></thead>
+                <tbody>
+        `;
+        docsCentral.forEach(d => {
+            const horse = d.horses || horses.find(h => h.id === d.horse_id);
+            let link = '-';
+            if (horse) link = horse.stable_name || horse.name;
+            else if (d.is_club_document) link = 'Klub';
+            
+            html += `<tr>
+                <td style="padding:8px">${d.document_date || '-'}</td>
+                <td style="padding:8px">${d.title}</td>
+                <td style="padding:8px">${docCategoryLabels[d.category] || d.category}</td>
+                <td style="padding:8px">${link}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printModalTitle').textContent = 'Tlač - Dokumenty';
+        showModalOnly('printModal');
+    }
     </script>
 </body>
 </html>

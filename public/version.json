@@ -1,14 +1,16 @@
 {
-  "version": "6.5.3",
-  "build": "2026-01-25T10:40:00Z",
+  "version": "6.6.0",
+  "build": "2026-01-25T11:00:00Z",
   "features": [
-    "Fixed horse select dropdowns - populateSelects called before modal opens",
-    "All modals now have properly filled horse selects"
+    "Stable Log - Záznamová kniha maštale",
+    "Visit Log - Návštevná kniha",
+    "Documents V2 - Centrálna evidencia s väzbami",
+    "Print views for all logs"
   ],
   "changelog": {
+    "6.6.0": "Záznamová kniha maštale, Návštevná kniha, Dokumenty s väzbami, Tlač",
     "6.5.3": "Fixed empty horse dropdowns in modals",
-    "6.5.2": "Fixed vaccination/vet record save - data now visible after save",
-    "6.5.1": "Admin UI fixes: horse CRUD, select dropdowns, edit forms working correctly",
-    "6.5.0": "Admin UI for vaccinations, feeding items, admin users, compliance dashboard"
+    "6.5.2": "Fixed vaccination/vet record save",
+    "6.5.1": "Admin UI fixes: horse CRUD, select dropdowns"
   }
 }
