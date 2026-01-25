@@ -133,7 +133,7 @@
             <nav>
                 <div class="nav-section">
                     <div class="nav-section-title">Prehľad</div>
-                    <div class="nav-item active" data-section="dashboard"><span class="icon">📊</span>Dashboard<span class="badge" id="alertBadge">0</span></div>
+                    <div class="nav-item active" data-section="dashboard"><span class="icon">📊</span>Prehľad<span class="badge" id="alertBadge">0</span></div>
                     <div class="nav-item" data-section="notifications"><span class="icon">🔔</span>Upozornenia</div>
                 </div>
                 <div class="nav-section">
@@ -157,7 +157,7 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Šport</div>
                     <div class="nav-item" data-section="competitions"><span class="icon">🏆</span>Preteky</div>
-                    <div class="nav-item" data-section="licenses"><span class="icon">📋</span>Licencie SJF/FEI</div>
+                    <div class="nav-item" data-section="licenses"><span class="icon">📋</span>Licencie SJF / FEI</div>
                     <div class="nav-item" data-section="sjf-register"><span class="icon">🏛️</span>SJF Register</div>
                 </div>
                 <div class="nav-section">
@@ -174,7 +174,7 @@
                     <div class="nav-item" data-section="articles"><span class="icon">📰</span>Články</div>
                     <div class="nav-item" data-section="gallery"><span class="icon">🖼️</span>Galéria</div>
                     <div class="nav-item" data-section="pages"><span class="icon">📄</span>Stránky</div>
-                    <div class="nav-item" data-section="documents"><span class="icon">📎</span>Dokumenty</div>
+                    <div class="nav-item" data-section="documents"><span class="icon">📎</span>Dokumenty webu</div>
                     <div class="nav-item" data-section="partners"><span class="icon">🤝</span>Partneri</div>
                     <div class="nav-item" data-section="services"><span class="icon">🛠️</span>Služby</div>
                     <div class="nav-item" data-section="web-settings"><span class="icon">⚙️</span>Nastavenia</div>
@@ -185,9 +185,9 @@
                 <div class="nav-item" onclick="logout()"><span class="icon">🚪</span>Odhlásiť</div>
                 
                 <div class="nav-section" style="margin-top:1rem">
-                    <div class="nav-section-title">System</div>
+                    <div class="nav-section-title">Systém</div>
                     <div class="nav-item" data-section="compliance"><span class="icon">🛡️</span>Compliance</div>
-                    <div class="nav-item" data-section="admin-users"><span class="icon">👤</span>Admin uzivatelia</div>
+                    <div class="nav-item" data-section="admin-users"><span class="icon">👤</span>Admin používatelia</div>
                 </div>
             </div>
         </aside>
@@ -195,7 +195,7 @@
         <main class="main">
             <!-- DASHBOARD -->
             <section id="dashboard" class="section active">
-                <div class="header"><h1>Dashboard</h1><div class="header-actions"><span id="currentDate"></span></div></div>
+                <div class="header"><h1>Prehľad</h1><div class="header-actions"><span id="currentDate"></span></div></div>
                 
                 <div id="criticalAlerts"></div>
                 
@@ -251,7 +251,7 @@
 
             <!-- TRAININGS -->
             <section id="trainings" class="section">
-                <div class="header"><h1>📝 Interné záznamy tréningov</h1><div class="header-actions"><input type="date" class="form-control" id="trainingDateFilter" style="width:auto"><button class="btn btn-primary" onclick="openModal('trainingModal')">+ Nový záznam</button></div></div>
+                <div class="header"><h1>📝 Interné záznamy tréningov</h1><div class="header-actions"><input type="date" class="form-control" id="trainingDateFilter" style="width:auto"><button class="btn btn-primary" onclick="openModal('trainingModal')">+ Pridať záznam</button></div></div>
                 <div class="alert alert-info" style="margin-bottom:1rem;font-size:0.9rem">
                     ℹ️ Tu môžete evidovať tréningy registrovaných jazdcov s koňmi a trénermi z databázy. Pre rezervácie z webu použite sekciu <strong>Tréningy</strong>.
                 </div>
@@ -260,57 +260,61 @@
 
             <!-- VET RECORDS -->
             <section id="vet" class="section">
-                <div class="header"><h1>Veterinarne zaznamy</h1><div class="header-actions"><select class="form-control" id="vetHorseFilter" style="width:200px"><option value="">Vsetky kone</option></select><button class="btn btn-primary" onclick="openModal('vetModal')">+ Novy zaznam</button></div></div>
+                <div class="header"><h1>🏥 Veterinárne záznamy</h1><div class="header-actions"><select class="form-control" id="vetHorseFilter" style="width:200px"><option value="">Všetky kone</option></select><button class="btn btn-primary" onclick="openModal('vetModal')">+ Pridať záznam</button></div></div>
                 
                 <div class="stats-grid" style="margin-bottom:1.5rem">
-                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="vetOverdue">0</div><div class="label">Po termine</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="vetSoon">0</div><div class="label">Do 30 dni</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="vetOverdue">0</div><div class="label">Po termíne</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="vetSoon">0</div><div class="label">Do 30 dní</div></div>
                     <div class="stat-card" style="border-left:4px solid var(--success)"><div class="value" id="vetOk">0</div><div class="label">V poriadku</div></div>
                 </div>
 
                 <div class="tabs" style="margin-bottom:1rem">
-                    <div class="tab active" data-vet-tab="records">Vet zaznamy</div>
-                    <div class="tab" data-vet-tab="vaccinations">Ockovania</div>
+                    <div class="tab active" data-vet-tab="records">Všetky záznamy</div>
+                    <div class="tab" data-vet-tab="vaccinations">Očkovania</div>
+                    <div class="tab" data-vet-tab="deworming">Odčervenie</div>
+                    <div class="tab" data-vet-tab="farrier">Kováč</div>
+                    <div class="tab" data-vet-tab="dental">Zubár</div>
+                    <div class="tab" data-vet-tab="treatment">Liečba / úraz</div>
                 </div>
 
                 <div id="vetRecordsTab" class="card">
-                    <div class="card-header"><h3>Veterinarne zaznamy</h3></div>
-                    <div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Typ</th><th>Datum</th><th>Dalsi termin</th><th>Veterinar</th><th>Poznamka</th><th>Akcie</th></tr></thead><tbody id="vetTable"></tbody></table></div>
+                    <div class="card-header"><h3>Veterinárne záznamy</h3></div>
+                    <div class="card-body"><table class="table"><thead><tr><th>Kôň</th><th>Typ</th><th>Dátum</th><th>Ďalší termín</th><th>Veterinár</th><th>Poznámka</th><th>Akcie</th></tr></thead><tbody id="vetTable"></tbody></table></div>
                 </div>
 
                 <div id="vaccinationsTab" class="card" style="display:none">
-                    <div class="card-header"><h3>Ockovania</h3><button class="btn btn-sm btn-primary" onclick="openVaccinationModal()">+ Pridat ockovanie</button></div>
-                    <div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Typ vakciny</th><th>Datum</th><th>Dalsi termin</th><th>Sarza</th><th>Veterinar</th><th>Akcie</th></tr></thead><tbody id="vaccinationsTable"></tbody></table></div>
+                    <div class="card-header"><h3>Očkovania</h3><button class="btn btn-sm btn-primary" onclick="openVaccinationModal()">+ Pridať očkovanie</button></div>
+                    <div class="card-body"><table class="table"><thead><tr><th>Kôň</th><th>Typ vakcíny</th><th>Dátum</th><th>Ďalší termín</th><th>Šarža</th><th>Veterinár</th><th>Akcie</th></tr></thead><tbody id="vaccinationsTable"></tbody></table></div>
                 </div>
             </section>
 
             <!-- FEEDING -->
             <section id="feeding" class="section">
-                <div class="header"><h1>Krmenie</h1><div class="header-actions"><input type="date" class="form-control" id="feedingDate" style="width:auto"><button class="btn btn-primary" onclick="openModal('feedingModal')">+ Pridat zaznam</button></div></div>
-                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Datum</th><th>Cas</th><th>Krmil</th><th>Poznamka</th><th>Polozky</th><th>Akcie</th></tr></thead><tbody id="feedingTable"></tbody></table></div></div>
+                <div class="header"><h1>🌾 Kŕmenie</h1><div class="header-actions"><input type="date" class="form-control" id="feedingDate" style="width:auto"><button class="btn btn-primary" onclick="openModal('feedingModal')">+ Pridať záznam</button></div></div>
+                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Kôň</th><th>Dátum</th><th>Čas</th><th>Kŕmil</th><th>Poznámka</th><th>Položky</th><th>Akcie</th></tr></thead><tbody id="feedingTable"></tbody></table></div></div>
             </section>
 
             <!-- MAŠTAĽNÁ KNIHA -->
             <section id="stable-log" class="section">
                 <div class="header">
-                    <h1>📖 Záznamová kniha maštale</h1>
+                    <h1>📖 Maštaľná kniha</h1>
                     <div class="header-actions">
                         <input type="date" class="form-control" id="stableLogFrom" style="width:auto">
                         <input type="date" class="form-control" id="stableLogTo" style="width:auto">
-                        <select class="form-control" id="stableLogType" style="width:150px">
+                        <select class="form-control" id="stableLogType" style="width:180px">
                             <option value="">Všetky typy</option>
-                            <option value="arrival">Príjem</option>
-                            <option value="departure">Odchod</option>
-                            <option value="transfer">Presun</option>
-                            <option value="return">Návrat</option>
-                            <option value="quarantine_start">Karanténa začiatok</option>
-                            <option value="quarantine_end">Karanténa koniec</option>
+                            <option value="arrival">Príjem koňa</option>
+                            <option value="departure">Odchod koňa</option>
+                            <option value="transfer">Dočasný presun</option>
+                            <option value="return">Návrat koňa</option>
+                            <option value="quarantine_start">Karanténa</option>
+                            <option value="quarantine_end">Ukončenie karantény</option>
                             <option value="death">Úhyn</option>
                         </select>
                         <select class="form-control" id="stableLogHorse" style="width:150px"><option value="">Všetky kone</option></select>
                         <button class="btn btn-outline" onclick="filterStableLog()">Filtrovať</button>
                         <button class="btn btn-outline" onclick="printStableLog()">🖨️ Tlač</button>
-                        <button class="btn btn-primary" onclick="openStableLogModal()">+ Nový záznam</button>
+                        <button class="btn btn-primary" onclick="openStableLogModal()">+ Pridať záznam</button>
                     </div>
                 </div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum</th><th>Kôň</th><th>Typ udalosti</th><th>Miesto</th><th>Zodpovedná osoba</th><th>Poznámka</th><th>Akcie</th></tr></thead><tbody id="stableLogTable"></tbody></table></div></div>
@@ -326,7 +330,7 @@
                         <input type="text" class="form-control" id="visitLogSearch" placeholder="Hľadať..." style="width:150px">
                         <button class="btn btn-outline" onclick="filterVisitLog()">Filtrovať</button>
                         <button class="btn btn-outline" onclick="printVisitLog()">🖨️ Tlač</button>
-                        <button class="btn btn-primary" onclick="openVisitLogModal()">+ Nový záznam</button>
+                        <button class="btn btn-primary" onclick="openVisitLogModal()">+ Pridať záznam</button>
                     </div>
                 </div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum/Čas</th><th>Návštevník</th><th>Organizácia</th><th>Účel</th><th>Sprievod</th><th>Odchod</th><th>BOZP</th><th>Akcie</th></tr></thead><tbody id="visitLogTable"></tbody></table></div></div>
@@ -335,27 +339,21 @@
             <!-- CENTRÁLNE DOKUMENTY -->
             <section id="docs-central" class="section">
                 <div class="header">
-                    <h1>📁 Centrálna evidencia dokumentov</h1>
+                    <h1>📁 Dokumenty</h1>
                     <div class="header-actions">
                         <input type="date" class="form-control" id="docsFrom" style="width:auto">
                         <input type="date" class="form-control" id="docsTo" style="width:auto">
                         <select class="form-control" id="docsCategory" style="width:150px">
                             <option value="">Všetky kategórie</option>
-                            <option value="passport">Pas</option>
-                            <option value="vet_report">Veterinárna správa</option>
-                            <option value="death_certificate">Úhyn</option>
+                            <option value="passport">Pas koňa</option>
+                            <option value="vet_doc">Veterinárny doklad</option>
+                            <option value="death">Úhyn</option>
                             <option value="rendering">Kafiléria</option>
-                            <option value="fei_document">FEI doklad</option>
-                            <option value="sjf_document">SJF doklad</option>
                             <option value="license">Licencia</option>
-                            <option value="consent">Súhlas</option>
                             <option value="receipt">Príjemka</option>
                             <option value="request">Žiadanka</option>
-                            <option value="mail_incoming">Pošta došlá</option>
-                            <option value="mail_outgoing">Pošta odoslaná</option>
+                            <option value="mail">Pošta</option>
                             <option value="contract">Zmluva</option>
-                            <option value="permit">Povolenie</option>
-                            <option value="inspection">Kontrola</option>
                             <option value="other">Iné</option>
                         </select>
                         <input type="text" class="form-control" id="docsSearch" placeholder="Hľadať..." style="width:150px">
@@ -572,7 +570,7 @@
                             <option value="published">Publikované</option>
                             <option value="draft">Koncepty</option>
                         </select>
-                        <button class="btn btn-primary" onclick="openArticleModal()">+ Nový článok</button>
+                        <button class="btn btn-primary" onclick="openArticleModal()">+ Pridať článok</button>
                     </div>
                 </div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Názov</th><th>Kategória</th><th>Autor</th><th>Status</th><th>Dátum</th><th>Zobrazenia</th><th>Akcie</th></tr></thead><tbody id="articlesTable"></tbody></table></div></div>
@@ -583,7 +581,7 @@
                 <div class="header">
                     <h1>🖼️ Galéria</h1>
                     <div class="header-actions">
-                        <button class="btn btn-secondary" onclick="openAlbumModal()">+ Nový album</button>
+                        <button class="btn btn-secondary" onclick="openAlbumModal()">+ Pridať album</button>
                     </div>
                 </div>
                 <div id="albumsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
@@ -594,7 +592,7 @@
                 <div class="header">
                     <h1>📄 Stránky</h1>
                     <div class="header-actions">
-                        <button class="btn btn-primary" onclick="openPageModal()">+ Nová stránka</button>
+                        <button class="btn btn-primary" onclick="openPageModal()">+ Pridať stránku</button>
                     </div>
                 </div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Názov</th><th>URL</th><th>Šablóna</th><th>V menu</th><th>Status</th><th>Akcie</th></tr></thead><tbody id="pagesTable"></tbody></table></div></div>
@@ -612,7 +610,7 @@
                             <option value="výsledky">Výsledky</option>
                             <option value="iné">Iné</option>
                         </select>
-                        <button class="btn btn-primary" onclick="openDocumentModal()">+ Nový dokument</button>
+                        <button class="btn btn-primary" onclick="openDocumentModal()">+ Pridať dokument</button>
                     </div>
                 </div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Názov</th><th>Kategória</th><th>Súbor</th><th>Veľkosť</th><th>Stiahnutia</th><th>Akcie</th></tr></thead><tbody id="documentsTable"></tbody></table></div></div>
@@ -623,7 +621,7 @@
                 <div class="header">
                     <h1>🤝 Partneri a sponzori</h1>
                     <div class="header-actions">
-                        <button class="btn btn-primary" onclick="openPartnerModal()">+ Nový partner</button>
+                        <button class="btn btn-primary" onclick="openPartnerModal()">+ Pridať partnera</button>
                     </div>
                 </div>
                 <div id="partnersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem"></div>
@@ -679,22 +677,41 @@
 
             <!-- COMPLIANCE DASHBOARD -->
             <section id="compliance" class="section">
-                <div class="header"><h1>Compliance Dashboard</h1></div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:1.5rem">
+                <div class="header">
+                    <h1>🛡️ Compliance</h1>
+                    <p style="margin:0;color:var(--gray)">Kontrola zákonných povinností a termínov</p>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:1.5rem">
                     <div class="card">
                         <div class="card-header" style="background:rgba(255,193,7,0.1)">
-                            <h3>Expirujuce SJF licencie koni (do 60 dni)</h3>
+                            <h3>⚠️ Expirácia licencií (do 60 dní)</h3>
                         </div>
                         <div class="card-body" id="complianceHorseLicenses">
-                            <p style="color:var(--gray)">Nacitavam...</p>
+                            <p style="color:var(--gray)">Načítavam...</p>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-header" style="background:rgba(220,53,69,0.1)">
-                            <h3>Ockovania s blizkym terminom (do 30 dni)</h3>
+                            <h3>💉 Expirácia očkovaní (do 30 dní)</h3>
                         </div>
                         <div class="card-body" id="complianceVaccinations">
-                            <p style="color:var(--gray)">Nacitavam...</p>
+                            <p style="color:var(--gray)">Načítavam...</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" style="background:rgba(255,152,0,0.1)">
+                            <h3>📄 Chýbajúce dokumenty</h3>
+                        </div>
+                        <div class="card-body" id="complianceMissingDocs">
+                            <p style="color:var(--gray)">Načítavam...</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" style="background:rgba(156,39,176,0.1)">
+                            <h3>🔒 Kone v karanténe</h3>
+                        </div>
+                        <div class="card-body" id="complianceQuarantine">
+                            <p style="color:var(--gray)">Načítavam...</p>
                         </div>
                     </div>
                 </div>
@@ -702,11 +719,11 @@
 
             <!-- ADMIN USERS -->
             <section id="admin-users" class="section">
-                <div class="header"><h1>Admin uzivatelia</h1><div class="header-actions"><button class="btn btn-primary" onclick="openAdminUserModal()">+ Novy uzivatel</button></div></div>
+                <div class="header"><h1>👤 Admin používatelia</h1><div class="header-actions"><button class="btn btn-primary" onclick="openAdminUserModal()">+ Pridať používateľa</button></div></div>
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
-                            <thead><tr><th>Uzivatel</th><th>Email</th><th>Rola</th><th>Status</th><th>Posledne prihlasenie</th><th>Akcie</th></tr></thead>
+                            <thead><tr><th>Používateľ</th><th>Email</th><th>Rola</th><th>Status</th><th>Posledné prihlásenie</th><th>Akcie</th></tr></thead>
                             <tbody id="adminUsersTable"></tbody>
                         </table>
                     </div>
@@ -1508,13 +1525,13 @@
                         <div class="form-group"><label>Kôň</label><select class="form-control" id="stableLogHorseSelect"></select></div>
                         <div class="form-group"><label>Typ udalosti *</label><select class="form-control" id="stableLogEventType" required>
                             <option value="">Vyberte...</option>
-                            <option value="arrival">Príjem do maštale</option>
-                            <option value="departure">Odchod z maštale</option>
+                            <option value="arrival">Príjem koňa</option>
+                            <option value="departure">Odchod koňa</option>
                             <option value="transfer">Dočasný presun</option>
-                            <option value="return">Návrat</option>
-                            <option value="quarantine_start">Karanténa - začiatok</option>
-                            <option value="quarantine_end">Karanténa - koniec</option>
-                            <option value="death">Úhyn</option>
+                            <option value="return">Návrat koňa</option>
+                            <option value="quarantine_start">Karanténa</option>
+                            <option value="quarantine_end">Ukončenie karantény</option>
+                            <option value="death">Úhyn koňovitého zvieraťa</option>
                         </select></div>
                     </div>
                     <div class="form-row">
@@ -1587,20 +1604,14 @@
                         <div class="form-group"><label>Kategória *</label><select class="form-control" id="docCategory" required>
                             <option value="">Vyberte...</option>
                             <option value="passport">Pas koňa</option>
-                            <option value="vet_report">Veterinárna správa</option>
-                            <option value="death_certificate">Doklad o úhyne</option>
-                            <option value="rendering">Potvrdenie kafilérie</option>
-                            <option value="fei_document">FEI doklad</option>
-                            <option value="sjf_document">SJF doklad</option>
+                            <option value="vet_doc">Veterinárny doklad</option>
+                            <option value="death">Úhyn</option>
+                            <option value="rendering">Kafiléria</option>
                             <option value="license">Licencia</option>
-                            <option value="consent">Súhlas / Poučenie</option>
-                            <option value="receipt">Príjemka tovaru</option>
+                            <option value="receipt">Príjemka</option>
                             <option value="request">Žiadanka</option>
-                            <option value="mail_incoming">Pošta došlá</option>
-                            <option value="mail_outgoing">Pošta odoslaná</option>
+                            <option value="mail">Pošta</option>
                             <option value="contract">Zmluva</option>
-                            <option value="permit">Povolenie</option>
-                            <option value="inspection">Protokol kontroly</option>
                             <option value="other">Iné</option>
                         </select></div>
                         <div class="form-group"><label>Dátum dokumentu</label><input type="date" class="form-control" id="docDate"></div>
@@ -5153,9 +5164,9 @@
     }
     
     const eventTypeLabels = {
-        arrival: 'Príjem', departure: 'Odchod', transfer: 'Presun',
-        return: 'Návrat', quarantine_start: 'Karanténa začiatok',
-        quarantine_end: 'Karanténa koniec', death: 'Úhyn'
+        arrival: 'Príjem koňa', departure: 'Odchod koňa', transfer: 'Dočasný presun',
+        return: 'Návrat koňa', quarantine_start: 'Karanténa',
+        quarantine_end: 'Ukončenie karantény', death: 'Úhyn koňovitého zvieraťa'
     };
     
     function renderStableLog() {
@@ -5267,13 +5278,14 @@
     }
     
     function printStableLog() {
-        const from = document.getElementById('stableLogFrom')?.value || 'N/A';
-        const to = document.getElementById('stableLogTo')?.value || 'N/A';
+        const from = document.getElementById('stableLogFrom')?.value || '';
+        const to = document.getElementById('stableLogTo')?.value || '';
+        const today = new Date().toLocaleDateString('sk-SK');
         let html = `
             <div style="text-align:center;margin-bottom:2rem">
                 <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
-                <h2>Záznamová kniha maštale</h2>
-                <p>Obdobie: ${from} - ${to}</p>
+                <h2>Záznamová kniha pohybu koňovitých zvierat</h2>
+                <p>Obdobie: ${from || 'od začiatku'} – ${to || 'do dnes'}</p>
             </div>
             <table style="width:100%;border-collapse:collapse" border="1">
                 <thead><tr style="background:#f0f0f0">
@@ -5295,9 +5307,12 @@
         });
         html += `</tbody></table>
             <div style="margin-top:3rem;display:flex;justify-content:space-between">
-                <div>Dátum: _______________</div>
+                <div>Dátum: ${today}</div>
                 <div>Podpis: _______________</div>
-            </div>`;
+            </div>
+            <p style="margin-top:2rem;font-size:0.85rem;color:#666;text-align:center">
+                Dokument bol vytvorený elektronickým evidenčným systémom prevádzky.
+            </p>`;
         document.getElementById('printContent').innerHTML = html;
         document.getElementById('printModalTitle').textContent = 'Tlač - Maštaľná kniha';
         showModalOnly('printModal');
@@ -5438,13 +5453,14 @@
     }
     
     function printVisitLog() {
-        const from = document.getElementById('visitLogFrom')?.value || 'N/A';
-        const to = document.getElementById('visitLogTo')?.value || 'N/A';
+        const from = document.getElementById('visitLogFrom')?.value || '';
+        const to = document.getElementById('visitLogTo')?.value || '';
+        const today = new Date().toLocaleDateString('sk-SK');
         let html = `
             <div style="text-align:center;margin-bottom:2rem">
                 <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
-                <h2>Návštevná kniha</h2>
-                <p>Obdobie: ${from} - ${to}</p>
+                <h2>Kniha návštev prevádzky</h2>
+                <p>Obdobie: ${from || 'od začiatku'} – ${to || 'do dnes'}</p>
             </div>
             <table style="width:100%;border-collapse:collapse" border="1">
                 <thead><tr style="background:#f0f0f0">
@@ -5466,9 +5482,12 @@
         });
         html += `</tbody></table>
             <div style="margin-top:3rem;display:flex;justify-content:space-between">
-                <div>Dátum: _______________</div>
+                <div>Dátum: ${today}</div>
                 <div>Overil: _______________</div>
-            </div>`;
+            </div>
+            <p style="margin-top:2rem;font-size:0.85rem;color:#666;text-align:center">
+                Dokument bol vytvorený elektronickým evidenčným systémom prevádzky.
+            </p>`;
         document.getElementById('printContent').innerHTML = html;
         document.getElementById('printModalTitle').textContent = 'Tlač - Návštevná kniha';
         showModalOnly('printModal');
@@ -5501,10 +5520,9 @@
     }
     
     const docCategoryLabels = {
-        passport: 'Pas', vet_report: 'Vet. správa', death_certificate: 'Úhyn', rendering: 'Kafiléria',
-        fei_document: 'FEI', sjf_document: 'SJF', license: 'Licencia', consent: 'Súhlas',
-        receipt: 'Príjemka', request: 'Žiadanka', mail_incoming: 'Pošta došlá', mail_outgoing: 'Pošta odoslaná',
-        contract: 'Zmluva', permit: 'Povolenie', inspection: 'Kontrola', other: 'Iné'
+        passport: 'Pas koňa', vet_doc: 'Veterinárny doklad', death: 'Úhyn', rendering: 'Kafiléria',
+        license: 'Licencia', receipt: 'Príjemka', request: 'Žiadanka', mail: 'Pošta',
+        contract: 'Zmluva', other: 'Iné'
     };
     
     function renderDocsCentral() {
@@ -5639,13 +5657,14 @@
     }
     
     function printDocs() {
-        const from = document.getElementById('docsFrom')?.value || 'N/A';
-        const to = document.getElementById('docsTo')?.value || 'N/A';
+        const from = document.getElementById('docsFrom')?.value || '';
+        const to = document.getElementById('docsTo')?.value || '';
+        const today = new Date().toLocaleDateString('sk-SK');
         let html = `
             <div style="text-align:center;margin-bottom:2rem">
                 <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
-                <h2>Zoznam dokumentov</h2>
-                <p>Obdobie: ${from} - ${to}</p>
+                <h2>Evidencia dokumentov</h2>
+                <p>Obdobie: ${from || 'od začiatku'} – ${to || 'do dnes'}</p>
             </div>
             <table style="width:100%;border-collapse:collapse" border="1">
                 <thead><tr style="background:#f0f0f0">
@@ -5657,7 +5676,7 @@
             const horse = d.horses || horses.find(h => h.id === d.horse_id);
             let link = '-';
             if (horse) link = horse.stable_name || horse.name;
-            else if (d.is_club_document) link = 'Klub';
+            else if (d.is_club_document) link = 'Prevádzka';
             
             html += `<tr>
                 <td style="padding:8px">${d.document_date || '-'}</td>
@@ -5666,7 +5685,10 @@
                 <td style="padding:8px">${link}</td>
             </tr>`;
         });
-        html += `</tbody></table>`;
+        html += `</tbody></table>
+            <p style="margin-top:2rem;font-size:0.85rem;color:#666;text-align:center">
+                Dokument bol vytvorený elektronickým evidenčným systémom prevádzky.
+            </p>`;
         document.getElementById('printContent').innerHTML = html;
         document.getElementById('printModalTitle').textContent = 'Tlač - Dokumenty';
         showModalOnly('printModal');
@@ -5957,11 +5979,12 @@
     function printHorseDetail() {
         const horse = horses.find(h => h.id === currentHorseId);
         if (!horse) return;
+        const today = new Date().toLocaleDateString('sk-SK');
         
         let html = `
             <div style="text-align:center;margin-bottom:2rem">
                 <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
-                <h2>Karta koňa: ${horse.name}</h2>
+                <h2>Evidenčná karta koňa: ${horse.name}</h2>
             </div>
             <table style="width:100%;border-collapse:collapse;margin-bottom:2rem" border="1">
                 <tr><td style="padding:8px;width:30%"><strong>Volacia meno:</strong></td><td style="padding:8px">${horse.stable_name || '-'}</td></tr>
@@ -5990,7 +6013,10 @@
                 <td style="padding:8px">${s.responsible_person || '-'}</td>
             </tr>`;
         });
-        html += '</tbody></table>';
+        html += `</tbody></table>
+            <p style="margin-top:2rem;font-size:0.85rem;color:#666;text-align:center">
+                Dokument bol vytvorený elektronickým evidenčným systémom prevádzky. Dátum: ${today}
+            </p>`;
         
         document.getElementById('printContent').innerHTML = html;
         document.getElementById('printModalTitle').textContent = 'Tlač karty koňa';
