@@ -10,6 +10,27 @@ function verifyToken(req) {
     try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
 }
 
+async function logAudit(entity_type, entity_id, action, user, before_data, after_data) {
+    try {
+        let changed_fields = null;
+        if (action === 'UPDATE' && before_data && after_data) {
+            changed_fields = [];
+            for (const key of Object.keys(after_data)) {
+                if (key === 'updated_at' || key === 'created_at') continue;
+                if (JSON.stringify(before_data[key]) !== JSON.stringify(after_data[key])) {
+                    changed_fields.push(key);
+                }
+            }
+        }
+        await supabase.from('audit_logs').insert({
+            entity_type, entity_id, action,
+            changed_by: user?.id || null,
+            changed_by_name: user?.name || user?.email || null,
+            before_data, after_data, changed_fields
+        });
+    } catch (e) { console.error('Audit error:', e); }
+}
+
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
@@ -25,9 +46,12 @@ module.exports = async (req, res) => {
             return res.status(200).json(data);
         }
 
-        if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
+        const user = verifyToken(req);
+        if (!user) return res.status(401).json({ error: 'Neautorizovany' });
 
         if (req.method === 'PUT') {
+            const { data: before } = await supabase.from('horses').select('*').eq('id', id).single();
+            
             const { 
                 name, stable_name, breed, color, sex, birth_date, country_of_birth,
                 passport_number, life_number, microchip,
@@ -52,12 +76,17 @@ module.exports = async (req, res) => {
                 })
                 .eq('id', id).select().single();
             if (error) throw error;
+            
+            await logAudit('horses', id, 'UPDATE', user, before, data);
             return res.status(200).json(data);
         }
 
         if (req.method === 'DELETE') {
+            const { data: before } = await supabase.from('horses').select('*').eq('id', id).single();
             const { error } = await supabase.from('horses').delete().eq('id', id);
             if (error) throw error;
+            
+            await logAudit('horses', id, 'DELETE', user, before, null);
             return res.status(200).json({ message: 'Deleted' });
         }
 

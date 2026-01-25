@@ -1,14 +1,15 @@
 {
-  "version": "6.8.1",
-  "build": "2026-01-25T13:00:00Z",
+  "version": "6.9.0",
+  "build": "2026-01-25T14:00:00Z",
   "features": [
-    "Sekcia Ulohy s CRUD operaciami",
-    "Sekcia Upozornenia s automatickym generovanim",
-    "Tlacidlo Obnovit upozornenia",
-    "Pravidla pre automaticke notifikacie",
-    "Statistiky uloh a upozorneni"
+    "Audit trail - sledovanie zmien v systeme",
+    "Detail zmeny s porovnanim pred/po",
+    "Filtre podla entity, akcie, pouzivatela, datumu",
+    "Tlac audit trail za obdobie",
+    "API audit logging pre horses entity"
   ],
   "changelog": {
+    "6.9.0": "Audit trail - kto, kedy, co zmenil",
     "6.8.1": "Ulohy a Notifikacie - centralny system spravy uloh a upozorneni",
     "6.8.0": "Terminologicka konzistencia, Compliance, Veterinarne podsekcie",
     "6.7.1": "Fixed document save - duplicate IDs conflict resolved",

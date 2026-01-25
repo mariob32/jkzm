@@ -188,6 +188,7 @@
                 <div class="nav-section" style="margin-top:1rem">
                     <div class="nav-section-title">Systém</div>
                     <div class="nav-item" data-section="compliance"><span class="icon">🛡️</span>Compliance</div>
+                    <div class="nav-item" data-section="audit-trail"><span class="icon">📋</span>Audit trail</div>
                     <div class="nav-item" data-section="admin-users"><span class="icon">👤</span>Admin používatelia</div>
                 </div>
             </div>
@@ -766,6 +767,94 @@
                         <div class="card-body" id="complianceQuarantine">
                             <p style="color:var(--gray)">Načítavam...</p>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AUDIT TRAIL -->
+            <section id="audit-trail" class="section">
+                <div class="header">
+                    <h1>Audit trail</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-outline" onclick="printAuditTrail()">Tlac</button>
+                        <button class="btn btn-outline" onclick="loadAuditLogs()">Obnovit</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:1rem">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Od</label>
+                                <input type="date" class="form-control" id="auditFromDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Do</label>
+                                <input type="date" class="form-control" id="auditToDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Entita</label>
+                                <select class="form-control" id="auditEntityFilter">
+                                    <option value="">Vsetky</option>
+                                    <option value="horses">Kone</option>
+                                    <option value="riders">Jazdci</option>
+                                    <option value="trainers">Treneri</option>
+                                    <option value="employees">Zamestnanci</option>
+                                    <option value="vaccinations">Ockovania</option>
+                                    <option value="feeding">Krmenie</option>
+                                    <option value="stable_log">Mastalna kniha</option>
+                                    <option value="visit_log">Navstevna kniha</option>
+                                    <option value="documents_v2">Dokumenty</option>
+                                    <option value="tasks">Ulohy</option>
+                                    <option value="notifications">Upozornenia</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Akcia</label>
+                                <select class="form-control" id="auditActionFilter">
+                                    <option value="">Vsetky</option>
+                                    <option value="INSERT">Vytvorenie</option>
+                                    <option value="UPDATE">Uprava</option>
+                                    <option value="DELETE">Zmazanie</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pouzivatel</label>
+                                <select class="form-control" id="auditUserFilter">
+                                    <option value="">Vsetci</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="align-self:flex-end">
+                                <button class="btn btn-primary" onclick="loadAuditLogs()">Filtrovat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Zaznamy zmien</h3>
+                        <span id="auditTotal" style="color:var(--gray)">0 zaznamov</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Datum a cas</th>
+                                    <th>Entita</th>
+                                    <th>Akcia</th>
+                                    <th>Zmenene polia</th>
+                                    <th>Pouzivatel</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogsTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer" style="display:flex;justify-content:space-between;align-items:center">
+                        <button class="btn btn-outline" onclick="loadAuditLogsPrev()" id="auditPrevBtn" disabled>Predchadzajuce</button>
+                        <span id="auditPagination">Strana 1</span>
+                        <button class="btn btn-outline" onclick="loadAuditLogsNext()" id="auditNextBtn">Nasledujuce</button>
                     </div>
                 </div>
             </section>
@@ -1773,6 +1862,15 @@
         </div>
     </div>
 
+    <!-- Audit Detail Modal -->
+    <div class="modal" id="auditDetailModal">
+        <div class="modal-content" style="max-width:900px;max-height:90vh;overflow:auto">
+            <div class="modal-header"><h3>Detail zmeny</h3><button class="modal-close" onclick="closeModal('auditDetailModal')">x</button></div>
+            <div class="modal-body" id="auditDetailContent"></div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('auditDetailModal')">Zatvorit</button></div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -1829,6 +1927,7 @@
             // Načítať dáta pre danú sekciu
             if (hash === 'tasks') setTimeout(loadTasks, 100);
             if (hash === 'notifications') setTimeout(loadNotifications, 100);
+            if (hash === 'audit-trail') { setTimeout(initAuditFilters, 100); setTimeout(loadAuditLogs, 150); }
             if (hash === 'articles') setTimeout(loadArticles, 100);
             if (hash === 'gallery') setTimeout(loadAlbums, 100);
             if (hash === 'pages') setTimeout(loadPages, 100);
@@ -6333,6 +6432,214 @@
             btn.disabled = false;
             btn.textContent = 'Obnoviť upozornenia';
         }
+    }
+
+    // ===== AUDIT TRAIL =====
+    let auditLogs = [];
+    let auditOffset = 0;
+    const auditLimit = 50;
+    let auditTotal = 0;
+
+    async function loadAuditLogs() {
+        try {
+            const from = document.getElementById('auditFromDate')?.value || '';
+            const to = document.getElementById('auditToDate')?.value || '';
+            const entity_type = document.getElementById('auditEntityFilter')?.value || '';
+            const action = document.getElementById('auditActionFilter')?.value || '';
+            const changed_by = document.getElementById('auditUserFilter')?.value || '';
+            
+            let url = `/api/audit-logs?limit=${auditLimit}&offset=${auditOffset}`;
+            if (from) url += `&from=${from}`;
+            if (to) url += `&to=${to}`;
+            if (entity_type) url += `&entity_type=${entity_type}`;
+            if (action) url += `&action=${action}`;
+            if (changed_by) url += `&changed_by=${changed_by}`;
+            
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const result = await res.json();
+            
+            auditLogs = result.data || [];
+            auditTotal = result.total || 0;
+            
+            renderAuditTable();
+            updateAuditPagination();
+        } catch(e) {
+            console.error('loadAuditLogs error:', e);
+        }
+    }
+
+    function renderAuditTable() {
+        const tbody = document.getElementById('auditLogsTable');
+        if (!tbody) return;
+        
+        const entityLabels = {
+            horses: 'Kone', riders: 'Jazdci', trainers: 'Treneri', employees: 'Zamestnanci',
+            vaccinations: 'Ockovania', feeding: 'Krmenie', stable_log: 'Mastalna kniha',
+            visit_log: 'Navstevna kniha', documents_v2: 'Dokumenty', tasks: 'Ulohy',
+            notifications: 'Upozornenia', feeding_items: 'Krmivo'
+        };
+        
+        const actionBadges = {
+            INSERT: 'badge-success', UPDATE: 'badge-warning', DELETE: 'badge-danger'
+        };
+        const actionLabels = {
+            INSERT: 'Vytvorenie', UPDATE: 'Uprava', DELETE: 'Zmazanie'
+        };
+        
+        tbody.innerHTML = auditLogs.map(log => {
+            const date = new Date(log.created_at).toLocaleString('sk');
+            const changedFields = log.changed_fields ? log.changed_fields.join(', ') : '-';
+            return `
+            <tr>
+                <td>${date}</td>
+                <td>${entityLabels[log.entity_type] || log.entity_type}<br><small style="color:var(--gray)">${log.entity_id.substring(0, 8)}...</small></td>
+                <td><span class="badge ${actionBadges[log.action]}">${actionLabels[log.action]}</span></td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${changedFields}</td>
+                <td>${log.changed_by_name || '-'}</td>
+                <td><button class="btn btn-sm btn-outline" onclick="showAuditDetail('${log.id}')">Detail</button></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Ziadne zaznamy</td></tr>';
+        
+        document.getElementById('auditTotal').textContent = `${auditTotal} zaznamov`;
+    }
+
+    function updateAuditPagination() {
+        const page = Math.floor(auditOffset / auditLimit) + 1;
+        const totalPages = Math.ceil(auditTotal / auditLimit);
+        document.getElementById('auditPagination').textContent = `Strana ${page} z ${totalPages || 1}`;
+        document.getElementById('auditPrevBtn').disabled = auditOffset === 0;
+        document.getElementById('auditNextBtn').disabled = auditOffset + auditLimit >= auditTotal;
+    }
+
+    function loadAuditLogsPrev() {
+        if (auditOffset > 0) {
+            auditOffset -= auditLimit;
+            loadAuditLogs();
+        }
+    }
+
+    function loadAuditLogsNext() {
+        if (auditOffset + auditLimit < auditTotal) {
+            auditOffset += auditLimit;
+            loadAuditLogs();
+        }
+    }
+
+    async function showAuditDetail(id) {
+        try {
+            const res = await fetch(`/api/audit-logs/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const log = await res.json();
+            
+            const entityLabels = {
+                horses: 'Kone', riders: 'Jazdci', trainers: 'Treneri', employees: 'Zamestnanci',
+                vaccinations: 'Ockovania', feeding: 'Krmenie', stable_log: 'Mastalna kniha',
+                visit_log: 'Navstevna kniha', documents_v2: 'Dokumenty', tasks: 'Ulohy',
+                notifications: 'Upozornenia'
+            };
+            const actionLabels = { INSERT: 'Vytvorenie', UPDATE: 'Uprava', DELETE: 'Zmazanie' };
+            
+            let beforeHtml = '-';
+            let afterHtml = '-';
+            let diffHtml = '';
+            
+            if (log.before_data) {
+                beforeHtml = '<pre style="background:#f5f5f5;padding:0.5rem;font-size:0.8rem;max-height:300px;overflow:auto">' + JSON.stringify(log.before_data, null, 2) + '</pre>';
+            }
+            if (log.after_data) {
+                afterHtml = '<pre style="background:#f5f5f5;padding:0.5rem;font-size:0.8rem;max-height:300px;overflow:auto">' + JSON.stringify(log.after_data, null, 2) + '</pre>';
+            }
+            
+            if (log.changed_fields && log.changed_fields.length > 0) {
+                diffHtml = '<h4 style="margin-top:1rem">Zmenene polia</h4><table class="table" style="font-size:0.85rem"><thead><tr><th>Pole</th><th>Pred</th><th>Po</th></tr></thead><tbody>';
+                for (const field of log.changed_fields) {
+                    const before = log.before_data ? JSON.stringify(log.before_data[field]) : '-';
+                    const after = log.after_data ? JSON.stringify(log.after_data[field]) : '-';
+                    diffHtml += `<tr><td><strong>${field}</strong></td><td style="color:var(--danger)">${before}</td><td style="color:var(--success)">${after}</td></tr>`;
+                }
+                diffHtml += '</tbody></table>';
+            }
+            
+            const html = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                    <div><strong>Entita:</strong> ${entityLabels[log.entity_type] || log.entity_type}</div>
+                    <div><strong>ID zaznamu:</strong> ${log.entity_id}</div>
+                    <div><strong>Akcia:</strong> ${actionLabels[log.action]}</div>
+                    <div><strong>Pouzivatel:</strong> ${log.changed_by_name || 'System'}</div>
+                    <div><strong>Datum:</strong> ${new Date(log.created_at).toLocaleString('sk')}</div>
+                </div>
+                ${diffHtml}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+                    <div><h4>Pred zmenou</h4>${beforeHtml}</div>
+                    <div><h4>Po zmene</h4>${afterHtml}</div>
+                </div>
+            `;
+            
+            document.getElementById('auditDetailContent').innerHTML = html;
+            showModal('auditDetailModal');
+        } catch(e) {
+            alert('Chyba pri nacitani detailu: ' + e.message);
+        }
+    }
+
+    function printAuditTrail() {
+        const from = document.getElementById('auditFromDate')?.value || 'od zaciatku';
+        const to = document.getElementById('auditToDate')?.value || 'do dnes';
+        const today = new Date().toLocaleDateString('sk');
+        
+        const entityLabels = {
+            horses: 'Kone', riders: 'Jazdci', trainers: 'Treneri', employees: 'Zamestnanci',
+            vaccinations: 'Ockovania', feeding: 'Krmenie', stable_log: 'Mastalna kniha',
+            visit_log: 'Navstevna kniha', documents_v2: 'Dokumenty', tasks: 'Ulohy',
+            notifications: 'Upozornenia'
+        };
+        const actionLabels = { INSERT: 'Vytvorenie', UPDATE: 'Uprava', DELETE: 'Zmazanie' };
+        
+        const rows = auditLogs.map(log => `
+            <tr>
+                <td>${new Date(log.created_at).toLocaleString('sk')}</td>
+                <td>${entityLabels[log.entity_type] || log.entity_type}</td>
+                <td>${actionLabels[log.action]}</td>
+                <td>${log.changed_fields ? log.changed_fields.join(', ') : '-'}</td>
+                <td>${log.changed_by_name || '-'}</td>
+            </tr>
+        `).join('');
+        
+        const html = `
+            <h2 style="text-align:center;margin-bottom:0.5rem">JAZDECKY KLUB ZELENA MILA</h2>
+            <h3 style="text-align:center;margin-bottom:1rem">Audit trail</h3>
+            <p style="text-align:center;margin-bottom:1.5rem">Obdobie: ${from} - ${to}</p>
+            <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+                <thead>
+                    <tr style="background:#f0f0f0">
+                        <th style="border:1px solid #ddd;padding:8px;text-align:left">Datum a cas</th>
+                        <th style="border:1px solid #ddd;padding:8px;text-align:left">Entita</th>
+                        <th style="border:1px solid #ddd;padding:8px;text-align:left">Akcia</th>
+                        <th style="border:1px solid #ddd;padding:8px;text-align:left">Zmenene polia</th>
+                        <th style="border:1px solid #ddd;padding:8px;text-align:left">Pouzivatel</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+            <p style="margin-top:2rem;font-size:0.85rem;color:#666;text-align:center">
+                Dokument bol vytvoreny elektronickym evidencnym systemom prevadzky. Datum: ${today}
+            </p>
+        `;
+        
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printModalTitle').textContent = 'Tlac Audit trail';
+        showModal('printModal');
+    }
+
+    async function initAuditFilters() {
+        try {
+            const res = await fetch('/api/admin-users', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const users = await res.json();
+            const select = document.getElementById('auditUserFilter');
+            if (select && users && users.length) {
+                select.innerHTML = '<option value="">Vsetci</option>' + 
+                    users.map(u => `<option value="${u.id}">${u.name || u.email}</option>`).join('');
+            }
+        } catch(e) { console.error(e); }
     }
     </script>
 </body>

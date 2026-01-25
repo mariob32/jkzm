@@ -10,6 +10,17 @@ function verifyToken(req) {
     try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
 }
 
+async function logAudit(entity_type, entity_id, action, user, before_data, after_data) {
+    try {
+        await supabase.from('audit_logs').insert({
+            entity_type, entity_id, action,
+            changed_by: user?.id || null,
+            changed_by_name: user?.name || user?.email || null,
+            before_data, after_data, changed_fields: null
+        });
+    } catch (e) { console.error('Audit error:', e); }
+}
+
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -24,7 +35,8 @@ module.exports = async (req, res) => {
         }
 
         if (req.method === 'POST') {
-            if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
+            const user = verifyToken(req);
+            if (!user) return res.status(401).json({ error: 'Neautorizovany' });
             const { 
                 name, stable_name, breed, color, sex, birth_date, country_of_birth,
                 passport_number, life_number, microchip,
@@ -35,7 +47,7 @@ module.exports = async (req, res) => {
                 insurance_company, insurance_policy, insurance_valid_until, insurance_value,
                 status, photo_url, notes
             } = req.body;
-            if (!name) return res.status(400).json({ error: 'Meno je povinné' });
+            if (!name) return res.status(400).json({ error: 'Meno je povinne' });
             const { data, error } = await supabase.from('horses')
                 .insert([{ 
                     name, stable_name, breed, color, sex, birth_date, country_of_birth,
@@ -49,6 +61,8 @@ module.exports = async (req, res) => {
                 }])
                 .select().single();
             if (error) throw error;
+            
+            await logAudit('horses', data.id, 'INSERT', user, null, data);
             return res.status(201).json(data);
         }
 
