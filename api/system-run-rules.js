@@ -17,7 +17,6 @@ module.exports = async (req, res) => {
     }
 
     try {
-        // 1) Načítať aktívne pravidlá
         const { data: rules, error: rulesError } = await supabase
             .from('notification_rules')
             .select('*')
@@ -34,7 +33,6 @@ module.exports = async (req, res) => {
                 results.processed++;
                 let entities = [];
                 
-                // 2) Načítať entity podľa typu
                 if (rule.entity_type === 'horses') {
                     const { data } = await supabase.from('horses').select('*').eq('status', 'active');
                     entities = data || [];
@@ -44,9 +42,11 @@ module.exports = async (req, res) => {
                 } else if (rule.entity_type === 'vet_records') {
                     const { data } = await supabase.from('vet_records').select('*, horses(id, name, stable_name)');
                     entities = data || [];
+                } else if (rule.entity_type === 'stable_log') {
+                    const { data } = await supabase.from('stable_log').select('*, horses(id, name, stable_name)').eq('event_type', 'quarantine_start');
+                    entities = data || [];
                 }
 
-                // 3) Spracovať entity
                 for (const entity of entities) {
                     const fieldValue = entity[rule.condition_field];
                     let shouldNotify = false;
@@ -65,40 +65,42 @@ module.exports = async (req, res) => {
                         if (!fieldValue || fieldValue === '') {
                             shouldNotify = true;
                         }
+                    } else if (rule.rule_type === 'status') {
+                        shouldNotify = true;
                     }
 
                     if (shouldNotify) {
-                        // 4) Skontrolovať či už existuje
                         const { data: existing } = await supabase
                             .from('notifications')
                             .select('id')
                             .eq('rule_id', rule.id)
                             .eq('entity_type', rule.entity_type)
                             .eq('entity_id', entity.id)
-                            .eq('status', 'pending')
-                            .single();
+                            .in('status', ['pending', 'active'])
+                            .maybeSingle();
 
                         if (existing) {
                             results.skipped++;
                             continue;
                         }
 
-                        // 5) Vytvoriť notifikáciu
                         const horseName = entity.name || entity.stable_name || 
                             (entity.horses ? (entity.horses.stable_name || entity.horses.name) : '');
                         
                         let message = (rule.message_template || '')
-                            .replace('{name}', horseName)
-                            .replace('{horse_name}', horseName)
-                            .replace('{date}', expiresAt || '');
+                            .replace(/{name}/g, horseName)
+                            .replace(/{horse_name}/g, horseName)
+                            .replace(/{date}/g, expiresAt || '');
+
+                        const priority = rule.severity === 'danger' ? 'high' : (rule.severity === 'warning' ? 'normal' : 'low');
 
                         const { error: insertError } = await supabase
                             .from('notifications')
                             .insert({
-                                type: 'system',
+                                notification_type: 'system',
                                 title: rule.name,
                                 message,
-                                priority: rule.severity === 'danger' ? 'high' : 'normal',
+                                priority,
                                 status: 'pending',
                                 source: 'rule',
                                 rule_id: rule.id,
@@ -121,7 +123,7 @@ module.exports = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: `Spracované: ${results.processed}, vytvorené: ${results.created}, preskočené: ${results.skipped}`,
+            message: `Spracovane: ${results.processed}, vytvorene: ${results.created}, preskocene: ${results.skipped}`,
             results
         });
 

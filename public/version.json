@@ -1,18 +1,18 @@
 {
-  "version": "6.9.0",
-  "build": "2026-01-25T14:00:00Z",
+  "version": "6.8.1",
+  "build": "2026-01-25T13:00:00Z",
   "features": [
-    "Modul Úlohy s CRUD operáciami",
-    "Sekcia Upozornenia s automatickým generovaním",
-    "Tlačidlo Obnoviť upozornenia",
-    "Pravidlá pre automatické notifikácie",
-    "Štatistiky úloh a upozornení"
+    "Sekcia Ulohy s CRUD operaciami",
+    "Sekcia Upozornenia s automatickym generovanim",
+    "Tlacidlo Obnovit upozornenia",
+    "Pravidla pre automaticke notifikacie",
+    "Statistiky uloh a upozorneni"
   ],
   "changelog": {
-    "6.9.0": "Úlohy a Notifikácie - centrálny systém správy úloh",
-    "6.8.0": "Terminologická konzistencia, Compliance, Veterinárne podsekcie",
+    "6.8.1": "Ulohy a Notifikacie - centralny system spravy uloh a upozorneni",
+    "6.8.0": "Terminologicka konzistencia, Compliance, Veterinarne podsekcie",
     "6.7.1": "Fixed document save - duplicate IDs conflict resolved",
-    "6.7.0": "Detail koňa s tabmi, upload súborov v dokumentoch",
-    "6.6.0": "Záznamová kniha maštale, Návštevná kniha, Dokumenty s väzbami"
+    "6.7.0": "Detail kona s tabmi, upload suborov v dokumentoch",
+    "6.6.0": "Zaznamova kniha mastale, Navstevna kniha, Dokumenty s vazbami"
   }
 }

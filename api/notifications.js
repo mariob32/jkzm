@@ -7,43 +7,51 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     try {
         if (req.method === 'GET') {
-            const { type, status, assigned_trainer_id, limit } = req.query;
+            const { status, priority, source, is_read, limit } = req.query;
             
             let query = supabase
                 .from('notifications')
-                .select('*, trainers(first_name, last_name), horses(name)')
+                .select('*, horses:assigned_horse_id(id, name, stable_name)')
                 .order('created_at', { ascending: false });
             
-            if (type) query = query.eq('type', type);
             if (status) query = query.eq('status', status);
-            if (assigned_trainer_id) query = query.eq('assigned_trainer_id', assigned_trainer_id);
+            if (priority) query = query.eq('priority', priority);
+            if (source) query = query.eq('source', source);
+            if (is_read !== undefined) query = query.eq('is_read', is_read === 'true');
             if (limit) query = query.limit(parseInt(limit));
             
             const { data, error } = await query;
             if (error) throw error;
-            return res.status(200).json(data);
+            return res.status(200).json(data || []);
         }
 
         if (req.method === 'POST') {
-            const { 
-                type, title, message, priority,
-                assigned_trainer_id, assigned_horse_id,
-                due_date, status 
-            } = req.body;
+            const { title, message, priority, due_date, assigned_horse_id } = req.body;
+            
+            if (!title) {
+                return res.status(400).json({ error: 'Nazov je povinny' });
+            }
             
             const { data, error } = await supabase
                 .from('notifications')
                 .insert({
-                    type: type || 'info',
+                    notification_type: 'manual',
                     title,
                     message,
                     priority: priority || 'normal',
-                    assigned_trainer_id,
-                    assigned_horse_id,
-                    due_date,
-                    status: status || 'pending'
+                    status: 'pending',
+                    source: 'manual',
+                    due_date: due_date || null,
+                    assigned_horse_id: assigned_horse_id || null,
+                    is_read: false,
+                    is_dismissed: false
                 })
                 .select()
                 .single();
@@ -54,10 +62,6 @@ module.exports = async (req, res) => {
         if (req.method === 'PUT') {
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: 'ID required' });
-            
-            if (updates.status === 'completed') {
-                updates.completed_at = new Date().toISOString();
-            }
             
             const { data, error } = await supabase
                 .from('notifications')
