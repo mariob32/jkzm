@@ -387,6 +387,7 @@
                         <div>
                             <label style="display:block;margin-bottom:0.5rem;font-weight:500">Úroveň</label>
                             <select id="bookingLevel" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                <option value="">Všetky úrovne</option>
                                 <option value="beginner">Začiatočník</option>
                                 <option value="intermediate">Mierne pokročilý</option>
                                 <option value="advanced">Pokročilý</option>
@@ -1095,7 +1096,10 @@
             const level = document.getElementById('bookingLevel').value;
             
             try {
-                const res = await fetch(`/api/reservations?arena_id=${arenaId}&date=${date}&availability=true&skill_level=${level}`);
+                let url = `/api/reservations?arena_id=${arenaId}&date=${date}&availability=true`;
+                if (level) url += `&skill_level=${level}`;
+                
+                const res = await fetch(url);
                 const data = await res.json();
                 
                 if (!data.slots || data.slots.length === 0) {
@@ -1187,7 +1191,7 @@
                         start_time: selectedSlotData.startTime,
                         end_time: selectedSlotData.endTime,
                         riders_count: parseInt(riders),
-                        skill_level: level,
+                        skill_level: level || null,
                         notes: notes,
                         service_type: 'lesson'
                     })

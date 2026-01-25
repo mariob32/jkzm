@@ -3372,7 +3372,16 @@
     async function loadArenas() {
         try {
             const res = await fetch('/api/arenas?include_schedules=true');
-            arenas = await res.json();
+            const data = await res.json();
+            
+            // Deduplicácia arén podľa ID
+            const seen = new Set();
+            arenas = data.filter(arena => {
+                if (seen.has(arena.id)) return false;
+                seen.add(arena.id);
+                return true;
+            });
+            
             renderArenas();
             updateArenaStats();
             populateArenaFilters();
@@ -3656,6 +3665,16 @@
         const container = document.getElementById('reservationsCalendar');
         if (!container) return;
         
+        // Deduplicácia arén (pre istotu)
+        const uniqueArenas = arenas.filter((arena, index, self) => 
+            index === self.findIndex(a => a.id === arena.id)
+        );
+        
+        if (uniqueArenas.length === 0) {
+            container.innerHTML = '<p style="text-align:center;color:var(--gray);padding:2rem">Najprv pridajte arény v sekcii "Arény a časy"</p>';
+            return;
+        }
+        
         const dayNames = ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'];
         const days = [];
         const startDate = new Date(currentWeekStart);
@@ -3669,6 +3688,13 @@
         document.getElementById('weekLabel').textContent = 
             `${days[0].toLocaleDateString('sk')} - ${days[6].toLocaleDateString('sk')}`;
         
+        // Helper na normalizáciu dátumu
+        const normalizeDate = (d) => {
+            if (!d) return '';
+            const date = new Date(d);
+            return date.toISOString().split('T')[0];
+        };
+        
         container.innerHTML = `
             <table class="table" style="font-size:0.85rem">
                 <thead>
@@ -3678,22 +3704,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    ${arenas.map(arena => `
+                    ${uniqueArenas.map(arena => `
                         <tr>
-                            <td style="border-left:3px solid ${arena.is_indoor ? '#17a2b8' : '#228B22'}">${arena.name}</td>
+                            <td style="border-left:3px solid ${arena.is_indoor ? '#17a2b8' : '#228B22'}">
+                                ${arena.is_indoor ? '🏠' : '🌳'} ${arena.name}
+                            </td>
                             ${days.map(d => {
-                                const dateStr = d.toISOString().split('T')[0];
+                                const dateStr = normalizeDate(d);
                                 const dayRes = reservations.filter(r => 
                                     r.arena_id === arena.id && 
-                                    r.reservation_date === dateStr &&
+                                    normalizeDate(r.reservation_date) === dateStr &&
                                     r.status !== 'cancelled'
                                 );
                                 const pending = dayRes.filter(r => r.status === 'pending').length;
-                                const confirmed = dayRes.filter(r => r.status === 'confirmed').length;
-                                return `<td style="text-align:center;${d.toDateString() === new Date().toDateString() ? 'background:#e8f5e9' : ''}">
+                                const confirmed = dayRes.filter(r => r.status === 'confirmed' || r.status === 'completed').length;
+                                const isToday = d.toDateString() === new Date().toDateString();
+                                
+                                return `<td style="text-align:center;${isToday ? 'background:#e8f5e9' : ''}">
                                     ${dayRes.length > 0 ? 
-                                        `<span class="badge badge-${pending > 0 ? 'warning' : 'success'}">${confirmed}${pending > 0 ? '+' + pending : ''}</span>` : 
-                                        '<span style="color:#ccc">-</span>'}
+                                        `<span class="badge badge-${pending > 0 ? 'warning' : 'success'}" title="${dayRes.length} rezervácií">${confirmed}${pending > 0 ? '+' + pending : ''}</span>` : 
+                                        '<span style="color:#ddd">-</span>'}
                                 </td>`;
                             }).join('')}
                         </tr>
