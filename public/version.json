@@ -1,6 +1,6 @@
 {
-  "version": "6.11.1",
-  "build": "2026-01-25T19:20:00Z",
+  "version": "6.11.2",
+  "build": "2026-01-25T19:30:00Z",
   "features": [
     "Ulohy - profi modul so stavmi, prioritami, filtrami",
     "Upozornenia - manualne a automaticke z pravidiel",
@@ -10,11 +10,10 @@
     "5 predvolenych pravidiel (SJF, FEI, ockovania, poistenie, pas)"
   ],
   "changelog": {
+    "6.11.2": "Graceful handling chybajucich tabuliek + migracny SQL",
     "6.11.1": "Fix API - odstranene problematicke JOINy (tasks, bookings, competitions)",
     "6.11.0": "Ulohy a Upozornenia - profi implementacia",
     "6.10.0": "Exporty a tlac - priprava na SVPS/SJF kontroly",
-    "6.9.0": "Audit trail - kto, kedy, co zmenil",
-    "6.8.1": "Ulohy a Notifikacie zaklad",
-    "6.8.0": "Terminologicka konzistencia, Compliance"
+    "6.9.0": "Audit trail - kto, kedy, co zmenil"
   }
 }

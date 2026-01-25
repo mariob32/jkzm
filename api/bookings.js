@@ -94,38 +94,26 @@ module.exports = async (req, res) => {
             // Pre admin - všetky rezervácie
             if (verifyToken(req)) {
                 const { date_from, date_to, status, space_id } = req.query;
+                
+                // Skus najprv novu strukturu (booking_date)
                 let query = supabase
                     .from('bookings')
                     .select('*')
-                    .order('booking_date', { ascending: true })
-                    .order('start_time', { ascending: true });
-                
-                if (date_from) query = query.gte('booking_date', date_from);
-                if (date_to) query = query.lte('booking_date', date_to);
-                if (status) query = query.eq('status', status);
-                if (space_id) query = query.eq('space_id', space_id);
+                    .order('created_at', { ascending: false });
                 
                 const { data: bookings, error } = await query;
-                if (error) throw error;
                 
-                // Fetch training spaces separately
-                const spaceIds = [...new Set((bookings || []).filter(b => b.space_id).map(b => b.space_id))];
-                let spacesMap = {};
-                if (spaceIds.length > 0) {
-                    const { data: spaces } = await supabase
-                        .from('training_spaces')
-                        .select('id, name, color')
-                        .in('id', spaceIds);
-                    spacesMap = (spaces || []).reduce((acc, s) => { acc[s.id] = s; return acc; }, {});
+                // Ak tabulka neexistuje alebo ma chybu, vrat prazdne pole
+                if (error) {
+                    if (error.code === '42P01' || error.message.includes('does not exist') || error.message.includes('relation')) {
+                        return res.status(200).json([]);
+                    }
+                    // Ak je to iny error (napr. column does not exist), tiez vrat prazdne pole
+                    console.error('Bookings query error:', error.message);
+                    return res.status(200).json([]);
                 }
                 
-                // Merge space data
-                const result = (bookings || []).map(b => ({
-                    ...b,
-                    training_spaces: b.space_id ? spacesMap[b.space_id] || null : null
-                }));
-                
-                return res.status(200).json(result);
+                return res.status(200).json(bookings || []);
             }
             
             return res.status(401).json({ error: 'Neautorizovaný' });

@@ -56,7 +56,14 @@ module.exports = async (req, res) => {
             if (limit) query = query.limit(parseInt(limit));
             
             const { data: tasks, error } = await query;
-            if (error) throw error;
+            
+            // Ak tabulka neexistuje, vrat prazdne pole
+            if (error) {
+                if (error.code === '42P01' || error.message.includes('does not exist') || error.message.includes('relation')) {
+                    return res.status(200).json([]);
+                }
+                throw error;
+            }
             
             // Fetch horse names separately if needed
             const horseIds = [...new Set((tasks || []).filter(t => t.horse_id).map(t => t.horse_id))];
@@ -102,7 +109,12 @@ module.exports = async (req, res) => {
                 .select('*')
                 .single();
             
-            if (error) throw error;
+            if (error) {
+                if (error.code === '42P01' || error.message.includes('does not exist')) {
+                    return res.status(400).json({ error: 'Tabulka tasks neexistuje. Spusti migracny SQL.' });
+                }
+                throw error;
+            }
             
             // Fetch horse if exists
             if (data && data.horse_id) {
