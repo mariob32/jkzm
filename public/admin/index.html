@@ -134,6 +134,7 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Prehľad</div>
                     <div class="nav-item active" data-section="dashboard"><span class="icon">📊</span>Prehľad<span class="badge" id="alertBadge">0</span></div>
+                    <div class="nav-item" data-section="tasks"><span class="icon">✓</span>Úlohy<span class="badge" id="tasksBadge">0</span></div>
                     <div class="nav-item" data-section="notifications"><span class="icon">🔔</span>Upozornenia</div>
                 </div>
                 <div class="nav-section">
@@ -425,37 +426,89 @@
                 <div class="card"><div class="card-body"><p style="color:var(--gray)">Modul členstvá - v príprave</p></div></div>
             </section>
 
-            <!-- NOTIFICATIONS -->
-            <section id="notifications" class="section">
+            <!-- TASKS / ÚLOHY -->
+            <section id="tasks" class="section">
                 <div class="header">
-                    <h1>🔔 Upozornenia a úlohy</h1>
-                    <button class="btn btn-primary" onclick="openNotificationModal()">+ Nové upozornenie</button>
+                    <h1>Úlohy</h1>
+                    <div class="header-actions">
+                        <select class="form-control" id="taskStatusFilter" style="width:150px">
+                            <option value="">Všetky</option>
+                            <option value="pending" selected>Čakajúce</option>
+                            <option value="in_progress">Rozpracované</option>
+                            <option value="completed">Dokončené</option>
+                        </select>
+                        <select class="form-control" id="taskPriorityFilter" style="width:120px">
+                            <option value="">Všetky priority</option>
+                            <option value="high">Vysoká</option>
+                            <option value="normal">Normálna</option>
+                            <option value="low">Nízka</option>
+                        </select>
+                        <button class="btn btn-outline" onclick="loadTasks()">Obnoviť</button>
+                        <button class="btn btn-primary" onclick="openTaskModal()">+ Pridať úlohu</button>
+                    </div>
                 </div>
                 
                 <div class="stats-grid" style="margin-bottom:1.5rem">
-                    <div class="stat-card"><div class="icon orange">⏳</div><div class="value" id="pendingNotifications">0</div><div class="label">Čakajúcich</div></div>
-                    <div class="stat-card"><div class="icon green">✅</div><div class="value" id="completedNotifications">0</div><div class="label">Dokončených</div></div>
-                    <div class="stat-card"><div class="icon red">⚠️</div><div class="value" id="urgentNotifications">0</div><div class="label">Urgentných</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="tasksPending">0</div><div class="label">Čakajúcich</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--primary)"><div class="value" id="tasksInProgress">0</div><div class="label">Rozpracovaných</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="tasksOverdue">0</div><div class="label">Po termíne</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--success)"><div class="value" id="tasksCompleted">0</div><div class="label">Dokončených</div></div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Priorita</th>
+                                    <th>Úloha</th>
+                                    <th>Kategória</th>
+                                    <th>Väzba</th>
+                                    <th>Termín</th>
+                                    <th>Priradené</th>
+                                    <th>Status</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tasksTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NOTIFICATIONS / UPOZORNENIA -->
+            <section id="notifications" class="section">
+                <div class="header">
+                    <h1>Upozornenia</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-outline" onclick="runNotificationRules()">Obnoviť upozornenia</button>
+                        <button class="btn btn-primary" onclick="openNotificationModal()">+ Pridať upozornenie</button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid" style="margin-bottom:1.5rem">
+                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="pendingNotifications">0</div><div class="label">Neprečítaných</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="urgentNotifications">0</div><div class="label">Vysoká priorita</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--info)"><div class="value" id="systemNotifications">0</div><div class="label">Systémových</div></div>
                 </div>
                 
                 <div class="card">
                     <div class="card-header">
                         <h3>Zoznam upozornení</h3>
-                        <select id="notificationStatusFilter" class="form-control" style="width:auto">
+                        <select id="notificationStatusFilter" class="form-control" style="width:auto" onchange="loadNotifications()">
                             <option value="">Všetky</option>
-                            <option value="pending">Čakajúce</option>
-                            <option value="completed">Dokončené</option>
+                            <option value="pending" selected>Aktívne</option>
+                            <option value="completed">Vyriešené</option>
                         </select>
                     </div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Typ</th>
+                                    <th>Zdroj</th>
                                     <th>Názov</th>
                                     <th>Priorita</th>
-                                    <th>Tréner</th>
-                                    <th>Kôň</th>
+                                    <th>Väzba</th>
                                     <th>Termín</th>
                                     <th>Status</th>
                                     <th>Akcie</th>
@@ -802,7 +855,42 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('notificationModal')">Zrušiť</button>
-                <button class="btn btn-primary" onclick="saveNotification()">💾 Uložiť</button>
+                <button class="btn btn-primary" onclick="saveNotification()">Uložiť</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content" style="max-width:600px">
+            <div class="modal-header"><h3 id="taskModalTitle">Nová úloha</h3><button class="modal-close" onclick="closeModal('taskModal')">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="taskId">
+                <div class="form-group"><label>Názov úlohy *</label><input type="text" class="form-control" id="taskTitle" required placeholder="Stručný popis úlohy"></div>
+                <div class="form-group"><label>Podrobný popis</label><textarea class="form-control" id="taskDescription" rows="2"></textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Priorita</label>
+                        <select class="form-control" id="taskPriority">
+                            <option value="low">Nízka</option>
+                            <option value="normal" selected>Normálna</option>
+                            <option value="high">Vysoká</option>
+                            <option value="urgent">Urgentná</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Termín</label><input type="date" class="form-control" id="taskDueDate"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Väzba na koňa</label>
+                        <select class="form-control" id="taskHorse"><option value="">-- Žiadna --</option></select>
+                    </div>
+                    <div class="form-group"><label>Priradiť používateľovi</label>
+                        <select class="form-control" id="taskAssigned"><option value="">-- Nepriradené --</option></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('taskModal')">Zrušiť</button>
+                <button class="btn btn-primary" onclick="saveTask()">Uložiť</button>
             </div>
         </div>
     </div>
@@ -1764,6 +1852,8 @@
         if (hash && document.getElementById(hash)) {
             showSection(hash);
             // Načítať dáta pre danú sekciu
+            if (hash === 'tasks') setTimeout(loadTasks, 100);
+            if (hash === 'notifications') setTimeout(loadNotifications, 100);
             if (hash === 'articles') setTimeout(loadArticles, 100);
             if (hash === 'gallery') setTimeout(loadAlbums, 100);
             if (hash === 'pages') setTimeout(loadPages, 100);
@@ -6022,6 +6112,218 @@
         document.getElementById('printModalTitle').textContent = 'Tlač karty koňa';
         closeModal('horseDetailModal');
         showModalOnly('printModal');
+    }
+
+    // ===== TASKS (ÚLOHY) =====
+    let tasks = [];
+    
+    async function loadTasks() {
+        try {
+            const status = document.getElementById('taskStatusFilter')?.value || '';
+            const priority = document.getElementById('taskPriorityFilter')?.value || '';
+            
+            let url = '/api/tasks?';
+            if (status) url += `status=${status}&`;
+            if (priority) url += `priority=${priority}&`;
+            
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            if (!res.ok) throw new Error('Failed to load tasks');
+            tasks = await res.json();
+            renderTasks();
+            updateTaskStats();
+        } catch(e) {
+            console.error('loadTasks error:', e);
+        }
+    }
+    
+    function renderTasks() {
+        const tbody = document.getElementById('tasksTable');
+        if (!tbody) return;
+        
+        const priorityBadges = { low: 'badge-gray', normal: 'badge-info', high: 'badge-warning', urgent: 'badge-danger' };
+        const priorityLabels = { low: 'Nízka', normal: 'Normálna', high: 'Vysoká', urgent: 'Urgentná' };
+        const statusBadges = { open: 'badge-warning', in_progress: 'badge-info', completed: 'badge-success', cancelled: 'badge-gray' };
+        const statusLabels = { open: 'Otvorená', in_progress: 'Rozpracovaná', completed: 'Dokončená', cancelled: 'Zrušená' };
+        
+        const today = new Date().toISOString().split('T')[0];
+        
+        tbody.innerHTML = tasks.map(t => {
+            const isOverdue = t.due_date && t.due_date < today && t.status !== 'completed';
+            const horseName = t.horses ? (t.horses.stable_name || t.horses.name) : '';
+            const assignedName = t.assigned?.username || '';
+            
+            return `<tr class="${isOverdue ? 'table-row-danger' : ''}">
+                <td><span class="badge ${priorityBadges[t.priority]}">${priorityLabels[t.priority] || t.priority}</span></td>
+                <td><strong>${t.title}</strong>${t.description ? `<br><small style="color:var(--gray)">${t.description.substring(0, 60)}...</small>` : ''}</td>
+                <td>${t.category || '-'}</td>
+                <td>${horseName ? '🐴 ' + horseName : '-'}</td>
+                <td>${t.due_date ? `<span class="${isOverdue ? 'text-danger' : ''}">${t.due_date}</span>` : '-'}</td>
+                <td>${assignedName || '-'}</td>
+                <td><span class="badge ${statusBadges[t.status]}">${statusLabels[t.status] || t.status}</span></td>
+                <td>
+                    ${t.status !== 'completed' ? `<button class="btn btn-sm btn-success" onclick="completeTask('${t.id}')" title="Dokončiť">✓</button>` : ''}
+                    <button class="btn btn-sm btn-outline" onclick="editTask('${t.id}')">Upraviť</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">Zmazať</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne úlohy</td></tr>';
+    }
+    
+    function updateTaskStats() {
+        const today = new Date().toISOString().split('T')[0];
+        const pending = tasks.filter(t => t.status === 'open').length;
+        const inProgress = tasks.filter(t => t.status === 'in_progress').length;
+        const overdue = tasks.filter(t => t.due_date && t.due_date < today && t.status !== 'completed').length;
+        const completed = tasks.filter(t => t.status === 'completed').length;
+        
+        const el1 = document.getElementById('tasksPending'); if (el1) el1.textContent = pending;
+        const el2 = document.getElementById('tasksInProgress'); if (el2) el2.textContent = inProgress;
+        const el3 = document.getElementById('tasksOverdue'); if (el3) el3.textContent = overdue;
+        const el4 = document.getElementById('tasksCompleted'); if (el4) el4.textContent = completed;
+        
+        const badge = document.getElementById('tasksBadge');
+        if (badge) badge.textContent = pending + inProgress;
+    }
+    
+    async function openTaskModal(id = null) {
+        document.getElementById('taskId').value = id || '';
+        document.getElementById('taskModalTitle').textContent = id ? 'Upraviť úlohu' : 'Nová úloha';
+        
+        // Reset form
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDescription').value = '';
+        document.getElementById('taskPriority').value = 'normal';
+        document.getElementById('taskDueDate').value = '';
+        
+        // Načítaj selecty
+        try {
+            const [horsesRes, usersRes] = await Promise.all([
+                fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }),
+                fetch('/api/admin-users', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+            ]);
+            const horsesList = await horsesRes.json();
+            const usersList = await usersRes.json();
+            
+            document.getElementById('taskHorse').innerHTML = '<option value="">-- Žiadna --</option>' +
+                horsesList.map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
+            document.getElementById('taskAssigned').innerHTML = '<option value="">-- Nepriradené --</option>' +
+                usersList.map(u => `<option value="${u.id}">${u.username}</option>`).join('');
+                
+            if (id) {
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    document.getElementById('taskTitle').value = task.title || '';
+                    document.getElementById('taskDescription').value = task.description || '';
+                    document.getElementById('taskPriority').value = task.priority || 'normal';
+                    document.getElementById('taskDueDate').value = task.due_date || '';
+                    document.getElementById('taskHorse').value = task.horse_id || '';
+                    document.getElementById('taskAssigned').value = task.assigned_to || '';
+                }
+            }
+        } catch(e) {
+            console.error('Error loading task selects:', e);
+        }
+        
+        showModal('taskModal');
+    }
+    
+    async function saveTask() {
+        const id = document.getElementById('taskId').value;
+        const data = {
+            title: document.getElementById('taskTitle').value,
+            description: document.getElementById('taskDescription').value,
+            priority: document.getElementById('taskPriority').value,
+            due_date: document.getElementById('taskDueDate').value || null,
+            horse_id: document.getElementById('taskHorse').value || null,
+            assigned_to: document.getElementById('taskAssigned').value || null
+        };
+        
+        if (!data.title) {
+            alert('Vyplňte názov úlohy');
+            return;
+        }
+        
+        try {
+            const url = id ? `/api/tasks/${id}` : '/api/tasks';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify(data)
+            });
+            
+            if (!res.ok) throw new Error('Failed to save task');
+            
+            closeModal('taskModal');
+            loadTasks();
+        } catch(e) {
+            alert('Chyba pri ukladaní: ' + e.message);
+        }
+    }
+    
+    function editTask(id) {
+        openTaskModal(id);
+    }
+    
+    async function completeTask(id) {
+        if (!confirm('Označiť úlohu ako dokončenú?')) return;
+        
+        try {
+            const res = await fetch(`/api/tasks/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify({ status: 'completed', completed_at: new Date().toISOString() })
+            });
+            if (!res.ok) throw new Error('Failed');
+            loadTasks();
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        }
+    }
+    
+    async function deleteTask(id) {
+        if (!confirm('Naozaj zmazať túto úlohu?')) return;
+        
+        try {
+            const res = await fetch(`/api/tasks/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            });
+            if (!res.ok) throw new Error('Failed');
+            loadTasks();
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        }
+    }
+    
+    // ===== RUN NOTIFICATION RULES =====
+    async function runNotificationRules() {
+        try {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Prebieha...';
+            
+            const res = await fetch('/api/system-run-rules', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            });
+            
+            const result = await res.json();
+            
+            if (res.ok) {
+                alert(result.message || 'Upozornenia boli obnovené');
+                loadNotifications();
+            } else {
+                throw new Error(result.error || 'Chyba');
+            }
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        } finally {
+            const btn = event.target;
+            btn.disabled = false;
+            btn.textContent = 'Obnoviť upozornenia';
+        }
     }
     </script>
 </body>

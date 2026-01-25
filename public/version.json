@@ -1,18 +1,18 @@
 {
-  "version": "6.8.0",
-  "build": "2026-01-25T13:00:00Z",
+  "version": "6.9.0",
+  "build": "2026-01-25T14:00:00Z",
   "features": [
-    "Terminologická konzistencia podľa záväzného rámca",
-    "Compliance sekcia s kontrolou povinností",
-    "Veterinárne záznamy s podsekcami",
-    "Tlačové výstupy s povinnou poznámkou",
-    "Zjednotené tlačidlá (Pridať záznam)",
-    "Oficiálne názvy v tlačových dokumentoch"
+    "Modul Úlohy s CRUD operáciami",
+    "Sekcia Upozornenia s automatickým generovaním",
+    "Tlačidlo Obnoviť upozornenia",
+    "Pravidlá pre automatické notifikácie",
+    "Štatistiky úloh a upozornení"
   ],
   "changelog": {
-    "6.8.0": "Terminologická konzistencia, Compliance, Veterinárne podsekcie, Tlač s poznámkou",
+    "6.9.0": "Úlohy a Notifikácie - centrálny systém správy úloh",
+    "6.8.0": "Terminologická konzistencia, Compliance, Veterinárne podsekcie",
     "6.7.1": "Fixed document save - duplicate IDs conflict resolved",
-    "6.7.0": "Detail koňa s tabmi, upload súborov v dokumentoch, tlač karty koňa",
+    "6.7.0": "Detail koňa s tabmi, upload súborov v dokumentoch",
     "6.6.0": "Záznamová kniha maštale, Návštevná kniha, Dokumenty s väzbami"
   }
 }

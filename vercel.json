@@ -92,6 +92,12 @@
     { "src": "/api/documents-v2/([^/]+)", "dest": "/api/documents-v2-id.js?id=$1" },
     { "src": "/api/documents-v2", "dest": "/api/documents-v2.js" },
     
+    { "src": "/api/tasks/([^/]+)", "dest": "/api/tasks-id.js?id=$1" },
+    { "src": "/api/tasks", "dest": "/api/tasks.js" },
+    { "src": "/api/notification-rules/([^/]+)", "dest": "/api/notification-rules-id.js?id=$1" },
+    { "src": "/api/notification-rules", "dest": "/api/notification-rules.js" },
+    { "src": "/api/system-run-rules", "dest": "/api/system-run-rules.js" },
+    
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },
     { "src": "/assets/(.*)", "dest": "/public/assets/$1" },
