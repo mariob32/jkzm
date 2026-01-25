@@ -1,20 +1,19 @@
 {
-  "version": "6.10.0",
-  "build": "2026-01-25T18:00:00Z",
+  "version": "6.11.0",
+  "build": "2026-01-25T19:00:00Z",
   "features": [
-    "Exporty a tlac - centralny modul pre SVPS/SJF kontroly",
-    "Export Mastalnej knihy (CSV + tlac)",
-    "Export Navstevnej knihy (CSV + tlac)",
-    "Export licencii SJF/FEI s filtrami",
-    "Export ockovani s filtrami expiracii",
-    "Export dokumentov s filtrami"
+    "Ulohy - profi modul so stavmi, prioritami, filtrami",
+    "Upozornenia - manualne a automaticke z pravidiel",
+    "Filtre: stav, priorita, termin (Dnes/Po termine/Do 7 dni)",
+    "Rule runner s dedup logikou",
+    "Tlac a CSV export uloh a upozorneni",
+    "5 predvolenych pravidiel (SJF, FEI, ockovania, poistenie, pas)"
   ],
   "changelog": {
+    "6.11.0": "Ulohy a Upozornenia - profi implementacia",
     "6.10.0": "Exporty a tlac - priprava na SVPS/SJF kontroly",
     "6.9.0": "Audit trail - kto, kedy, co zmenil",
-    "6.8.1": "Ulohy a Notifikacie - centralny system spravy uloh a upozorneni",
-    "6.8.0": "Terminologicka konzistencia, Compliance, Veterinarne podsekcie",
-    "6.7.1": "Fixed document save - duplicate IDs conflict resolved",
-    "6.7.0": "Detail kona s tabmi, upload suborov v dokumentoch"
+    "6.8.1": "Ulohy a Notifikacie zaklad",
+    "6.8.0": "Terminologicka konzistencia, Compliance"
   }
 }

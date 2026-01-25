@@ -1,5 +1,14 @@
 const { createClient } = require('@supabase/supabase-js');
+const jwt = require('jsonwebtoken');
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
+
+function verifyToken(req) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return null;
+    try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
+}
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -7,43 +16,54 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const auth = req.headers.authorization;
-    if (!auth || !auth.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const user = verifyToken(req);
+    if (!user) return res.status(401).json({ error: 'Neautorizovany' });
 
     const id = req.query.id;
-    if (!id) return res.status(400).json({ error: 'ID required' });
+    if (!id) return res.status(400).json({ error: 'ID je povinne' });
 
     try {
         if (req.method === 'GET') {
             const { data, error } = await supabase
                 .from('tasks')
-                .select(`
-                    *,
-                    horses(id, name, stable_name),
-                    assigned:admin_users!tasks_assigned_to_fkey(id, username)
-                `)
+                .select('*, horses:horse_id(id, name, stable_name), assignee:assigned_to(id, name, email)')
                 .eq('id', id)
                 .single();
             
             if (error) throw error;
+            if (!data) return res.status(404).json({ error: 'Uloha nenajdena' });
             return res.status(200).json(data);
         }
 
         if (req.method === 'PUT') {
-            const updates = { ...req.body };
-            delete updates.id;
+            const { title, description, priority, status, due_date, horse_id, entity_type, entity_id, assigned_to } = req.body;
             
-            if (updates.status === 'completed' && !updates.completed_at) {
-                updates.completed_at = new Date().toISOString();
+            const updates = {
+                updated_at: new Date().toISOString()
+            };
+            
+            if (title !== undefined) updates.title = title;
+            if (description !== undefined) updates.description = description;
+            if (priority !== undefined) updates.priority = priority;
+            if (status !== undefined) {
+                updates.status = status;
+                if (status === 'completed') {
+                    updates.completed_at = new Date().toISOString();
+                } else if (status === 'open' || status === 'in_progress') {
+                    updates.completed_at = null;
+                }
             }
+            if (due_date !== undefined) updates.due_date = due_date || null;
+            if (horse_id !== undefined) updates.horse_id = horse_id || null;
+            if (entity_type !== undefined) updates.entity_type = entity_type || null;
+            if (entity_id !== undefined) updates.entity_id = entity_id || null;
+            if (assigned_to !== undefined) updates.assigned_to = assigned_to || null;
             
             const { data, error } = await supabase
                 .from('tasks')
                 .update(updates)
                 .eq('id', id)
-                .select()
+                .select('*, horses:horse_id(id, name, stable_name)')
                 .single();
             
             if (error) throw error;
@@ -57,7 +77,7 @@ module.exports = async (req, res) => {
                 .eq('id', id);
             
             if (error) throw error;
-            return res.status(200).json({ success: true });
+            return res.status(200).json({ success: true, message: 'Uloha zmazana' });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });

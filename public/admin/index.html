@@ -431,30 +431,59 @@
             <!-- TASKS / ÚLOHY -->
             <section id="tasks" class="section">
                 <div class="header">
-                    <h1>Úlohy</h1>
+                    <h1>Ulohy</h1>
                     <div class="header-actions">
-                        <select class="form-control" id="taskStatusFilter" style="width:150px">
-                            <option value="">Všetky</option>
-                            <option value="pending" selected>Čakajúce</option>
-                            <option value="in_progress">Rozpracované</option>
-                            <option value="completed">Dokončené</option>
-                        </select>
-                        <select class="form-control" id="taskPriorityFilter" style="width:120px">
-                            <option value="">Všetky priority</option>
-                            <option value="high">Vysoká</option>
-                            <option value="normal">Normálna</option>
-                            <option value="low">Nízka</option>
-                        </select>
-                        <button class="btn btn-outline" onclick="loadTasks()">Obnoviť</button>
-                        <button class="btn btn-primary" onclick="openTaskModal()">+ Pridať úlohu</button>
+                        <button class="btn btn-outline" onclick="printTasks()">Tlac</button>
+                        <button class="btn btn-outline" onclick="downloadTasksCSV()">CSV</button>
+                        <button class="btn btn-primary" onclick="openTaskModal()">+ Pridat ulohu</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:1rem">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stav</label>
+                                <select class="form-control" id="taskStatusFilter" onchange="loadTasks()">
+                                    <option value="all">Vsetky</option>
+                                    <option value="active" selected>Aktivne</option>
+                                    <option value="open">Otvorene</option>
+                                    <option value="in_progress">Rozpracovane</option>
+                                    <option value="completed">Dokoncene</option>
+                                    <option value="cancelled">Zrusene</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priorita</label>
+                                <select class="form-control" id="taskPriorityFilter" onchange="loadTasks()">
+                                    <option value="all">Vsetky</option>
+                                    <option value="urgent">Urgentna</option>
+                                    <option value="high">Vysoka</option>
+                                    <option value="normal">Normalna</option>
+                                    <option value="low">Nizka</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Termin</label>
+                                <select class="form-control" id="taskDueFilter" onchange="loadTasks()">
+                                    <option value="">Vsetky</option>
+                                    <option value="today">Dnes</option>
+                                    <option value="overdue">Po termine</option>
+                                    <option value="week">Do 7 dni</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="align-self:flex-end">
+                                <button class="btn btn-outline" onclick="loadTasks()">Obnovit</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="stats-grid" style="margin-bottom:1.5rem">
-                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="tasksPending">0</div><div class="label">Čakajúcich</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--primary)"><div class="value" id="tasksInProgress">0</div><div class="label">Rozpracovaných</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="tasksOverdue">0</div><div class="label">Po termíne</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--success)"><div class="value" id="tasksCompleted">0</div><div class="label">Dokončených</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="tasksPending">0</div><div class="label">Otvorenych</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--primary)"><div class="value" id="tasksInProgress">0</div><div class="label">Rozpracovanych</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="tasksOverdue">0</div><div class="label">Po termine</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--success)"><div class="value" id="tasksCompleted">0</div><div class="label">Dokoncenych</div></div>
                 </div>
                 
                 <div class="card">
@@ -463,12 +492,10 @@
                             <thead>
                                 <tr>
                                     <th>Priorita</th>
-                                    <th>Úloha</th>
-                                    <th>Kategória</th>
-                                    <th>Väzba</th>
-                                    <th>Termín</th>
-                                    <th>Priradené</th>
-                                    <th>Status</th>
+                                    <th>Uloha</th>
+                                    <th>Kon</th>
+                                    <th>Termin</th>
+                                    <th>Stav</th>
                                     <th>Akcie</th>
                                 </tr>
                             </thead>
@@ -483,41 +510,69 @@
                 <div class="header">
                     <h1>Upozornenia</h1>
                     <div class="header-actions">
-                        <button class="btn btn-outline" onclick="runNotificationRules()">Obnoviť upozornenia</button>
-                        <button class="btn btn-primary" onclick="openNotificationModal()">+ Pridať upozornenie</button>
+                        <button class="btn btn-outline" onclick="printNotifications()">Tlac</button>
+                        <button class="btn btn-outline" onclick="downloadNotificationsCSV()">CSV</button>
+                        <button class="btn btn-warning" onclick="runNotificationRules()">Obnovit upozornenia</button>
+                        <button class="btn btn-primary" onclick="openNotificationModal()">+ Pridat</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:1rem">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stav</label>
+                                <select class="form-control" id="notificationReadFilter" onchange="loadNotifications()">
+                                    <option value="">Vsetky</option>
+                                    <option value="false" selected>Neprecitane</option>
+                                    <option value="true">Precitane</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Zavaznost</label>
+                                <select class="form-control" id="notificationSeverityFilter" onchange="loadNotifications()">
+                                    <option value="all">Vsetky</option>
+                                    <option value="danger">Kriticke</option>
+                                    <option value="warning">Varovania</option>
+                                    <option value="info">Informacie</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Zdroj</label>
+                                <select class="form-control" id="notificationSourceFilter" onchange="loadNotifications()">
+                                    <option value="all">Vsetky</option>
+                                    <option value="rule">Automaticke</option>
+                                    <option value="manual">Manualne</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="align-self:flex-end">
+                                <button class="btn btn-outline" onclick="loadNotifications()">Obnovit</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="stats-grid" style="margin-bottom:1.5rem">
-                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="pendingNotifications">0</div><div class="label">Neprečítaných</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="urgentNotifications">0</div><div class="label">Vysoká priorita</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--info)"><div class="value" id="systemNotifications">0</div><div class="label">Systémových</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="pendingNotifications">0</div><div class="label">Neprecitanych</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="urgentNotifications">0</div><div class="label">Kritickych</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--info)"><div class="value" id="systemNotifications">0</div><div class="label">Automatickych</div></div>
                 </div>
                 
                 <div class="card">
-                    <div class="card-header">
-                        <h3>Zoznam upozornení</h3>
-                        <select id="notificationStatusFilter" class="form-control" style="width:auto" onchange="loadNotifications()">
-                            <option value="">Všetky</option>
-                            <option value="pending" selected>Aktívne</option>
-                            <option value="completed">Vyriešené</option>
-                        </select>
-                    </div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th>Zavaznost</th>
+                                    <th>Nazov</th>
                                     <th>Zdroj</th>
-                                    <th>Názov</th>
-                                    <th>Priorita</th>
-                                    <th>Väzba</th>
-                                    <th>Termín</th>
-                                    <th>Status</th>
+                                    <th>Kon</th>
+                                    <th>Vytvorene</th>
                                     <th>Akcie</th>
                                 </tr>
                             </thead>
                             <tbody id="notificationsTable"></tbody>
-                        </table>
+                        </table>>
                     </div>
                 </div>
             </section>
@@ -1071,11 +1126,11 @@
                 <div class="form-group"><label>Nazov *</label><input type="text" class="form-control" id="notificationTitle" required placeholder="Strucny nazov"></div>
                 <div class="form-group"><label>Popis</label><textarea class="form-control" id="notificationMessage" rows="3" placeholder="Podrobnejsi popis..."></textarea></div>
                 <div class="form-row">
-                    <div class="form-group"><label>Priorita</label>
-                        <select class="form-control" id="notificationPriority">
-                            <option value="low">Nizka</option>
-                            <option value="normal" selected>Normalna</option>
-                            <option value="high">Vysoka</option>
+                    <div class="form-group"><label>Zavaznost</label>
+                        <select class="form-control" id="notificationSeverity">
+                            <option value="info" selected>Informacia</option>
+                            <option value="warning">Varovanie</option>
+                            <option value="danger">Kriticke</option>
                         </select>
                     </div>
                     <div class="form-group"><label>Termin</label><input type="date" class="form-control" id="notificationDueDate"></div>
@@ -1096,34 +1151,39 @@
     <!-- Task Modal -->
     <div class="modal" id="taskModal">
         <div class="modal-content" style="max-width:600px">
-            <div class="modal-header"><h3 id="taskModalTitle">Nová úloha</h3><button class="modal-close" onclick="closeModal('taskModal')">×</button></div>
+            <div class="modal-header"><h3 id="taskModalTitle">Nova uloha</h3><button class="modal-close" onclick="closeModal('taskModal')">x</button></div>
             <div class="modal-body">
                 <input type="hidden" id="taskId">
-                <div class="form-group"><label>Názov úlohy *</label><input type="text" class="form-control" id="taskTitle" required placeholder="Stručný popis úlohy"></div>
-                <div class="form-group"><label>Podrobný popis</label><textarea class="form-control" id="taskDescription" rows="2"></textarea></div>
+                <div class="form-group"><label>Nazov ulohy *</label><input type="text" class="form-control" id="taskTitle" required placeholder="Strucny popis ulohy"></div>
+                <div class="form-group"><label>Podrobny popis</label><textarea class="form-control" id="taskDescription" rows="2"></textarea></div>
                 <div class="form-row">
                     <div class="form-group"><label>Priorita</label>
                         <select class="form-control" id="taskPriority">
-                            <option value="low">Nízka</option>
-                            <option value="normal" selected>Normálna</option>
-                            <option value="high">Vysoká</option>
-                            <option value="urgent">Urgentná</option>
+                            <option value="low">Nizka</option>
+                            <option value="normal" selected>Normalna</option>
+                            <option value="high">Vysoka</option>
+                            <option value="urgent">Urgentna</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Termín</label><input type="date" class="form-control" id="taskDueDate"></div>
+                    <div class="form-group"><label>Stav</label>
+                        <select class="form-control" id="taskStatus">
+                            <option value="open" selected>Otvorena</option>
+                            <option value="in_progress">Rozpracovana</option>
+                            <option value="completed">Dokoncena</option>
+                            <option value="cancelled">Zrusena</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Väzba na koňa</label>
-                        <select class="form-control" id="taskHorse"><option value="">-- Žiadna --</option></select>
-                    </div>
-                    <div class="form-group"><label>Priradiť používateľovi</label>
-                        <select class="form-control" id="taskAssigned"><option value="">-- Nepriradené --</option></select>
+                    <div class="form-group"><label>Termin</label><input type="date" class="form-control" id="taskDueDate"></div>
+                    <div class="form-group"><label>Vazba na kona</label>
+                        <select class="form-control" id="taskHorse"><option value="">-- Ziadna --</option></select>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('taskModal')">Zrušiť</button>
-                <button class="btn btn-primary" onclick="saveTask()">Uložiť</button>
+                <button class="btn btn-outline" onclick="closeModal('taskModal')">Zrusit</button>
+                <button class="btn btn-primary" onclick="saveTask()">Ulozit</button>
             </div>
         </div>
     </div>
@@ -6401,12 +6461,14 @@
     
     async function loadTasks() {
         try {
-            const status = document.getElementById('taskStatusFilter')?.value || '';
+            const status = document.getElementById('taskStatusFilter')?.value || 'active';
             const priority = document.getElementById('taskPriorityFilter')?.value || '';
+            const dueFilter = document.getElementById('taskDueFilter')?.value || '';
             
             let url = '/api/tasks?';
             if (status) url += `status=${status}&`;
-            if (priority) url += `priority=${priority}&`;
+            if (priority && priority !== 'all') url += `priority=${priority}&`;
+            if (dueFilter) url += `due_filter=${dueFilter}&`;
             
             const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
             if (!res.ok) throw new Error('Failed to load tasks');
@@ -6423,73 +6485,81 @@
         if (!tbody) return;
         
         const priorityBadges = { low: 'badge-gray', normal: 'badge-info', high: 'badge-warning', urgent: 'badge-danger' };
-        const priorityLabels = { low: 'Nízka', normal: 'Normálna', high: 'Vysoká', urgent: 'Urgentná' };
+        const priorityLabels = { low: 'Nizka', normal: 'Normalna', high: 'Vysoka', urgent: 'Urgentna' };
         const statusBadges = { open: 'badge-warning', in_progress: 'badge-info', completed: 'badge-success', cancelled: 'badge-gray' };
-        const statusLabels = { open: 'Otvorená', in_progress: 'Rozpracovaná', completed: 'Dokončená', cancelled: 'Zrušená' };
+        const statusLabels = { open: 'Otvorena', in_progress: 'Rozpracovana', completed: 'Dokoncena', cancelled: 'Zrusena' };
         
         const today = new Date().toISOString().split('T')[0];
         
         tbody.innerHTML = tasks.map(t => {
-            const isOverdue = t.due_date && t.due_date < today && t.status !== 'completed';
+            const isOverdue = t.due_date && t.due_date < today && t.status !== 'completed' && t.status !== 'cancelled';
             const horseName = t.horses ? (t.horses.stable_name || t.horses.name) : '';
-            const assignedName = t.assigned?.username || '';
             
             return `<tr class="${isOverdue ? 'table-row-danger' : ''}">
                 <td><span class="badge ${priorityBadges[t.priority]}">${priorityLabels[t.priority] || t.priority}</span></td>
-                <td><strong>${t.title}</strong>${t.description ? `<br><small style="color:var(--gray)">${t.description.substring(0, 60)}...</small>` : ''}</td>
-                <td>${t.category || '-'}</td>
-                <td>${horseName ? '🐴 ' + horseName : '-'}</td>
+                <td><strong>${t.title}</strong>${t.description ? `<br><small style="color:var(--gray)">${t.description.substring(0, 80)}...</small>` : ''}</td>
+                <td>${horseName || '-'}</td>
                 <td>${t.due_date ? `<span class="${isOverdue ? 'text-danger' : ''}">${t.due_date}</span>` : '-'}</td>
-                <td>${assignedName || '-'}</td>
                 <td><span class="badge ${statusBadges[t.status]}">${statusLabels[t.status] || t.status}</span></td>
                 <td>
-                    ${t.status !== 'completed' ? `<button class="btn btn-sm btn-success" onclick="completeTask('${t.id}')" title="Dokončiť">✓</button>` : ''}
-                    <button class="btn btn-sm btn-outline" onclick="editTask('${t.id}')">Upraviť</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">Zmazať</button>
+                    ${t.status === 'open' ? `<button class="btn btn-sm btn-primary" onclick="startTask('${t.id}')" title="Zacat">Zacat</button>` : ''}
+                    ${t.status === 'in_progress' ? `<button class="btn btn-sm btn-success" onclick="completeTask('${t.id}')" title="Dokoncit">Hotovo</button>` : ''}
+                    <button class="btn btn-sm btn-outline" onclick="editTask('${t.id}')">Upravit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">X</button>
                 </td>
             </tr>`;
-        }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne úlohy</td></tr>';
+        }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Ziadne ulohy</td></tr>';
     }
     
     function updateTaskStats() {
         const today = new Date().toISOString().split('T')[0];
-        const pending = tasks.filter(t => t.status === 'open').length;
-        const inProgress = tasks.filter(t => t.status === 'in_progress').length;
-        const overdue = tasks.filter(t => t.due_date && t.due_date < today && t.status !== 'completed').length;
-        const completed = tasks.filter(t => t.status === 'completed').length;
-        
-        const el1 = document.getElementById('tasksPending'); if (el1) el1.textContent = pending;
-        const el2 = document.getElementById('tasksInProgress'); if (el2) el2.textContent = inProgress;
-        const el3 = document.getElementById('tasksOverdue'); if (el3) el3.textContent = overdue;
-        const el4 = document.getElementById('tasksCompleted'); if (el4) el4.textContent = completed;
-        
-        const badge = document.getElementById('tasksBadge');
-        if (badge) badge.textContent = pending + inProgress;
+        // Nacitaj vsetky ulohy pre statistiky
+        fetch('/api/tasks?status=all', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+            .then(r => r.json())
+            .then(allTasks => {
+                const pending = allTasks.filter(t => t.status === 'open').length;
+                const inProgress = allTasks.filter(t => t.status === 'in_progress').length;
+                const overdue = allTasks.filter(t => t.due_date && t.due_date < today && (t.status === 'open' || t.status === 'in_progress')).length;
+                const completed = allTasks.filter(t => t.status === 'completed').length;
+                
+                const el1 = document.getElementById('tasksPending'); if (el1) el1.textContent = pending;
+                const el2 = document.getElementById('tasksInProgress'); if (el2) el2.textContent = inProgress;
+                const el3 = document.getElementById('tasksOverdue'); if (el3) el3.textContent = overdue;
+                const el4 = document.getElementById('tasksCompleted'); if (el4) el4.textContent = completed;
+            });
+    }
+    
+    async function startTask(id) {
+        try {
+            await fetch(`/api/tasks/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify({ status: 'in_progress' })
+            });
+            loadTasks();
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        }
     }
     
     async function openTaskModal(id = null) {
         document.getElementById('taskId').value = id || '';
-        document.getElementById('taskModalTitle').textContent = id ? 'Upraviť úlohu' : 'Nová úloha';
+        document.getElementById('taskModalTitle').textContent = id ? 'Upravit ulohu' : 'Nova uloha';
         
         // Reset form
         document.getElementById('taskTitle').value = '';
         document.getElementById('taskDescription').value = '';
         document.getElementById('taskPriority').value = 'normal';
+        document.getElementById('taskStatus').value = 'open';
         document.getElementById('taskDueDate').value = '';
         
-        // Načítaj selecty
+        // Nacitaj selecty
         try {
-            const [horsesRes, usersRes] = await Promise.all([
-                fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }),
-                fetch('/api/admin-users', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
-            ]);
+            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
             const horsesList = await horsesRes.json();
-            const usersList = await usersRes.json();
             
-            document.getElementById('taskHorse').innerHTML = '<option value="">-- Žiadna --</option>' +
-                horsesList.map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
-            document.getElementById('taskAssigned').innerHTML = '<option value="">-- Nepriradené --</option>' +
-                usersList.map(u => `<option value="${u.id}">${u.username}</option>`).join('');
+            document.getElementById('taskHorse').innerHTML = '<option value="">-- Bez vazby na kona --</option>' +
+                horsesList.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
                 
             if (id) {
                 const task = tasks.find(t => t.id === id);
@@ -6497,9 +6567,9 @@
                     document.getElementById('taskTitle').value = task.title || '';
                     document.getElementById('taskDescription').value = task.description || '';
                     document.getElementById('taskPriority').value = task.priority || 'normal';
+                    document.getElementById('taskStatus').value = task.status || 'open';
                     document.getElementById('taskDueDate').value = task.due_date || '';
                     document.getElementById('taskHorse').value = task.horse_id || '';
-                    document.getElementById('taskAssigned').value = task.assigned_to || '';
                 }
             }
         } catch(e) {
@@ -6515,13 +6585,13 @@
             title: document.getElementById('taskTitle').value,
             description: document.getElementById('taskDescription').value,
             priority: document.getElementById('taskPriority').value,
+            status: document.getElementById('taskStatus')?.value || 'open',
             due_date: document.getElementById('taskDueDate').value || null,
-            horse_id: document.getElementById('taskHorse').value || null,
-            assigned_to: document.getElementById('taskAssigned').value || null
+            horse_id: document.getElementById('taskHorse').value || null
         };
         
         if (!data.title) {
-            alert('Vyplňte názov úlohy');
+            alert('Vyplnte nazov ulohy');
             return;
         }
         
@@ -6540,7 +6610,7 @@
             closeModal('taskModal');
             loadTasks();
         } catch(e) {
-            alert('Chyba pri ukladaní: ' + e.message);
+            alert('Chyba pri ukladani: ' + e.message);
         }
     }
     
@@ -6594,7 +6664,7 @@
             const result = await res.json();
             
             if (res.ok) {
-                alert(result.message || 'Upozornenia boli obnovené');
+                alert(result.message || 'Upozornenia boli obnovene');
                 loadNotifications();
             } else {
                 throw new Error(result.error || 'Chyba');
@@ -6604,8 +6674,205 @@
         } finally {
             const btn = event.target;
             btn.disabled = false;
-            btn.textContent = 'Obnoviť upozornenia';
+            btn.textContent = 'Obnovit upozornenia';
         }
+    }
+
+    // ===== NOTIFICATIONS =====
+    let notifications = [];
+
+    async function loadNotifications() {
+        try {
+            const isRead = document.getElementById('notificationReadFilter')?.value || '';
+            const severity = document.getElementById('notificationSeverityFilter')?.value || 'all';
+            const source = document.getElementById('notificationSourceFilter')?.value || 'all';
+            
+            let url = '/api/notifications?';
+            if (isRead) url += `is_read=${isRead}&`;
+            if (severity !== 'all') url += `severity=${severity}&`;
+            if (source !== 'all') url += `source=${source}&`;
+            
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            notifications = await res.json();
+            renderNotifications();
+            updateNotificationStats();
+        } catch(e) {
+            console.error('loadNotifications error:', e);
+        }
+    }
+
+    function renderNotifications() {
+        const tbody = document.getElementById('notificationsTable');
+        if (!tbody) return;
+        
+        const severityBadges = { info: 'badge-info', warning: 'badge-warning', danger: 'badge-danger' };
+        const severityLabels = { info: 'Info', warning: 'Varovanie', danger: 'Kriticke' };
+        const sourceLabels = { manual: 'Manualne', rule: 'Automaticke' };
+        
+        tbody.innerHTML = notifications.map(n => {
+            const horseName = n.horses ? (n.horses.stable_name || n.horses.name) : '';
+            const createdDate = n.created_at ? n.created_at.split('T')[0] : '';
+            
+            return `<tr class="${!n.is_read ? 'table-row-highlight' : ''}">
+                <td><span class="badge ${severityBadges[n.severity] || 'badge-info'}">${severityLabels[n.severity] || n.severity}</span></td>
+                <td><strong>${n.title}</strong>${n.message ? `<br><small style="color:var(--gray)">${n.message.substring(0, 80)}...</small>` : ''}</td>
+                <td><span class="badge badge-gray">${sourceLabels[n.source] || n.source}</span></td>
+                <td>${horseName || '-'}</td>
+                <td>${createdDate}</td>
+                <td>
+                    ${!n.is_read ? `<button class="btn btn-sm btn-primary" onclick="markNotificationRead('${n.id}')">Precitat</button>` : ''}
+                    <button class="btn btn-sm btn-outline" onclick="dismissNotification('${n.id}')">Skryt</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Ziadne upozornenia</td></tr>';
+    }
+
+    function updateNotificationStats() {
+        fetch('/api/notifications?is_dismissed=false', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+            .then(r => r.json())
+            .then(all => {
+                const unread = all.filter(n => !n.is_read).length;
+                const danger = all.filter(n => n.severity === 'danger' && !n.is_read).length;
+                const system = all.filter(n => n.source === 'rule').length;
+                
+                const el1 = document.getElementById('pendingNotifications'); if (el1) el1.textContent = unread;
+                const el2 = document.getElementById('urgentNotifications'); if (el2) el2.textContent = danger;
+                const el3 = document.getElementById('systemNotifications'); if (el3) el3.textContent = system;
+            });
+    }
+
+    async function markNotificationRead(id) {
+        try {
+            await fetch(`/api/notifications/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify({ is_read: true })
+            });
+            loadNotifications();
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        }
+    }
+
+    async function dismissNotification(id) {
+        if (!confirm('Skryt toto upozornenie?')) return;
+        try {
+            await fetch(`/api/notifications/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify({ is_dismissed: true })
+            });
+            loadNotifications();
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        }
+    }
+
+    async function openNotificationModal() {
+        document.getElementById('notificationId').value = '';
+        document.getElementById('notificationTitle').value = '';
+        document.getElementById('notificationMessage').value = '';
+        document.getElementById('notificationSeverity').value = 'info';
+        document.getElementById('notificationDueDate').value = '';
+        
+        try {
+            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const horsesList = await horsesRes.json();
+            document.getElementById('notificationHorse').innerHTML = '<option value="">-- Bez vazby --</option>' +
+                horsesList.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
+        } catch(e) {}
+        
+        showModal('notificationModal');
+    }
+
+    async function saveNotification() {
+        const data = {
+            title: document.getElementById('notificationTitle').value,
+            message: document.getElementById('notificationMessage').value,
+            severity: document.getElementById('notificationSeverity').value,
+            due_date: document.getElementById('notificationDueDate').value || null,
+            assigned_horse_id: document.getElementById('notificationHorse').value || null
+        };
+        
+        if (!data.title) {
+            alert('Vyplnte nazov');
+            return;
+        }
+        
+        try {
+            await fetch('/api/notifications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify(data)
+            });
+            closeModal('notificationModal');
+            loadNotifications();
+        } catch(e) {
+            alert('Chyba: ' + e.message);
+        }
+    }
+
+    // ===== PRINT & CSV TASKS =====
+    function printTasks() {
+        const priorityLabels = { low: 'Nizka', normal: 'Normalna', high: 'Vysoka', urgent: 'Urgentna' };
+        const statusLabels = { open: 'Otvorena', in_progress: 'Rozpracovana', completed: 'Dokoncena', cancelled: 'Zrusena' };
+        
+        const rows = tasks.map(t => `
+            <tr>
+                <td>${priorityLabels[t.priority] || t.priority}</td>
+                <td>${t.title}</td>
+                <td>${t.horses ? (t.horses.stable_name || t.horses.name) : '-'}</td>
+                <td>${t.due_date || '-'}</td>
+                <td>${statusLabels[t.status] || t.status}</td>
+            </tr>
+        `).join('');
+        
+        printExportTable('Prehad uloh', `Datum: ${new Date().toLocaleDateString('sk')}`,
+            '<tr><th>Priorita</th><th>Nazov</th><th>Kon</th><th>Termin</th><th>Stav</th></tr>', rows);
+    }
+
+    function downloadTasksCSV() {
+        const url = '/api/exports/tasks?format=csv&status=' + (document.getElementById('taskStatusFilter')?.value || 'all');
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+            .then(r => r.blob())
+            .then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'ulohy.csv';
+                a.click();
+            });
+    }
+
+    // ===== PRINT & CSV NOTIFICATIONS =====
+    function printNotifications() {
+        const severityLabels = { info: 'Info', warning: 'Varovanie', danger: 'Kriticke' };
+        const sourceLabels = { manual: 'Manualne', rule: 'Automaticke' };
+        
+        const rows = notifications.map(n => `
+            <tr>
+                <td>${severityLabels[n.severity] || n.severity}</td>
+                <td>${n.title}</td>
+                <td>${n.message || '-'}</td>
+                <td>${sourceLabels[n.source] || n.source}</td>
+                <td>${n.horses ? (n.horses.stable_name || n.horses.name) : '-'}</td>
+                <td>${n.created_at ? n.created_at.split('T')[0] : ''}</td>
+            </tr>
+        `).join('');
+        
+        printExportTable('Prehad upozorneni', `Datum: ${new Date().toLocaleDateString('sk')}`,
+            '<tr><th>Zavaznost</th><th>Nazov</th><th>Sprava</th><th>Zdroj</th><th>Kon</th><th>Vytvorene</th></tr>', rows);
+    }
+
+    function downloadNotificationsCSV() {
+        const url = '/api/exports/notifications?format=csv';
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+            .then(r => r.blob())
+            .then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'upozornenia.csv';
+                a.click();
+            });
     }
 
     // ===== AUDIT TRAIL =====

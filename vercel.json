@@ -107,6 +107,8 @@
     { "src": "/api/exports/vaccinations", "dest": "/api/exports/vaccinations.js" },
     { "src": "/api/exports/documents", "dest": "/api/exports/documents.js" },
     { "src": "/api/exports/horse-card", "dest": "/api/exports/horse-card.js" },
+    { "src": "/api/exports/tasks", "dest": "/api/exports/tasks.js" },
+    { "src": "/api/exports/notifications", "dest": "/api/exports/notifications.js" },
     
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },
