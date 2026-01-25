@@ -22,8 +22,14 @@ module.exports = async (req, res) => {
                 .from('competitions')
                 .select('*')
                 .order('start_date', { ascending: false });
-            if (error) throw error;
-            return res.status(200).json(data);
+            if (error) {
+                // Ak tabulka neexistuje, vrat prazdne pole
+                if (error.code === '42P01' || error.message.includes('does not exist')) {
+                    return res.status(200).json([]);
+                }
+                throw error;
+            }
+            return res.status(200).json(data || []);
         }
 
         if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });

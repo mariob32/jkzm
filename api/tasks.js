@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
             
             let query = supabase
                 .from('tasks')
-                .select('*, horses:horse_id(id, name, stable_name)')
+                .select('*')
                 .order('due_date', { ascending: true, nullsFirst: false })
                 .order('created_at', { ascending: false });
             
@@ -55,9 +55,27 @@ module.exports = async (req, res) => {
             
             if (limit) query = query.limit(parseInt(limit));
             
-            const { data, error } = await query;
+            const { data: tasks, error } = await query;
             if (error) throw error;
-            return res.status(200).json(data || []);
+            
+            // Fetch horse names separately if needed
+            const horseIds = [...new Set((tasks || []).filter(t => t.horse_id).map(t => t.horse_id))];
+            let horsesMap = {};
+            if (horseIds.length > 0) {
+                const { data: horses } = await supabase
+                    .from('horses')
+                    .select('id, name, stable_name')
+                    .in('id', horseIds);
+                horsesMap = (horses || []).reduce((acc, h) => { acc[h.id] = h; return acc; }, {});
+            }
+            
+            // Merge horse data
+            const result = (tasks || []).map(t => ({
+                ...t,
+                horses: t.horse_id ? horsesMap[t.horse_id] || null : null
+            }));
+            
+            return res.status(200).json(result);
         }
 
         if (req.method === 'POST') {
@@ -81,10 +99,21 @@ module.exports = async (req, res) => {
                     assigned_to: assigned_to || null,
                     created_by: user.id || null
                 })
-                .select('*, horses:horse_id(id, name, stable_name)')
+                .select('*')
                 .single();
             
             if (error) throw error;
+            
+            // Fetch horse if exists
+            if (data && data.horse_id) {
+                const { data: horse } = await supabase
+                    .from('horses')
+                    .select('id, name, stable_name')
+                    .eq('id', data.horse_id)
+                    .single();
+                data.horses = horse || null;
+            }
+            
             return res.status(201).json(data);
         }
 

@@ -96,7 +96,7 @@ module.exports = async (req, res) => {
                 const { date_from, date_to, status, space_id } = req.query;
                 let query = supabase
                     .from('bookings')
-                    .select('*, training_spaces(name, color)')
+                    .select('*')
                     .order('booking_date', { ascending: true })
                     .order('start_time', { ascending: true });
                 
@@ -105,9 +105,27 @@ module.exports = async (req, res) => {
                 if (status) query = query.eq('status', status);
                 if (space_id) query = query.eq('space_id', space_id);
                 
-                const { data, error } = await query;
+                const { data: bookings, error } = await query;
                 if (error) throw error;
-                return res.status(200).json(data);
+                
+                // Fetch training spaces separately
+                const spaceIds = [...new Set((bookings || []).filter(b => b.space_id).map(b => b.space_id))];
+                let spacesMap = {};
+                if (spaceIds.length > 0) {
+                    const { data: spaces } = await supabase
+                        .from('training_spaces')
+                        .select('id, name, color')
+                        .in('id', spaceIds);
+                    spacesMap = (spaces || []).reduce((acc, s) => { acc[s.id] = s; return acc; }, {});
+                }
+                
+                // Merge space data
+                const result = (bookings || []).map(b => ({
+                    ...b,
+                    training_spaces: b.space_id ? spacesMap[b.space_id] || null : null
+                }));
+                
+                return res.status(200).json(result);
             }
             
             return res.status(401).json({ error: 'Neautorizovaný' });
