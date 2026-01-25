@@ -290,3 +290,25 @@ Nová stránka `/o-klube.html` obsahuje:
 
 ### Navigácia
 Odkaz "O klube" je pridaný do hlavnej navigácie aj do pätičky.
+
+---
+
+## 📋 Verzia 6.5.0 (2026-01-25)
+
+### Admin UI vylepsenia
+- **Vaccinations CRUD** - Edit a Delete tlacidla v admin paneli
+- **Feeding Items** - Nested CRUD pre polozky krmenia (Detail modal)
+- **Admin Users** - Sprava admin pouzivatelov (role, is_active)
+- **Compliance Dashboard** - Expirujuce SJF licencie a ockovania
+
+### Nove API endpointy (v6.4)
+- `/api/feeding-items` - CRUD polozky krmenia
+- `/api/vaccinations` - CRUD ockovania
+- `/api/competition-entries` - CRUD prihlasky na preteky
+- `/api/admin-users` - CRUD admin pouzivatelia
+- `/api/health` - System health check (public)
+
+### Technicke zmeny
+- Vet sekcia ma teraz taby (Vet zaznamy / Ockovania)
+- Feeding tabulka ma tlacidlo Detail pre nested CRUD
+- Compliance dashboard zobrazuje expirujuce licencie a ockovania

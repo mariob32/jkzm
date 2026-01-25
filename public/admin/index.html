@@ -180,6 +180,12 @@
             <div style="margin-top:auto;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1)">
                 <div class="nav-item" onclick="window.open('/','_blank')"><span class="icon">🌐</span>Zobraziť web</div>
                 <div class="nav-item" onclick="logout()"><span class="icon">🚪</span>Odhlásiť</div>
+                
+                <div class="nav-section" style="margin-top:1rem">
+                    <div class="nav-section-title">System</div>
+                    <div class="nav-item" data-section="compliance"><span class="icon">🛡️</span>Compliance</div>
+                    <div class="nav-item" data-section="admin-users"><span class="icon">👤</span>Admin uzivatelia</div>
+                </div>
             </div>
         </aside>
 
@@ -251,21 +257,34 @@
 
             <!-- VET RECORDS -->
             <section id="vet" class="section">
-                <div class="header"><h1>🏥 Veterinárne záznamy</h1><div class="header-actions"><select class="form-control" id="vetHorseFilter" style="width:200px"><option value="">Všetky kone</option></select><button class="btn btn-primary" onclick="openModal('vetModal')">+ Nový záznam</button></div></div>
+                <div class="header"><h1>Veterinarne zaznamy</h1><div class="header-actions"><select class="form-control" id="vetHorseFilter" style="width:200px"><option value="">Vsetky kone</option></select><button class="btn btn-primary" onclick="openModal('vetModal')">+ Novy zaznam</button></div></div>
                 
                 <div class="stats-grid" style="margin-bottom:1.5rem">
-                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="vetOverdue">0</div><div class="label">Po termíne</div></div>
-                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="vetSoon">0</div><div class="label">Do 30 dní</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--danger)"><div class="value" id="vetOverdue">0</div><div class="label">Po termine</div></div>
+                    <div class="stat-card" style="border-left:4px solid var(--warning)"><div class="value" id="vetSoon">0</div><div class="label">Do 30 dni</div></div>
                     <div class="stat-card" style="border-left:4px solid var(--success)"><div class="value" id="vetOk">0</div><div class="label">V poriadku</div></div>
                 </div>
 
-                <div class="card"><div class="card-header"><h3>Veterinárne záznamy</h3></div><div class="card-body"><table class="table"><thead><tr><th>Kôň</th><th>Typ</th><th>Dátum</th><th>Ďalší termín</th><th>Veterinár</th><th>Poznámka</th><th>Akcie</th></tr></thead><tbody id="vetTable"></tbody></table></div></div>
+                <div class="tabs" style="margin-bottom:1rem">
+                    <div class="tab active" data-vet-tab="records">Vet zaznamy</div>
+                    <div class="tab" data-vet-tab="vaccinations">Ockovania</div>
+                </div>
+
+                <div id="vetRecordsTab" class="card">
+                    <div class="card-header"><h3>Veterinarne zaznamy</h3></div>
+                    <div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Typ</th><th>Datum</th><th>Dalsi termin</th><th>Veterinar</th><th>Poznamka</th><th>Akcie</th></tr></thead><tbody id="vetTable"></tbody></table></div>
+                </div>
+
+                <div id="vaccinationsTab" class="card" style="display:none">
+                    <div class="card-header"><h3>Ockovania</h3><button class="btn btn-sm btn-primary" onclick="openVaccinationModal()">+ Pridat ockovanie</button></div>
+                    <div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Typ vakciny</th><th>Datum</th><th>Dalsi termin</th><th>Sarza</th><th>Veterinar</th><th>Akcie</th></tr></thead><tbody id="vaccinationsTable"></tbody></table></div>
+                </div>
             </section>
 
             <!-- FEEDING -->
             <section id="feeding" class="section">
-                <div class="header"><h1>🌾 Kŕmenie</h1><div class="header-actions"><input type="date" class="form-control" id="feedingDate" style="width:auto"><button class="btn btn-primary" onclick="openModal('feedingModal')">+ Pridať záznam</button></div></div>
-                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Kôň</th><th>Dátum</th><th>Čas</th><th>Kŕmil</th><th>Poznámka</th><th>Akcie</th></tr></thead><tbody id="feedingTable"></tbody></table></div></div>
+                <div class="header"><h1>Krmenie</h1><div class="header-actions"><input type="date" class="form-control" id="feedingDate" style="width:auto"><button class="btn btn-primary" onclick="openModal('feedingModal')">+ Pridat zaznam</button></div></div>
+                <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Kon</th><th>Datum</th><th>Cas</th><th>Krmil</th><th>Poznamka</th><th>Polozky</th><th>Akcie</th></tr></thead><tbody id="feedingTable"></tbody></table></div></div>
             </section>
 
             <!-- COMPETITIONS -->
@@ -574,6 +593,42 @@
                             <button class="btn btn-outline" onclick="loadSettings()">🔄 Obnoviť</button>
                             <span id="settingsStatus" style="color:var(--gray);font-size:0.85rem"></span>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COMPLIANCE DASHBOARD -->
+            <section id="compliance" class="section">
+                <div class="header"><h1>Compliance Dashboard</h1></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:1.5rem">
+                    <div class="card">
+                        <div class="card-header" style="background:rgba(255,193,7,0.1)">
+                            <h3>Expirujuce SJF licencie koni (do 60 dni)</h3>
+                        </div>
+                        <div class="card-body" id="complianceHorseLicenses">
+                            <p style="color:var(--gray)">Nacitavam...</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" style="background:rgba(220,53,69,0.1)">
+                            <h3>Ockovania s blizkym terminom (do 30 dni)</h3>
+                        </div>
+                        <div class="card-body" id="complianceVaccinations">
+                            <p style="color:var(--gray)">Nacitavam...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN USERS -->
+            <section id="admin-users" class="section">
+                <div class="header"><h1>Admin uzivatelia</h1><div class="header-actions"><button class="btn btn-primary" onclick="openAdminUserModal()">+ Novy uzivatel</button></div></div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Uzivatel</th><th>Email</th><th>Rola</th><th>Status</th><th>Posledne prihlasenie</th><th>Akcie</th></tr></thead>
+                            <tbody id="adminUsersTable"></tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -1266,6 +1321,79 @@
         </div>
     </div>
 
+    <!-- Vaccination Modal -->
+    <div class="modal" id="vaccinationModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="vaccinationModalTitle">Ockovanie</h3><button class="modal-close" onclick="closeModal('vaccinationModal')">×</button></div>
+            <div class="modal-body">
+                <form id="vaccinationForm">
+                    <input type="hidden" id="vaccinationId">
+                    <div class="form-row">
+                        <div class="form-group"><label>Kon *</label><select class="form-control" id="vaccinationHorse" required></select></div>
+                        <div class="form-group"><label>Typ vakciny *</label><input type="text" class="form-control" id="vaccinationType" required placeholder="Chripka, Tetanus..."></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Datum ockovania *</label><input type="date" class="form-control" id="vaccinationDate" required></div>
+                        <div class="form-group"><label>Dalsi termin</label><input type="date" class="form-control" id="vaccinationNextDate"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Cislo sarze</label><input type="text" class="form-control" id="vaccinationBatch"></div>
+                        <div class="form-group"><label>Veterinar</label><input type="text" class="form-control" id="vaccinationVetName" placeholder="MVDr. Jan Kovac"></div>
+                    </div>
+                    <div class="form-group"><label>Licencia veterinara</label><input type="text" class="form-control" id="vaccinationVetLicense"></div>
+                    <div class="form-group"><label>Poznamky</label><textarea class="form-control" id="vaccinationNotes"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('vaccinationModal')">Zrusit</button><button class="btn btn-primary" onclick="saveVaccination()">Ulozit</button></div>
+        </div>
+    </div>
+
+    <!-- Feeding Detail Modal -->
+    <div class="modal" id="feedingDetailModal">
+        <div class="modal-content" style="max-width:800px">
+            <div class="modal-header"><h3>Detail krmenia</h3><button class="modal-close" onclick="closeModal('feedingDetailModal')">×</button></div>
+            <div class="modal-body">
+                <div id="feedingDetailInfo" style="margin-bottom:1rem;padding:1rem;background:var(--light);border-radius:var(--radius)"></div>
+                <h4 style="margin-bottom:1rem">Polozky krmenia</h4>
+                <table class="table" id="feedingItemsTable">
+                    <thead><tr><th>Typ krmiva</th><th>Mnozstvo</th><th>Jednotka</th><th>Poznamka</th><th>Akcie</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <div style="margin-top:1.5rem;padding:1rem;background:rgba(40,167,69,0.1);border-radius:var(--radius)">
+                    <h4 style="margin:0 0 1rem 0">Pridat polozku</h4>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end">
+                        <div class="form-group" style="margin:0;flex:1;min-width:120px"><label>Typ krmiva</label><input type="text" id="newFeedType" class="form-control" placeholder="Seno, ovos..."></div>
+                        <div class="form-group" style="margin:0;width:100px"><label>Mnozstvo</label><input type="number" id="newFeedQuantity" class="form-control" step="0.1"></div>
+                        <div class="form-group" style="margin:0;width:80px"><label>Jednotka</label><select id="newFeedUnit" class="form-control"><option value="kg">kg</option><option value="l">l</option><option value="ks">ks</option><option value="g">g</option></select></div>
+                        <div class="form-group" style="margin:0;flex:1;min-width:120px"><label>Poznamka</label><input type="text" id="newFeedNotes" class="form-control"></div>
+                        <button class="btn btn-primary" onclick="addFeedingItem()">Pridat</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('feedingDetailModal')">Zavriet</button></div>
+        </div>
+    </div>
+
+    <!-- Admin User Modal -->
+    <div class="modal" id="adminUserModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="adminUserModalTitle">Novy admin uzivatel</h3><button class="modal-close" onclick="closeModal('adminUserModal')">×</button></div>
+            <div class="modal-body">
+                <form id="adminUserForm">
+                    <input type="hidden" id="adminUserId">
+                    <div class="form-group"><label>Uzivatelske meno *</label><input type="text" class="form-control" id="adminUserUsername" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" class="form-control" id="adminUserEmail"></div>
+                    <div class="form-group" id="adminUserPasswordGroup"><label>Heslo *</label><input type="password" class="form-control" id="adminUserPassword" placeholder="Min. 6 znakov"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Rola</label><select class="form-control" id="adminUserRole"><option value="admin">Admin</option><option value="editor">Editor</option><option value="viewer">Viewer</option></select></div>
+                        <div class="form-group"><label>Status</label><select class="form-control" id="adminUserActive"><option value="true">Aktivny</option><option value="false">Neaktivny</option></select></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('adminUserModal')">Zrusit</button><button class="btn btn-primary" onclick="saveAdminUser()">Ulozit</button></div>
+        </div>
+    </div>
+
     <!-- Payment Modal -->
     <div class="modal" id="paymentModal">
         <div class="modal-content">
@@ -1444,8 +1572,8 @@
 
     function populateSelects() {
         // Horse selects
-        const horseOpts = '<option value="">Vyberte koňa</option>' + horses.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.name}</option>`).join('');
-        document.querySelectorAll('#trainingHorse, #vetHorse, #feedHorse, #vetHorseFilter').forEach(s => s.innerHTML = horseOpts);
+        const horseOpts = '<option value="">Vyberte kona</option>' + horses.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.name}</option>`).join('');
+        document.querySelectorAll('#trainingHorse, #vetHorse, #feedHorse, #vetHorseFilter, #vaccinationHorse').forEach(s => { if(s) s.innerHTML = horseOpts; });
         
         // Rider selects
         const riderOpts = '<option value="">Vyberte jazdca</option>' + riders.filter(r => r.status === 'active').map(r => `<option value="${r.id}">${r.first_name} ${r.last_name}</option>`).join('');
@@ -1469,6 +1597,8 @@
         renderPayments();
         renderBookings();
         renderMessages();
+        renderFeeding();
+        renderVetRecords();
     }
 
     // Render functions
@@ -1927,8 +2057,387 @@
         };
         await api('feeding', 'POST', data);
         closeModal('feedingModal');
-        showToast('Záznam kŕmenia uložený!', 'success');
+        showToast('Zaznam krmenia ulozeny!', 'success');
+        await loadFeedingData();
     }
+
+    // ===== FEEDING =====
+    let feedingData = [];
+
+    async function loadFeedingData() {
+        feedingData = await api('feeding').catch(() => []);
+        renderFeeding();
+    }
+
+    function renderFeeding() {
+        const timeLabels = {morning:'Rano',noon:'Obed',evening:'Vecer'};
+        document.getElementById('feedingTable').innerHTML = feedingData.map(f => {
+            const horse = horses.find(h => h.id === f.horse_id);
+            const emp = employees.find(e => e.id === f.employee_id);
+            return `<tr>
+                <td><strong>${horse?.name || '-'}</strong></td>
+                <td>${f.date || '-'}</td>
+                <td>${timeLabels[f.time_slot] || f.time_slot || '-'}</td>
+                <td>${emp ? emp.first_name + ' ' + emp.last_name : '-'}</td>
+                <td>${f.notes || '-'}</td>
+                <td><button class="btn btn-sm btn-info" onclick="openFeedingDetail('${f.id}')">Detail</button></td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteFeeding('${f.id}')">Zmazat</button></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Ziadne zaznamy</td></tr>';
+    }
+
+    async function deleteFeeding(id) {
+        if (!confirm('Naozaj zmazat tento zaznam krmenia?')) return;
+        await api(`feeding/${id}`, 'DELETE');
+        showToast('Zaznam zmazany', 'success');
+        await loadFeedingData();
+    }
+
+    // ===== FEEDING ITEMS (DETAIL) =====
+    let currentFeedingId = null;
+
+    async function openFeedingDetail(feedingId) {
+        currentFeedingId = feedingId;
+        const feeding = feedingData.find(f => f.id === feedingId);
+        const horse = horses.find(h => h.id === feeding?.horse_id);
+        const timeLabels = {morning:'Rano',noon:'Obed',evening:'Vecer'};
+        
+        document.getElementById('feedingDetailInfo').innerHTML = `
+            <strong>Kon:</strong> ${horse?.name || '-'} | 
+            <strong>Datum:</strong> ${feeding?.date || '-'} | 
+            <strong>Cas:</strong> ${timeLabels[feeding?.time_slot] || '-'}
+        `;
+        
+        await loadFeedingItems(feedingId);
+        openModal('feedingDetailModal');
+    }
+
+    async function loadFeedingItems(feedingId) {
+        const items = await api(`feeding-items?feeding_id=${feedingId}`).catch(() => []);
+        const tbody = document.querySelector('#feedingItemsTable tbody');
+        tbody.innerHTML = items.length ? items.map(item => `
+            <tr>
+                <td>${item.feed_type}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unit}</td>
+                <td>${item.notes || '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-danger" onclick="deleteFeedingItem('${item.id}')">Zmazat</button>
+                </td>
+            </tr>
+        `).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Ziadne polozky</td></tr>';
+    }
+
+    async function addFeedingItem() {
+        const feed_type = document.getElementById('newFeedType').value;
+        const quantity = document.getElementById('newFeedQuantity').value;
+        const unit = document.getElementById('newFeedUnit').value;
+        const notes = document.getElementById('newFeedNotes').value;
+        
+        if (!feed_type || !quantity) {
+            showToast('Vyplnte typ a mnozstvo', 'error');
+            return;
+        }
+        
+        await api('feeding-items', 'POST', {
+            feeding_id: currentFeedingId,
+            feed_type,
+            quantity: parseFloat(quantity),
+            unit,
+            notes
+        });
+        
+        showToast('Polozka pridana', 'success');
+        document.getElementById('newFeedType').value = '';
+        document.getElementById('newFeedQuantity').value = '';
+        document.getElementById('newFeedNotes').value = '';
+        await loadFeedingItems(currentFeedingId);
+    }
+
+    async function deleteFeedingItem(itemId) {
+        if (!confirm('Zmazat tuto polozku?')) return;
+        await api(`feeding-items/${itemId}`, 'DELETE');
+        showToast('Polozka zmazana', 'success');
+        await loadFeedingItems(currentFeedingId);
+    }
+
+    // ===== VET RECORDS =====
+    function renderVetRecords() {
+        document.getElementById('vetTable').innerHTML = vetRecords.map(v => {
+            const horse = horses.find(h => h.id === v.horse_id);
+            return `<tr>
+                <td><strong>${horse?.name || '-'}</strong></td>
+                <td>${v.record_type || '-'}</td>
+                <td>${v.record_date || '-'}</td>
+                <td>${v.next_due_date || '-'}</td>
+                <td>${v.vet_name || '-'}</td>
+                <td>${v.notes || '-'}</td>
+                <td><button class="btn btn-sm btn-outline" onclick="editVetRecord('${v.id}')">Upravit</button> <button class="btn btn-sm btn-danger" onclick="deleteVetRecord('${v.id}')">Zmazat</button></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Ziadne zaznamy</td></tr>';
+    }
+
+    async function editVetRecord(id) {
+        const v = vetRecords.find(r => r.id === id);
+        if (!v) return;
+        document.getElementById('vetId').value = v.id;
+        document.getElementById('vetHorse').value = v.horse_id || '';
+        document.getElementById('vetType').value = v.record_type || '';
+        document.getElementById('vetDate').value = v.record_date || '';
+        document.getElementById('vetNextDate').value = v.next_due_date || '';
+        document.getElementById('vetVeterinarian').value = v.vet_name || '';
+        document.getElementById('vetNotes').value = v.notes || '';
+        openModal('vetModal');
+    }
+
+    async function deleteVetRecord(id) {
+        if (!confirm('Naozaj zmazat tento zaznam?')) return;
+        await api(`vet-records/${id}`, 'DELETE');
+        showToast('Zaznam zmazany', 'success');
+        vetRecords = await api('vet-records').catch(() => []);
+        renderVetRecords();
+    }
+
+    // ===== VACCINATIONS =====
+    let vaccinations = [];
+
+    async function loadVaccinations() {
+        vaccinations = await api('vaccinations').catch(() => []);
+        renderVaccinations();
+    }
+
+    function renderVaccinations() {
+        document.getElementById('vaccinationsTable').innerHTML = vaccinations.map(v => {
+            const horse = horses.find(h => h.id === v.horse_id);
+            return `<tr>
+                <td><strong>${horse?.name || '-'}</strong></td>
+                <td>${v.vaccine_type || '-'}</td>
+                <td>${v.vaccination_date || '-'}</td>
+                <td>${v.next_date || '-'}</td>
+                <td>${v.batch_number || '-'}</td>
+                <td>${v.vet_name || '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editVaccination('${v.id}')">Upravit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteVaccination('${v.id}')">Zmazat</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Ziadne ockovania</td></tr>';
+    }
+
+    function openVaccinationModal(id = null) {
+        document.getElementById('vaccinationId').value = '';
+        document.getElementById('vaccinationHorse').value = '';
+        document.getElementById('vaccinationType').value = '';
+        document.getElementById('vaccinationDate').value = '';
+        document.getElementById('vaccinationNextDate').value = '';
+        document.getElementById('vaccinationBatch').value = '';
+        document.getElementById('vaccinationVetName').value = '';
+        document.getElementById('vaccinationVetLicense').value = '';
+        document.getElementById('vaccinationNotes').value = '';
+        document.getElementById('vaccinationModalTitle').textContent = 'Nove ockovanie';
+        openModal('vaccinationModal');
+    }
+
+    async function editVaccination(id) {
+        const v = vaccinations.find(x => x.id === id);
+        if (!v) return;
+        document.getElementById('vaccinationId').value = v.id;
+        document.getElementById('vaccinationHorse').value = v.horse_id || '';
+        document.getElementById('vaccinationType').value = v.vaccine_type || '';
+        document.getElementById('vaccinationDate').value = v.vaccination_date || '';
+        document.getElementById('vaccinationNextDate').value = v.next_date || '';
+        document.getElementById('vaccinationBatch').value = v.batch_number || '';
+        document.getElementById('vaccinationVetName').value = v.vet_name || '';
+        document.getElementById('vaccinationVetLicense').value = v.vet_license || '';
+        document.getElementById('vaccinationNotes').value = v.notes || '';
+        document.getElementById('vaccinationModalTitle').textContent = 'Upravit ockovanie';
+        openModal('vaccinationModal');
+    }
+
+    async function saveVaccination() {
+        const id = document.getElementById('vaccinationId').value;
+        const data = {
+            horse_id: document.getElementById('vaccinationHorse').value || null,
+            vaccine_type: document.getElementById('vaccinationType').value,
+            vaccination_date: document.getElementById('vaccinationDate').value,
+            next_date: document.getElementById('vaccinationNextDate').value || null,
+            batch_number: document.getElementById('vaccinationBatch').value || null,
+            vet_name: document.getElementById('vaccinationVetName').value || null,
+            vet_license: document.getElementById('vaccinationVetLicense').value || null,
+            notes: document.getElementById('vaccinationNotes').value || null
+        };
+        
+        if (!data.vaccine_type || !data.vaccination_date) {
+            showToast('Vyplnte typ vakciny a datum', 'error');
+            return;
+        }
+        
+        if (id) {
+            await api(`vaccinations/${id}`, 'PUT', data);
+        } else {
+            await api('vaccinations', 'POST', data);
+        }
+        
+        closeModal('vaccinationModal');
+        showToast('Ockovanie ulozene', 'success');
+        await loadVaccinations();
+    }
+
+    async function deleteVaccination(id) {
+        if (!confirm('Naozaj zmazat toto ockovanie?')) return;
+        await api(`vaccinations/${id}`, 'DELETE');
+        showToast('Ockovanie zmazane', 'success');
+        await loadVaccinations();
+    }
+
+    // ===== ADMIN USERS =====
+    let adminUsers = [];
+
+    async function loadAdminUsers() {
+        adminUsers = await api('admin-users').catch(() => []);
+        renderAdminUsers();
+    }
+
+    function renderAdminUsers() {
+        document.getElementById('adminUsersTable').innerHTML = adminUsers.map(u => `
+            <tr>
+                <td><strong>${u.username}</strong></td>
+                <td>${u.email || '-'}</td>
+                <td><span class="badge badge-${u.role === 'admin' ? 'success' : 'info'}">${u.role}</span></td>
+                <td><span class="badge badge-${u.is_active ? 'success' : 'danger'}">${u.is_active ? 'Aktivny' : 'Neaktivny'}</span></td>
+                <td>${u.last_login ? new Date(u.last_login).toLocaleString('sk') : 'Nikdy'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editAdminUser('${u.id}')">Upravit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteAdminUser('${u.id}')">Zmazat</button>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Ziadni pouzivatelia</td></tr>';
+    }
+
+    function openAdminUserModal() {
+        document.getElementById('adminUserId').value = '';
+        document.getElementById('adminUserUsername').value = '';
+        document.getElementById('adminUserEmail').value = '';
+        document.getElementById('adminUserPassword').value = '';
+        document.getElementById('adminUserRole').value = 'admin';
+        document.getElementById('adminUserActive').value = 'true';
+        document.getElementById('adminUserPasswordGroup').style.display = 'block';
+        document.getElementById('adminUserModalTitle').textContent = 'Novy admin uzivatel';
+        openModal('adminUserModal');
+    }
+
+    async function editAdminUser(id) {
+        const u = adminUsers.find(x => x.id === id);
+        if (!u) return;
+        document.getElementById('adminUserId').value = u.id;
+        document.getElementById('adminUserUsername').value = u.username;
+        document.getElementById('adminUserEmail').value = u.email || '';
+        document.getElementById('adminUserPassword').value = '';
+        document.getElementById('adminUserRole').value = u.role || 'admin';
+        document.getElementById('adminUserActive').value = u.is_active ? 'true' : 'false';
+        document.getElementById('adminUserPasswordGroup').style.display = 'none';
+        document.getElementById('adminUserModalTitle').textContent = 'Upravit pouzivatela';
+        openModal('adminUserModal');
+    }
+
+    async function saveAdminUser() {
+        const id = document.getElementById('adminUserId').value;
+        const data = {
+            username: document.getElementById('adminUserUsername').value,
+            email: document.getElementById('adminUserEmail').value || null,
+            role: document.getElementById('adminUserRole').value,
+            is_active: document.getElementById('adminUserActive').value === 'true'
+        };
+        
+        const password = document.getElementById('adminUserPassword').value;
+        if (password) data.password = password;
+        
+        if (!data.username) {
+            showToast('Vyplnte uzivatelske meno', 'error');
+            return;
+        }
+        
+        if (!id && !password) {
+            showToast('Heslo je povinne pre noveho pouzivatela', 'error');
+            return;
+        }
+        
+        if (id) {
+            await api(`admin-users/${id}`, 'PUT', data);
+        } else {
+            await api('admin-users', 'POST', data);
+        }
+        
+        closeModal('adminUserModal');
+        showToast('Uzivatel ulozeny', 'success');
+        await loadAdminUsers();
+    }
+
+    async function deleteAdminUser(id) {
+        if (!confirm('Naozaj zmazat tohto pouzivatela?')) return;
+        try {
+            await api(`admin-users/${id}`, 'DELETE');
+            showToast('Uzivatel zmazany', 'success');
+            await loadAdminUsers();
+        } catch(e) {
+            showToast('Nemozno zmazat posledneho admina', 'error');
+        }
+    }
+
+    // ===== COMPLIANCE DASHBOARD =====
+    async function loadCompliance() {
+        const now = new Date();
+        const in60days = new Date(now.getTime() + 60*24*60*60*1000);
+        const in30days = new Date(now.getTime() + 30*24*60*60*1000);
+        
+        // Expirujuce SJF licencie koni
+        const expiringLicenses = horses.filter(h => {
+            if (!h.sjf_license_valid_until) return false;
+            const expiry = new Date(h.sjf_license_valid_until);
+            return expiry <= in60days && h.status === 'active';
+        }).slice(0, 10);
+        
+        document.getElementById('complianceHorseLicenses').innerHTML = expiringLicenses.length ? 
+            expiringLicenses.map(h => {
+                const days = Math.ceil((new Date(h.sjf_license_valid_until) - now) / (1000*60*60*24));
+                const isOverdue = days < 0;
+                return `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray-light)">
+                    <span>${h.name}</span>
+                    <span class="badge badge-${isOverdue ? 'danger' : 'warning'}">${isOverdue ? 'Po termine' : days + ' dni'}</span>
+                </div>`;
+            }).join('') : '<p style="color:var(--gray)">Ziadne expirujuce licencie</p>';
+        
+        // Expirujuce ockovania
+        await loadVaccinations();
+        const expiringVaccinations = vaccinations.filter(v => {
+            if (!v.next_date) return false;
+            const nextDate = new Date(v.next_date);
+            return nextDate <= in30days;
+        }).slice(0, 10);
+        
+        document.getElementById('complianceVaccinations').innerHTML = expiringVaccinations.length ?
+            expiringVaccinations.map(v => {
+                const horse = horses.find(h => h.id === v.horse_id);
+                const days = Math.ceil((new Date(v.next_date) - now) / (1000*60*60*24));
+                const isOverdue = days < 0;
+                return `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray-light)">
+                    <span>${horse?.name || '-'} - ${v.vaccine_type}</span>
+                    <span class="badge badge-${isOverdue ? 'danger' : 'warning'}">${isOverdue ? 'Po termine' : days + ' dni'}</span>
+                </div>`;
+            }).join('') : '<p style="color:var(--gray)">Ziadne expirujuce ockovania</p>';
+    }
+
+    // ===== VET TABS =====
+    document.querySelectorAll('[data-vet-tab]').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('[data-vet-tab]').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const tabName = tab.dataset.vetTab;
+            document.getElementById('vetRecordsTab').style.display = tabName === 'records' ? 'block' : 'none';
+            document.getElementById('vaccinationsTab').style.display = tabName === 'vaccinations' ? 'block' : 'none';
+            if (tabName === 'vaccinations') loadVaccinations();
+        });
+    });
 
     // Bookings
     async function confirmBooking(id) {
@@ -4074,6 +4583,18 @@
             }
             if (item.dataset.section === 'notifications') {
                 setTimeout(loadNotifications, 100);
+            }
+            if (item.dataset.section === 'vet') {
+                setTimeout(loadVaccinations, 100);
+            }
+            if (item.dataset.section === 'feeding') {
+                setTimeout(loadFeedingData, 100);
+            }
+            if (item.dataset.section === 'compliance') {
+                setTimeout(loadCompliance, 100);
+            }
+            if (item.dataset.section === 'admin-users') {
+                setTimeout(loadAdminUsers, 100);
             }
         });
     });

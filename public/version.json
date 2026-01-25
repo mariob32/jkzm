@@ -1,17 +1,17 @@
 {
-  "version": "5.2.0",
-  "build": "2026-01-22T12:15:00Z",
+  "version": "6.5.0",
+  "build": "2026-01-25T09:30:00Z",
   "features": [
-    "CMS system",
-    "Gallery with lightbox",
-    "SJF Register integration",
-    "Services CRUD",
-    "Partners management",
-    "O klube page with 2% dane"
+    "Vaccinations CRUD with Edit/Delete",
+    "Feeding items nested CRUD",
+    "Admin users management",
+    "Compliance dashboard",
+    "Vet tabs (records + vaccinations)"
   ],
   "changelog": {
-    "5.2.0": "Added O klube page with 2% dane section, QR code, forms download",
-    "5.1.0": "Gallery lightbox, media upload (base64 + signed URLs)",
-    "5.0.0": "Complete CMS system, articles, pages, documents"
+    "6.5.0": "Admin UI for vaccinations, feeding items, admin users, compliance dashboard",
+    "6.4.1": "Fixed /api/health to be public, health-records endpoint for vet data",
+    "6.4.0": "API CRUD completion - feeding-items, vaccinations, competition-entries, admin-users",
+    "5.2.0": "Added O klube page with 2% dane section, QR code, forms download"
   }
 }
