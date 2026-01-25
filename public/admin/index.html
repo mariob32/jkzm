@@ -1581,31 +1581,42 @@
             <div class="modal-body">
                 <form id="docForm">
                     <input type="hidden" id="docId">
+                    <input type="hidden" id="docForHorseId">
                     <div class="form-group"><label>Názov dokumentu *</label><input type="text" class="form-control" id="docTitle" required></div>
                     <div class="form-row">
                         <div class="form-group"><label>Kategória *</label><select class="form-control" id="docCategory" required>
                             <option value="">Vyberte...</option>
-                            <option value="passport">Pas</option>
+                            <option value="passport">Pas koňa</option>
                             <option value="vet_report">Veterinárna správa</option>
-                            <option value="death_certificate">Úhyn</option>
-                            <option value="rendering">Kafiléria</option>
+                            <option value="death_certificate">Doklad o úhyne</option>
+                            <option value="rendering">Potvrdenie kafilérie</option>
                             <option value="fei_document">FEI doklad</option>
                             <option value="sjf_document">SJF doklad</option>
                             <option value="license">Licencia</option>
-                            <option value="consent">Súhlas</option>
-                            <option value="receipt">Príjemka</option>
+                            <option value="consent">Súhlas / Poučenie</option>
+                            <option value="receipt">Príjemka tovaru</option>
                             <option value="request">Žiadanka</option>
                             <option value="mail_incoming">Pošta došlá</option>
                             <option value="mail_outgoing">Pošta odoslaná</option>
                             <option value="contract">Zmluva</option>
                             <option value="permit">Povolenie</option>
-                            <option value="inspection">Kontrola</option>
+                            <option value="inspection">Protokol kontroly</option>
                             <option value="other">Iné</option>
                         </select></div>
                         <div class="form-group"><label>Dátum dokumentu</label><input type="date" class="form-control" id="docDate"></div>
                     </div>
                     <div class="form-group"><label>Popis</label><textarea class="form-control" id="docDescription" rows="2"></textarea></div>
-                    <div class="form-group"><label>Súbor URL</label><input type="text" class="form-control" id="docFileUrl" placeholder="https://..."></div>
+                    
+                    <div class="form-group">
+                        <label>Súbor (max 4MB)</label>
+                        <div style="display:flex;gap:0.5rem;align-items:center">
+                            <input type="file" id="docFileInput" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleDocFileSelect(this)" style="flex:1">
+                            <span id="docUploadStatus" style="font-size:0.85rem;color:var(--gray)"></span>
+                        </div>
+                        <input type="hidden" id="docFileUrl">
+                        <small id="docFileLink" style="display:none;margin-top:0.5rem"><a href="#" target="_blank" id="docFileLinkUrl">📄 Zobraziť súbor</a></small>
+                    </div>
+                    
                     <div class="form-row">
                         <div class="form-group"><label>Väzba na koňa</label><select class="form-control" id="docHorse"><option value="">-- Nevybrané --</option></select></div>
                         <div class="form-group"><label><input type="checkbox" id="docIsClub"> Dokument klubu/prevádzky</label></div>
@@ -1617,6 +1628,65 @@
                 </form>
             </div>
             <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('docModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveDoc()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- HORSE DETAIL MODAL -->
+    <div class="modal" id="horseDetailModal">
+        <div class="modal-content" style="max-width:900px;max-height:90vh;overflow:auto">
+            <div class="modal-header">
+                <h3 id="horseDetailTitle">Detail koňa</h3>
+                <button class="modal-close" onclick="closeModal('horseDetailModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs" style="margin-bottom:1rem">
+                    <div class="tab active" data-horse-tab="info">📋 Základné info</div>
+                    <div class="tab" data-horse-tab="docs">📁 Dokumenty</div>
+                    <div class="tab" data-horse-tab="history">📖 História maštale</div>
+                    <div class="tab" data-horse-tab="vet">🏥 Veterinárne záznamy</div>
+                </div>
+                
+                <div id="horseTabInfo" class="horse-tab-content">
+                    <div id="horseDetailInfo">Načítavam...</div>
+                </div>
+                
+                <div id="horseTabDocs" class="horse-tab-content" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                        <h4 style="margin:0">Dokumenty koňa</h4>
+                        <button class="btn btn-primary btn-sm" onclick="openDocModalForHorse()">+ Pridať dokument</button>
+                    </div>
+                    <table class="table">
+                        <thead><tr><th>Dátum</th><th>Názov</th><th>Kategória</th><th>Súbor</th><th>Akcie</th></tr></thead>
+                        <tbody id="horseDocsTable"></tbody>
+                    </table>
+                </div>
+                
+                <div id="horseTabHistory" class="horse-tab-content" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                        <h4 style="margin:0">História maštale</h4>
+                        <button class="btn btn-primary btn-sm" onclick="openStableLogForHorse()">+ Pridať záznam</button>
+                    </div>
+                    <table class="table">
+                        <thead><tr><th>Dátum</th><th>Udalosť</th><th>Miesto</th><th>Zodpovedný</th><th>Poznámka</th><th>Akcie</th></tr></thead>
+                        <tbody id="horseHistoryTable"></tbody>
+                    </table>
+                </div>
+                
+                <div id="horseTabVet" class="horse-tab-content" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                        <h4 style="margin:0">Veterinárne záznamy</h4>
+                        <button class="btn btn-primary btn-sm" onclick="openVetForHorse()">+ Pridať záznam</button>
+                    </div>
+                    <table class="table">
+                        <thead><tr><th>Dátum</th><th>Typ</th><th>Veterinár</th><th>Ďalší termín</th><th>Poznámka</th></tr></thead>
+                        <tbody id="horseVetTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="printHorseDetail()">🖨️ Tlač karty</button>
+                <button class="btn btn-primary" onclick="closeModal('horseDetailModal')">Zavrieť</button>
+            </div>
         </div>
     </div>
 
@@ -1865,7 +1935,11 @@
                 <td>${h.sjf_license_number ? `<span class="badge badge-success">SJF</span>` : ''}${h.fei_id ? ` <span class="badge badge-info">FEI</span>` : ''}</td>
                 <td>${h.vaccination_status || '<span class="badge badge-warning">Skontrolovať</span>'}</td>
                 <td><span class="badge badge-${h.status === 'active' ? 'success' : 'gray'}">${h.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editHorse('${h.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteHorse('${h.id}')">🗑️</button></td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="openHorseDetail('${h.id}')" title="Detail">👁️</button>
+                    <button class="btn btn-sm btn-outline" onclick="editHorse('${h.id}')" title="Upraviť">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteHorse('${h.id}')" title="Zmazať">🗑️</button>
+                </td>
             </tr>
         `).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne kone</td></tr>';
     }
@@ -5460,11 +5534,15 @@
     
     async function openDocModal() {
         document.getElementById('docId').value = '';
+        document.getElementById('docForHorseId').value = '';
         document.getElementById('docTitle').value = '';
         document.getElementById('docCategory').value = '';
         document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('docDescription').value = '';
         document.getElementById('docFileUrl').value = '';
+        document.getElementById('docFileInput').value = '';
+        document.getElementById('docUploadStatus').textContent = '';
+        document.getElementById('docFileLink').style.display = 'none';
         document.getElementById('docHorse').innerHTML = '<option value="">-- Nevybrané --</option>' + horses.map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
         document.getElementById('docIsClub').checked = false;
         
@@ -5497,6 +5575,14 @@
         document.getElementById('docDate').value = d.document_date || '';
         document.getElementById('docDescription').value = d.description || '';
         document.getElementById('docFileUrl').value = d.file_url || '';
+        
+        // Show existing file link
+        if (d.file_url) {
+            document.getElementById('docFileLink').style.display = 'block';
+            document.getElementById('docFileLinkUrl').href = d.file_url;
+            document.getElementById('docUploadStatus').textContent = 'Existujúci súbor';
+        }
+        
         document.getElementById('docHorse').value = d.horse_id || '';
         document.getElementById('docIsClub').checked = d.is_club_document || false;
         document.getElementById('docStableLog').value = d.stable_log_id || '';
@@ -5583,6 +5669,332 @@
         html += `</tbody></table>`;
         document.getElementById('printContent').innerHTML = html;
         document.getElementById('printModalTitle').textContent = 'Tlač - Dokumenty';
+        showModalOnly('printModal');
+    }
+
+    // ===== HORSE DETAIL =====
+    let currentHorseId = null;
+    let horseDocs = [];
+    let horseHistory = [];
+    let horseVetRecords = [];
+
+    async function openHorseDetail(horseId) {
+        currentHorseId = horseId;
+        const horse = horses.find(h => h.id === horseId);
+        if (!horse) { showToast('Kôň nenájdený', 'error'); return; }
+        
+        document.getElementById('horseDetailTitle').textContent = `${horse.stable_name || horse.name} - Detail`;
+        
+        // Reset tabs
+        document.querySelectorAll('[data-horse-tab]').forEach(t => t.classList.remove('active'));
+        document.querySelector('[data-horse-tab="info"]').classList.add('active');
+        document.querySelectorAll('.horse-tab-content').forEach(c => c.style.display = 'none');
+        document.getElementById('horseTabInfo').style.display = 'block';
+        
+        // Render basic info
+        renderHorseDetailInfo(horse);
+        
+        // Load related data
+        await Promise.all([
+            loadHorseDocs(horseId),
+            loadHorseHistory(horseId),
+            loadHorseVetRecords(horseId)
+        ]);
+        
+        showModalOnly('horseDetailModal');
+    }
+
+    function renderHorseDetailInfo(h) {
+        const levelLabels = {beginner:'Začiatočníci',intermediate:'Pokročilí',advanced:'Skúsení',children:'Deti',competition:'Súťažný'};
+        document.getElementById('horseDetailInfo').innerHTML = `
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1rem">
+                <div class="card" style="margin:0">
+                    <div class="card-header"><h4 style="margin:0">📋 Základné údaje</h4></div>
+                    <div class="card-body">
+                        <p><strong>Meno:</strong> ${h.name}</p>
+                        <p><strong>Volacia meno:</strong> ${h.stable_name || '-'}</p>
+                        <p><strong>Plemeno:</strong> ${h.breed || '-'}</p>
+                        <p><strong>Farba:</strong> ${h.color || '-'}</p>
+                        <p><strong>Pohlavie:</strong> ${h.sex || '-'}</p>
+                        <p><strong>Dátum narodenia:</strong> ${h.birth_date || '-'}</p>
+                        <p><strong>Výška:</strong> ${h.height_cm ? h.height_cm + ' cm' : '-'}</p>
+                        <p><strong>Hmotnosť:</strong> ${h.weight_kg ? h.weight_kg + ' kg' : '-'}</p>
+                    </div>
+                </div>
+                <div class="card" style="margin:0">
+                    <div class="card-header"><h4 style="margin:0">📝 Identifikácia</h4></div>
+                    <div class="card-body">
+                        <p><strong>Číslo pasu:</strong> ${h.passport_number || '-'}</p>
+                        <p><strong>Životné číslo (UELN):</strong> ${h.life_number || '-'}</p>
+                        <p><strong>Mikročip:</strong> ${h.microchip || '-'}</p>
+                        <p><strong>FEI ID:</strong> ${h.fei_id || '-'}</p>
+                        <p><strong>FEI pas platný do:</strong> ${h.fei_passport_expiry || '-'}</p>
+                        <p><strong>SJF licencia:</strong> ${h.sjf_license_number || '-'}</p>
+                        <p><strong>SJF platná do:</strong> ${h.sjf_license_valid_until || '-'}</p>
+                    </div>
+                </div>
+                <div class="card" style="margin:0">
+                    <div class="card-header"><h4 style="margin:0">👤 Ostatné</h4></div>
+                    <div class="card-body">
+                        <p><strong>Majiteľ:</strong> ${h.owner_name || '-'}</p>
+                        <p><strong>Úroveň:</strong> ${levelLabels[h.level] || h.level || '-'}</p>
+                        <p><strong>Disciplíny:</strong> ${(h.disciplines || []).join(', ') || '-'}</p>
+                        <p><strong>Status:</strong> <span class="badge badge-${h.status === 'active' ? 'success' : 'gray'}">${h.status}</span></p>
+                        <p><strong>Poznámky:</strong> ${h.notes || '-'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    async function loadHorseDocs(horseId) {
+        try {
+            const res = await fetch(`/api/documents-v2?horse_id=${horseId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            horseDocs = await res.json();
+            if (!Array.isArray(horseDocs)) horseDocs = [];
+            renderHorseDocs();
+        } catch(e) {
+            console.error('loadHorseDocs error:', e);
+            horseDocs = [];
+        }
+    }
+
+    function renderHorseDocs() {
+        document.getElementById('horseDocsTable').innerHTML = horseDocs.map(d => `
+            <tr>
+                <td>${d.document_date || '-'}</td>
+                <td><strong>${d.title}</strong></td>
+                <td><span class="badge badge-info">${docCategoryLabels[d.category] || d.category}</span></td>
+                <td>${d.file_url ? `<a href="${d.file_url}" target="_blank">📄 Otvoriť</a>` : '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editDoc('${d.id}')">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteDocFromHorse('${d.id}')">🗑️</button>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Žiadne dokumenty</td></tr>';
+    }
+
+    async function deleteDocFromHorse(id) {
+        if (!confirm('Zmazať tento dokument?')) return;
+        try {
+            await fetch(`/api/documents-v2/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast('Dokument zmazaný', 'success');
+            loadHorseDocs(currentHorseId);
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    async function loadHorseHistory(horseId) {
+        try {
+            const res = await fetch(`/api/stable-log?horse_id=${horseId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            horseHistory = await res.json();
+            if (!Array.isArray(horseHistory)) horseHistory = [];
+            renderHorseHistory();
+        } catch(e) {
+            console.error('loadHorseHistory error:', e);
+            horseHistory = [];
+        }
+    }
+
+    function renderHorseHistory() {
+        document.getElementById('horseHistoryTable').innerHTML = horseHistory.map(s => `
+            <tr>
+                <td><strong>${s.event_date}</strong>${s.event_time ? `<br><small>${s.event_time}</small>` : ''}</td>
+                <td><span class="badge badge-${s.event_type === 'death' ? 'danger' : 'info'}">${eventTypeLabels[s.event_type] || s.event_type}</span></td>
+                <td>${s.location_from || ''} ${s.location_to ? '→ ' + s.location_to : ''}</td>
+                <td>${s.responsible_person || '-'}</td>
+                <td>${s.notes || '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editStableLogFromHorse('${s.id}')">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteStableLogFromHorse('${s.id}')">🗑️</button>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadne záznamy</td></tr>';
+    }
+
+    async function deleteStableLogFromHorse(id) {
+        if (!confirm('Zmazať tento záznam?')) return;
+        try {
+            await fetch(`/api/stable-log/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast('Záznam zmazaný', 'success');
+            loadHorseHistory(currentHorseId);
+        } catch(e) {
+            showToast('Chyba: ' + e.message, 'error');
+        }
+    }
+
+    function editStableLogFromHorse(id) {
+        closeModal('horseDetailModal');
+        editStableLog(id);
+    }
+
+    async function loadHorseVetRecords(horseId) {
+        try {
+            const res = await fetch(`/api/vet-records?horse_id=${horseId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            horseVetRecords = await res.json();
+            if (!Array.isArray(horseVetRecords)) horseVetRecords = [];
+            renderHorseVetRecords();
+        } catch(e) {
+            console.error('loadHorseVetRecords error:', e);
+            horseVetRecords = [];
+        }
+    }
+
+    function renderHorseVetRecords() {
+        const typeLabels = {vaccination:'Očkovanie',deworming:'Odčervenie',dental:'Zuby',farrier:'Podkúvanie',checkup:'Prehliadka',injury:'Zranenie',surgery:'Operácia',other:'Iné'};
+        document.getElementById('horseVetTable').innerHTML = horseVetRecords.map(v => `
+            <tr>
+                <td>${v.record_date || '-'}</td>
+                <td><span class="badge badge-info">${typeLabels[v.record_type] || v.record_type}</span></td>
+                <td>${v.vet_name || '-'}</td>
+                <td>${v.next_due_date || '-'}</td>
+                <td>${v.notes || '-'}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Žiadne záznamy</td></tr>';
+    }
+
+    // Horse detail tab switching
+    document.querySelectorAll('[data-horse-tab]').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('[data-horse-tab]').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            document.querySelectorAll('.horse-tab-content').forEach(c => c.style.display = 'none');
+            const tabName = tab.dataset.horseTab;
+            if (tabName === 'info') document.getElementById('horseTabInfo').style.display = 'block';
+            if (tabName === 'docs') document.getElementById('horseTabDocs').style.display = 'block';
+            if (tabName === 'history') document.getElementById('horseTabHistory').style.display = 'block';
+            if (tabName === 'vet') document.getElementById('horseTabVet').style.display = 'block';
+        });
+    });
+
+    // Open doc modal for current horse
+    function openDocModalForHorse() {
+        closeModal('horseDetailModal');
+        openDocModal();
+        document.getElementById('docHorse').value = currentHorseId;
+        document.getElementById('docForHorseId').value = currentHorseId;
+    }
+
+    // Open stable log modal for current horse
+    function openStableLogForHorse() {
+        closeModal('horseDetailModal');
+        openStableLogModal();
+        document.getElementById('stableLogHorseSelect').value = currentHorseId;
+    }
+
+    // Open vet modal for current horse  
+    function openVetForHorse() {
+        closeModal('horseDetailModal');
+        openModal('vetModal');
+        document.getElementById('vetHorse').value = currentHorseId;
+    }
+
+    // File upload handler
+    async function handleDocFileSelect(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        if (file.size > 4 * 1024 * 1024) {
+            showToast('Súbor je príliš veľký (max 4MB)', 'error');
+            input.value = '';
+            return;
+        }
+        
+        document.getElementById('docUploadStatus').textContent = 'Nahrávam...';
+        
+        try {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64 = e.target.result;
+                
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        file: base64,
+                        filename: file.name,
+                        folder: 'documents'
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.url) {
+                    document.getElementById('docFileUrl').value = data.url;
+                    document.getElementById('docUploadStatus').textContent = '✅ Nahraté';
+                    document.getElementById('docFileLink').style.display = 'block';
+                    document.getElementById('docFileLinkUrl').href = data.url;
+                } else {
+                    throw new Error(data.error || 'Upload zlyhal');
+                }
+            };
+            reader.readAsDataURL(file);
+        } catch(e) {
+            console.error('Upload error:', e);
+            document.getElementById('docUploadStatus').textContent = '❌ Chyba';
+            showToast('Chyba nahrávania: ' + e.message, 'error');
+        }
+    }
+
+    // Print horse detail card
+    function printHorseDetail() {
+        const horse = horses.find(h => h.id === currentHorseId);
+        if (!horse) return;
+        
+        let html = `
+            <div style="text-align:center;margin-bottom:2rem">
+                <h1>JAZDECKÝ KLUB ZELENÁ MÍĽA</h1>
+                <h2>Karta koňa: ${horse.name}</h2>
+            </div>
+            <table style="width:100%;border-collapse:collapse;margin-bottom:2rem" border="1">
+                <tr><td style="padding:8px;width:30%"><strong>Volacia meno:</strong></td><td style="padding:8px">${horse.stable_name || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>Plemeno:</strong></td><td style="padding:8px">${horse.breed || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>Farba:</strong></td><td style="padding:8px">${horse.color || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>Dátum narodenia:</strong></td><td style="padding:8px">${horse.birth_date || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>Číslo pasu:</strong></td><td style="padding:8px">${horse.passport_number || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>UELN:</strong></td><td style="padding:8px">${horse.life_number || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>Mikročip:</strong></td><td style="padding:8px">${horse.microchip || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>FEI ID:</strong></td><td style="padding:8px">${horse.fei_id || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>SJF licencia:</strong></td><td style="padding:8px">${horse.sjf_license_number || '-'}</td></tr>
+                <tr><td style="padding:8px"><strong>Majiteľ:</strong></td><td style="padding:8px">${horse.owner_name || '-'}</td></tr>
+            </table>
+            <h3>História maštale</h3>
+            <table style="width:100%;border-collapse:collapse" border="1">
+                <thead><tr style="background:#f0f0f0">
+                    <th style="padding:8px">Dátum</th><th style="padding:8px">Udalosť</th><th style="padding:8px">Miesto</th><th style="padding:8px">Zodpovedný</th>
+                </tr></thead>
+                <tbody>
+        `;
+        horseHistory.forEach(s => {
+            html += `<tr>
+                <td style="padding:8px">${s.event_date}</td>
+                <td style="padding:8px">${eventTypeLabels[s.event_type] || s.event_type}</td>
+                <td style="padding:8px">${s.location_from || ''} ${s.location_to ? '→ ' + s.location_to : ''}</td>
+                <td style="padding:8px">${s.responsible_person || '-'}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printModalTitle').textContent = 'Tlač karty koňa';
+        closeModal('horseDetailModal');
         showModalOnly('printModal');
     }
     </script>

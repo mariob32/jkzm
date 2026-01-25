@@ -1,16 +1,17 @@
 {
-  "version": "6.6.0",
-  "build": "2026-01-25T11:00:00Z",
+  "version": "6.7.0",
+  "build": "2026-01-25T12:00:00Z",
   "features": [
-    "Stable Log - Záznamová kniha maštale",
-    "Visit Log - Návštevná kniha",
-    "Documents V2 - Centrálna evidencia s väzbami",
-    "Print views for all logs"
+    "Horse Detail Modal with tabs (Info, Documents, Stable History, Vet Records)",
+    "File upload in Documents (max 4MB)",
+    "Document binding to horses from horse detail",
+    "Print horse card",
+    "Improved document categories"
   ],
   "changelog": {
+    "6.7.0": "Detail koňa s tabmi, upload súborov v dokumentoch, tlač karty koňa",
     "6.6.0": "Záznamová kniha maštale, Návštevná kniha, Dokumenty s väzbami, Tlač",
     "6.5.3": "Fixed empty horse dropdowns in modals",
-    "6.5.2": "Fixed vaccination/vet record save",
-    "6.5.1": "Admin UI fixes: horse CRUD, select dropdowns"
+    "6.5.2": "Fixed vaccination/vet record save"
   }
 }
