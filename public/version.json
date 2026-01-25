@@ -1,15 +1,14 @@
 {
-  "version": "6.5.2",
-  "build": "2026-01-25T10:35:00Z",
+  "version": "6.5.3",
+  "build": "2026-01-25T10:40:00Z",
   "features": [
-    "Fixed saveVaccination - now switches to Vaccinations tab after save",
-    "Fixed saveVetRecord - now calls renderVetRecords after save",
-    "Added error handling to save functions"
+    "Fixed horse select dropdowns - populateSelects called before modal opens",
+    "All modals now have properly filled horse selects"
   ],
   "changelog": {
+    "6.5.3": "Fixed empty horse dropdowns in modals",
     "6.5.2": "Fixed vaccination/vet record save - data now visible after save",
     "6.5.1": "Admin UI fixes: horse CRUD, select dropdowns, edit forms working correctly",
-    "6.5.0": "Admin UI for vaccinations, feeding items, admin users, compliance dashboard",
-    "6.4.1": "Fixed /api/health to be public, health-records endpoint for vet data"
+    "6.5.0": "Admin UI for vaccinations, feeding items, admin users, compliance dashboard"
   }
 }

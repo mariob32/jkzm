@@ -1764,6 +1764,9 @@
 
     // Modal functions
     function openModal(id) { 
+        // Najprv naplnit selecty
+        populateSelects();
+        
         // Reset formuláru pre nové položky
         if (id === 'horseModal') resetHorseForm();
         if (id === 'riderModal') resetRiderForm();
@@ -1777,6 +1780,8 @@
     
     // Zobraz modal BEZ resetovania (pre edit)
     function showModalOnly(id) {
+        // Naplnit selecty pred otvorenim
+        populateSelects();
         document.getElementById(id).classList.add('active');
     }
     
@@ -2423,6 +2428,9 @@
     }
 
     function openVaccinationModal(id = null) {
+        // Naplnit selecty
+        populateSelects();
+        
         document.getElementById('vaccinationId').value = '';
         document.getElementById('vaccinationHorse').value = '';
         document.getElementById('vaccinationType').value = '';
