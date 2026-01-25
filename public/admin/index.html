@@ -145,7 +145,9 @@
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Prevádzka</div>
-                    <div class="nav-item" data-section="trainings"><span class="icon">📅</span>Tréningy</div>
+                    <div class="nav-item" data-section="arenas"><span class="icon">🏟️</span>Arény a časy</div>
+                    <div class="nav-item" data-section="bookings"><span class="icon">🏇</span>Tréningy</div>
+                    <div class="nav-item" data-section="trainings"><span class="icon">📝</span>Interné záznamy</div>
                     <div class="nav-item" data-section="vet"><span class="icon">🏥</span>Veterinárne záznamy</div>
                     <div class="nav-item" data-section="feeding"><span class="icon">🌾</span>Kŕmenie</div>
                 </div>
@@ -162,8 +164,6 @@
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Web</div>
-                    <div class="nav-item" data-section="arenas"><span class="icon">🏟️</span>Arény a časy</div>
-                    <div class="nav-item" data-section="bookings"><span class="icon">📝</span>Rezervácie</div>
                     <div class="nav-item" data-section="messages"><span class="icon">✉️</span>Správy</div>
                 </div>
                 <div class="nav-section">
@@ -242,7 +242,10 @@
 
             <!-- TRAININGS -->
             <section id="trainings" class="section">
-                <div class="header"><h1>📅 Tréningy</h1><div class="header-actions"><input type="date" class="form-control" id="trainingDateFilter" style="width:auto"><button class="btn btn-primary" onclick="openModal('trainingModal')">+ Nový tréning</button></div></div>
+                <div class="header"><h1>📝 Interné záznamy tréningov</h1><div class="header-actions"><input type="date" class="form-control" id="trainingDateFilter" style="width:auto"><button class="btn btn-primary" onclick="openModal('trainingModal')">+ Nový záznam</button></div></div>
+                <div class="alert alert-info" style="margin-bottom:1rem;font-size:0.9rem">
+                    ℹ️ Tu môžete evidovať tréningy registrovaných jazdcov s koňmi a trénermi z databázy. Pre rezervácie z webu použite sekciu <strong>Tréningy</strong>.
+                </div>
                 <div class="card"><div class="card-body"><table class="table"><thead><tr><th>Dátum/Čas</th><th>Jazdec</th><th>Kôň</th><th>Tréner</th><th>Typ</th><th>Status</th><th>Akcie</th></tr></thead><tbody id="trainingsTable"></tbody></table></div></div>
             </section>
 
@@ -391,7 +394,7 @@
             <!-- BOOKINGS -->
             <section id="bookings" class="section">
                 <div class="header">
-                    <h1>📝 Rezervácie</h1>
+                    <h1>🏇 Tréningy / Jazdenia</h1>
                     <div class="header-actions">
                         <select id="reservationArenaFilter" class="form-control" style="width:auto;display:inline-block;margin-right:0.5rem">
                             <option value="">Všetky arény</option>
@@ -409,7 +412,12 @@
                     </div>
                 </div>
                 
+                <div class="alert alert-info" style="margin-bottom:1rem;font-size:0.9rem">
+                    💡 <strong>Tip:</strong> Klikni na ľubovoľnú bunku v kalendári pre zobrazenie detailu - kto je prihlásený na daný deň.
+                </div>
+                
                 <div class="card">
+                    <div class="card-header"><h3>📋 Zoznam tréningov</h3></div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
@@ -417,7 +425,7 @@
                                     <th>Dátum</th>
                                     <th>Čas</th>
                                     <th>Aréna</th>
-                                    <th>Zákazník</th>
+                                    <th>Meno</th>
                                     <th>Kontakt</th>
                                     <th>Jazdcov</th>
                                     <th>Typ</th>
@@ -435,7 +443,7 @@
                 <!-- Kalendárový prehľad -->
                 <div class="card" style="margin-top:1.5rem">
                     <div class="card-header">
-                        <h3>📅 Týždenný prehľad</h3>
+                        <h3>📅 Týždenný prehľad tréningov</h3>
                         <div style="display:flex;gap:0.5rem;align-items:center">
                             <button class="btn btn-sm btn-outline" onclick="changeWeek(-1)">◀ Predošlý</button>
                             <span id="weekLabel" style="font-weight:500;min-width:200px;text-align:center"></span>
@@ -575,6 +583,22 @@
     <!-- MODALS -->
     
     <!-- Arena Modal -->
+    <!-- Day Detail Modal -->
+    <div class="modal" id="dayDetailModal">
+        <div class="modal-content" style="max-width:800px">
+            <div class="modal-header">
+                <h3>📅 Detail dňa</h3>
+                <button class="modal-close" onclick="closeModal('dayDetailModal')">×</button>
+            </div>
+            <div class="modal-body" id="dayDetailContent">
+                <!-- Dynamický obsah -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('dayDetailModal')">Zavrieť</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification Modal -->
     <div class="modal" id="notificationModal">
         <div class="modal-content" style="max-width:600px">
@@ -3719,10 +3743,13 @@
                                 const pending = dayRes.filter(r => r.status === 'pending').length;
                                 const confirmed = dayRes.filter(r => r.status === 'confirmed' || r.status === 'completed').length;
                                 const isToday = d.toDateString() === new Date().toDateString();
+                                const total = confirmed + pending;
                                 
-                                return `<td style="text-align:center;${isToday ? 'background:#e8f5e9' : ''}">
-                                    ${dayRes.length > 0 ? 
-                                        `<span class="badge badge-${pending > 0 ? 'warning' : 'success'}" title="${dayRes.length} rezervácií">${confirmed}${pending > 0 ? '+' + pending : ''}</span>` : 
+                                return `<td style="text-align:center;cursor:pointer;${isToday ? 'background:#e8f5e9' : ''}" 
+                                           onclick="showDayDetail(${arena.id}, '${arena.name}', '${dateStr}')"
+                                           title="Klikni pre detail">
+                                    ${total > 0 ? 
+                                        `<span class="badge badge-${pending > 0 ? 'warning' : 'success'}">${confirmed}${pending > 0 ? '+' + pending : ''}</span>` : 
                                         '<span style="color:#ddd">-</span>'}
                                 </td>`;
                             }).join('')}
@@ -3731,6 +3758,105 @@
                 </tbody>
             </table>
         `;
+    }
+
+    // Zobrazenie detailu dňa
+    function showDayDetail(arenaId, arenaName, dateStr) {
+        const normalizeDate = (d) => {
+            if (!d) return '';
+            const date = new Date(d);
+            return date.toISOString().split('T')[0];
+        };
+        
+        const dayReservations = reservations.filter(r => 
+            r.arena_id === arenaId && 
+            normalizeDate(r.reservation_date) === dateStr &&
+            r.status !== 'cancelled'
+        ).sort((a, b) => a.start_time.localeCompare(b.start_time));
+        
+        const formattedDate = new Date(dateStr).toLocaleDateString('sk', { 
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+        });
+        
+        const statusBadges = {
+            pending: '<span class="badge badge-warning">Čakajúca</span>',
+            confirmed: '<span class="badge badge-success">Potvrdená</span>',
+            completed: '<span class="badge badge-info">Dokončená</span>'
+        };
+        
+        const serviceTypes = {
+            lesson: 'Jazda/Tréning',
+            free_ride: 'Voľná jazda',
+            longing: 'Lonžovanie',
+            training: 'Tréning'
+        };
+        
+        const skillLabels = {
+            beginner: 'Začiatočník',
+            intermediate: 'Mierne pokročilý',
+            advanced: 'Pokročilý'
+        };
+        
+        let content = `
+            <div style="margin-bottom:1rem">
+                <h4 style="margin:0">${arenaName}</h4>
+                <p style="color:var(--gray);margin:0.25rem 0 0 0">${formattedDate}</p>
+            </div>
+        `;
+        
+        if (dayReservations.length === 0) {
+            content += `<p style="text-align:center;color:var(--gray);padding:2rem">Žiadne tréningy v tento deň</p>`;
+        } else {
+            content += `
+                <table class="table" style="font-size:0.9rem">
+                    <thead>
+                        <tr>
+                            <th>Čas</th>
+                            <th>Meno</th>
+                            <th>Kontakt</th>
+                            <th>Jazdcov</th>
+                            <th>Úroveň</th>
+                            <th>Status</th>
+                            <th>Akcie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${dayReservations.map(r => `
+                            <tr>
+                                <td><strong>${r.start_time?.substring(0,5) || '-'} - ${r.end_time?.substring(0,5) || '-'}</strong></td>
+                                <td>
+                                    <strong>${r.customer_name}</strong>
+                                    ${r.notes ? `<br><small style="color:var(--gray)">${r.notes}</small>` : ''}
+                                </td>
+                                <td>
+                                    <a href="tel:${r.customer_phone}">${r.customer_phone}</a>
+                                    ${r.customer_email ? `<br><small>${r.customer_email}</small>` : ''}
+                                </td>
+                                <td style="text-align:center">${r.riders_count || 1}</td>
+                                <td>${skillLabels[r.skill_level] || '-'}</td>
+                                <td>${statusBadges[r.status] || r.status}</td>
+                                <td>
+                                    ${r.status === 'pending' ? `
+                                        <button class="btn btn-sm btn-primary" onclick="updateReservationStatus(${r.id}, 'confirmed');closeModal('dayDetailModal');" title="Potvrdiť">✓</button>
+                                        <button class="btn btn-sm btn-danger" onclick="updateReservationStatus(${r.id}, 'cancelled');closeModal('dayDetailModal');" title="Zrušiť">✕</button>
+                                    ` : ''}
+                                    ${r.status === 'confirmed' ? `
+                                        <button class="btn btn-sm btn-info" onclick="updateReservationStatus(${r.id}, 'completed');closeModal('dayDetailModal');" title="Dokončiť">✓</button>
+                                    ` : ''}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div style="margin-top:1rem;padding:1rem;background:#f8f9fa;border-radius:8px;font-size:0.9rem">
+                    <strong>Súhrn:</strong> ${dayReservations.length} tréningov, 
+                    ${dayReservations.reduce((sum, r) => sum + (r.riders_count || 1), 0)} jazdcov celkom
+                </div>
+            `;
+        }
+        
+        document.getElementById('dayDetailContent').innerHTML = content;
+        openModal('dayDetailModal');
     }
 
     function changeWeek(delta) {
