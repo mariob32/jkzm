@@ -6258,7 +6258,7 @@
             if (priority && priority !== 'all') url += `priority=${priority}&`;
             if (dueFilter) url += `due_filter=${dueFilter}&`;
             
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             if (!res.ok) throw new Error('Failed to load tasks');
             tasks = await res.json();
             renderTasks();
@@ -6302,7 +6302,7 @@
     function updateTaskStats() {
         const today = new Date().toISOString().split('T')[0];
         // Nacitaj vsetky ulohy pre statistiky
-        fetch('/api/tasks?status=all', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+        fetch('/api/tasks?status=all', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(r => r.json())
             .then(allTasks => {
                 const pending = allTasks.filter(t => t.status === 'open').length;
@@ -6321,7 +6321,7 @@
         try {
             await fetch(`/api/tasks/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') },
                 body: JSON.stringify({ status: 'in_progress' })
             });
             loadTasks();
@@ -6343,7 +6343,7 @@
         
         // Nacitaj selecty
         try {
-            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             const horsesList = await horsesRes.json();
             
             document.getElementById('taskHorse').innerHTML = '<option value="">-- Bez vazby na kona --</option>' +
@@ -6389,7 +6389,7 @@
             
             const res = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') },
                 body: JSON.stringify(data)
             });
             
@@ -6412,7 +6412,7 @@
         try {
             const res = await fetch(`/api/tasks/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') },
                 body: JSON.stringify({ status: 'completed', completed_at: new Date().toISOString() })
             });
             if (!res.ok) throw new Error('Failed');
@@ -6428,7 +6428,7 @@
         try {
             const res = await fetch(`/api/tasks/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') }
             });
             if (!res.ok) throw new Error('Failed');
             loadTasks();
@@ -6451,7 +6451,7 @@
             if (severity !== 'all') url += `severity=${severity}&`;
             if (source !== 'all') url += `source=${source}&`;
             
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             notifications = await res.json();
             renderNotifications();
             updateNotificationStats();
@@ -6487,7 +6487,7 @@
     }
 
     function updateNotificationStats() {
-        fetch('/api/notifications?is_dismissed=false', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+        fetch('/api/notifications?is_dismissed=false', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(r => r.json())
             .then(all => {
                 const unread = all.filter(n => !n.is_read).length;
@@ -6504,7 +6504,7 @@
         try {
             await fetch(`/api/notifications/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') },
                 body: JSON.stringify({ is_read: true })
             });
             loadNotifications();
@@ -6518,7 +6518,7 @@
         try {
             await fetch(`/api/notifications/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') },
                 body: JSON.stringify({ is_dismissed: true })
             });
             loadNotifications();
@@ -6535,7 +6535,7 @@
         document.getElementById('notificationDueDate').value = '';
         
         try {
-            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const horsesRes = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             const horsesList = await horsesRes.json();
             document.getElementById('notificationHorse').innerHTML = '<option value="">-- Bez vazby --</option>' +
                 horsesList.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.stable_name || h.name}</option>`).join('');
@@ -6561,7 +6561,7 @@
         try {
             await fetch('/api/notifications', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') },
                 body: JSON.stringify(data)
             });
             closeModal('notificationModal');
@@ -6580,7 +6580,7 @@
             
             const res = await fetch('/api/system-run-rules', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') }
             });
             
             const result = await res.json();
@@ -6621,7 +6621,7 @@
 
     function downloadTasksCSV() {
         const url = '/api/exports/tasks?format=csv&status=' + (document.getElementById('taskStatusFilter')?.value || 'all');
-        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(r => r.blob())
             .then(blob => {
                 const a = document.createElement('a');
@@ -6653,7 +6653,7 @@
 
     function downloadNotificationsCSV() {
         const url = '/api/exports/notifications?format=csv';
-        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(r => r.blob())
             .then(blob => {
                 const a = document.createElement('a');
@@ -6684,7 +6684,7 @@
             if (action) url += `&action=${action}`;
             if (changed_by) url += `&changed_by=${changed_by}`;
             
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             const result = await res.json();
             
             auditLogs = result.data || [];
@@ -6756,7 +6756,7 @@
 
     async function showAuditDetail(id) {
         try {
-            const res = await fetch(`/api/audit-logs/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(`/api/audit-logs/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             const log = await res.json();
             
             const entityLabels = {
@@ -6861,7 +6861,7 @@
 
     async function initAuditFilters() {
         try {
-            const res = await fetch('/api/admin-users', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch('/api/admin-users', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             const users = await res.json();
             const select = document.getElementById('auditUserFilter');
             if (select && users && users.length) {
@@ -6887,7 +6887,7 @@
         if (from) url += `from=${from}&`;
         if (to) url += `to=${to}`;
         try {
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             exportData.stableLog = await res.json();
             renderExportStableLog();
         } catch(e) { console.error(e); }
@@ -6915,7 +6915,7 @@
         if (from) url += `from=${from}&`;
         if (to) url += `to=${to}`;
         try {
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             exportData.visitLog = await res.json();
             renderExportVisitLog();
         } catch(e) { console.error(e); }
@@ -6943,7 +6943,7 @@
         if (status) url += `status=${status}&`;
         if (expiry) url += `expiry_days=${expiry}`;
         try {
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             exportData.licenses = await res.json();
             renderExportLicenses();
         } catch(e) { console.error(e); }
@@ -6970,7 +6970,7 @@
         if (filter === 'overdue') url += 'overdue_only=true';
         else if (filter) url += `expiry_days=${filter}`;
         try {
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             exportData.vaccinations = await res.json();
             renderExportVaccinations();
         } catch(e) { console.error(e); }
@@ -6999,7 +6999,7 @@
         if (to) url += `to=${to}&`;
         if (category) url += `category=${category}`;
         try {
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
             exportData.documents = await res.json();
             renderExportDocuments();
         } catch(e) { console.error(e); }
@@ -7038,7 +7038,7 @@
         const a = document.createElement('a');
         a.href = url;
         a.download = '';
-        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(res => res.blob())
             .then(blob => {
                 const blobUrl = URL.createObjectURL(blob);
