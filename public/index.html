@@ -342,9 +342,9 @@
             </div>
             
             <!-- Rezervačný formulár (skrytý, zobrazí sa po výbere) -->
-            <div id="bookingFormContainer" style="display:none;background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);max-width:500px;margin:0 auto">
+            <div id="bookingFormContainer" style="display:none;background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);max-width:550px;margin:0 auto">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-                    <h3 style="margin:0;color:#2d5a27">✏️ Rezervácia</h3>
+                    <h3 style="margin:0;color:#2d5a27">🏇 Prihlásenie na tréning</h3>
                     <button onclick="closeBookingForm()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#6c757d">×</button>
                 </div>
                 
@@ -359,53 +359,123 @@
                     
                     <div id="bookingMessageArea"></div>
                     
-                    <div style="margin-bottom:1rem">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Meno a priezvisko *</label>
-                        <input type="text" id="bookingName" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                    <!-- Výber typu zákazníka -->
+                    <div style="margin-bottom:1.5rem;padding:1rem;background:#f8f9fa;border-radius:8px">
+                        <label style="display:block;margin-bottom:0.75rem;font-weight:600;color:#2d5a27">Typ prihlásenia</label>
+                        <div style="display:flex;gap:1rem">
+                            <label style="flex:1;display:flex;align-items:center;gap:0.5rem;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;cursor:pointer;transition:all 0.2s" id="typeNewLabel">
+                                <input type="radio" name="bookingType" value="new" checked onchange="toggleBookingType('new')">
+                                <span>👤 Nový zákazník</span>
+                            </label>
+                            <label style="flex:1;display:flex;align-items:center;gap:0.5rem;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;cursor:pointer;transition:all 0.2s" id="typeMemberLabel">
+                                <input type="radio" name="bookingType" value="member" onchange="toggleBookingType('member')">
+                                <span>🎫 Člen klubu</span>
+                            </label>
+                        </div>
                     </div>
                     
-                    <div style="margin-bottom:1rem">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Telefón *</label>
-                        <input type="tel" id="bookingPhone" required style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="+421...">
+                    <!-- Formulár pre nového zákazníka -->
+                    <div id="newCustomerForm">
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Meno a priezvisko *</label>
+                            <input type="text" id="bookingName" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="Ján Novák">
+                        </div>
+                        
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                            <div>
+                                <label style="display:block;margin-bottom:0.5rem;font-weight:500">Telefón *</label>
+                                <input type="tel" id="bookingPhone" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="+421 9XX XXX XXX">
+                            </div>
+                            <div>
+                                <label style="display:block;margin-bottom:0.5rem;font-weight:500">Email <span style="color:#6c757d;font-weight:normal">(nepovinné)</span></label>
+                                <input type="email" id="bookingEmail" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" placeholder="email@example.com">
+                            </div>
+                        </div>
                     </div>
                     
-                    <div style="margin-bottom:1rem">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Email</label>
-                        <input type="email" id="bookingEmail" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                    <!-- Formulár pre člena klubu -->
+                    <div id="memberForm" style="display:none">
+                        <div style="margin-bottom:1rem">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Vyhľadať člena</label>
+                            <input type="text" id="memberSearch" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;margin-bottom:0.5rem" placeholder="🔍 Začnite písať meno..." oninput="filterMembers(this.value)">
+                            <select id="bookingMember" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem" onchange="showMemberInfo()">
+                                <option value="">-- Načítavam členov --</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Info o vybranom členovi -->
+                        <div id="selectedMemberInfo" style="display:none;background:#f0f7ff;border:1px solid #b3d7ff;padding:1rem;border-radius:8px;margin-bottom:1rem">
+                            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+                                <span style="font-size:1.5rem">👤</span>
+                                <div>
+                                    <strong id="memberInfoName" style="font-size:1.1rem"></strong>
+                                    <span id="memberInfoLevel" style="margin-left:0.5rem;font-size:0.8rem;padding:0.2rem 0.5rem;border-radius:4px;background:#e8f5e9;color:#2d5a27"></span>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1.5rem;font-size:0.9rem;color:#555">
+                                <span id="memberInfoPhone">📞 -</span>
+                                <span id="memberInfoEmail">✉️ -</span>
+                            </div>
+                        </div>
+                        
+                        <p style="margin:0.5rem 0 0 0;font-size:0.8rem;color:#6c757d">
+                            Nie ste v zozname? <a href="#" onclick="toggleBookingType('new');document.querySelector('input[value=new]').checked=true;return false;" style="color:#2d5a27">Prihláste sa ako nový zákazník</a>
+                        </p>
                     </div>
+                    
+                    <hr style="margin:1.5rem 0;border:none;border-top:1px solid #e9ecef">
                     
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
                         <div>
-                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Počet jazdcov</label>
-                            <select id="bookingRiders" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Typ tréningu</label>
+                            <select id="bookingServiceType" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                <option value="lesson">🐴 Jazda s inštruktorom</option>
+                                <option value="free_ride">🌳 Voľná jazda</option>
+                                <option value="longing">🔄 Lonžovanie</option>
+                                <option value="training">🏆 Tréning (pokročilí)</option>
                             </select>
                         </div>
                         <div>
-                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Úroveň</label>
-                            <select id="bookingLevel" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
-                                <option value="">Všetky úrovne</option>
-                                <option value="beginner">Začiatočník</option>
-                                <option value="intermediate">Mierne pokročilý</option>
-                                <option value="advanced">Pokročilý</option>
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:500">Počet jazdcov</label>
+                            <select id="bookingRiders" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem">
+                                <option value="1">1 jazdec</option>
+                                <option value="2">2 jazdci</option>
+                                <option value="3">3 jazdci</option>
+                                <option value="4">4 jazdci</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div style="margin-bottom:1.5rem">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Poznámka</label>
-                        <textarea id="bookingNotes" rows="2" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;resize:vertical" placeholder="Špeciálne požiadavky..."></textarea>
+                    <div style="margin-bottom:1rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Úroveň jazdca</label>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem">
+                            <label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;border:2px solid #e9ecef;border-radius:6px;cursor:pointer;font-size:0.9rem" class="level-option">
+                                <input type="radio" name="bookingLevelRadio" value="beginner" checked>
+                                <span>🌱 Začiatočník</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;border:2px solid #e9ecef;border-radius:6px;cursor:pointer;font-size:0.9rem" class="level-option">
+                                <input type="radio" name="bookingLevelRadio" value="intermediate">
+                                <span>🌿 Stredný</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem;border:2px solid #e9ecef;border-radius:6px;cursor:pointer;font-size:0.9rem" class="level-option">
+                                <input type="radio" name="bookingLevelRadio" value="advanced">
+                                <span>🌳 Pokročilý</span>
+                            </label>
+                        </div>
+                        <input type="hidden" id="bookingLevel" value="beginner">
                     </div>
                     
-                    <button type="submit" style="width:100%;padding:1rem;background:#2d5a27;color:white;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer">
-                        Odoslať rezerváciu
+                    <div style="margin-bottom:1.5rem">
+                        <label style="display:block;margin-bottom:0.5rem;font-weight:500">Poznámka <span style="color:#6c757d;font-weight:normal">(nepovinné)</span></label>
+                        <textarea id="bookingNotes" rows="2" style="width:100%;padding:0.75rem;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;resize:vertical" placeholder="Špeciálne požiadavky, zdravotné obmedzenia..."></textarea>
+                    </div>
+                    
+                    <button type="submit" style="width:100%;padding:1rem;background:#2d5a27;color:white;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem">
+                        <span>✓</span> Odoslať prihlášku
                     </button>
                     
                     <p style="margin-top:1rem;font-size:0.85rem;color:#6c757d;text-align:center">
-                        Po odoslaní vás budeme kontaktovať pre potvrdenie.
+                        📞 Po odoslaní vás budeme kontaktovať pre potvrdenie termínu.
                     </p>
                 </form>
             </div>
@@ -1156,26 +1226,204 @@
             selectedSlotData = null;
         }
         
+        // Prepínanie medzi novým zákazníkom a členom
+        function toggleBookingType(type) {
+            const newForm = document.getElementById('newCustomerForm');
+            const memberForm = document.getElementById('memberForm');
+            const newLabel = document.getElementById('typeNewLabel');
+            const memberLabel = document.getElementById('typeMemberLabel');
+            
+            if (type === 'new') {
+                newForm.style.display = 'block';
+                memberForm.style.display = 'none';
+                newLabel.style.borderColor = '#2d5a27';
+                newLabel.style.background = '#e8f5e9';
+                memberLabel.style.borderColor = '#e9ecef';
+                memberLabel.style.background = 'white';
+            } else {
+                newForm.style.display = 'none';
+                memberForm.style.display = 'block';
+                memberLabel.style.borderColor = '#2d5a27';
+                memberLabel.style.background = '#e8f5e9';
+                newLabel.style.borderColor = '#e9ecef';
+                newLabel.style.background = 'white';
+                loadMembersForBooking();
+            }
+        }
+        
+        // Načítanie členov pre dropdown
+        let membersData = [];
+        async function loadMembersForBooking() {
+            const select = document.getElementById('bookingMember');
+            if (membersData.length > 0) {
+                // Už načítané, len obnov dropdown
+                renderMembersDropdown(membersData);
+                return;
+            }
+            
+            select.innerHTML = '<option value="">-- Načítavam --</option>';
+            document.getElementById('memberSearch').value = '';
+            
+            try {
+                const res = await fetch('/api/members-public');
+                membersData = await res.json();
+                
+                if (membersData.length === 0) {
+                    select.innerHTML = '<option value="">Žiadni členovia v databáze</option>';
+                    return;
+                }
+                
+                // Zoradiť podľa mena
+                membersData.sort((a, b) => `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`));
+                renderMembersDropdown(membersData);
+                    
+            } catch(e) {
+                console.error('Error loading members:', e);
+                select.innerHTML = '<option value="">Chyba pri načítaní</option>';
+            }
+        }
+        
+        function renderMembersDropdown(members) {
+            const select = document.getElementById('bookingMember');
+            const levelLabels = { beginner: '🌱', intermediate: '🌿', advanced: '🌳' };
+            
+            select.innerHTML = '<option value="">-- Vyberte člena (' + members.length + ') --</option>' +
+                members.map(r => {
+                    const levelIcon = levelLabels[r.skill_level] || '🌱';
+                    return `<option value="${r.id}" 
+                        data-phone="${r.phone || ''}" 
+                        data-email="${r.email || ''}" 
+                        data-level="${r.skill_level || 'beginner'}"
+                        data-name="${r.first_name} ${r.last_name}">
+                        ${levelIcon} ${r.first_name} ${r.last_name}${r.phone ? ' • ' + r.phone : ''}
+                    </option>`;
+                }).join('');
+        }
+        
+        function filterMembers(query) {
+            if (!membersData.length) return;
+            
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                renderMembersDropdown(membersData);
+                return;
+            }
+            
+            const filtered = membersData.filter(r => 
+                `${r.first_name} ${r.last_name}`.toLowerCase().includes(q) ||
+                (r.phone && r.phone.includes(q))
+            );
+            
+            renderMembersDropdown(filtered);
+            
+            // Auto-select ak je len jeden výsledok
+            if (filtered.length === 1) {
+                document.getElementById('bookingMember').value = filtered[0].id;
+                showMemberInfo();
+            }
+        }
+        
+        function showMemberInfo() {
+            const select = document.getElementById('bookingMember');
+            const infoDiv = document.getElementById('selectedMemberInfo');
+            const option = select.selectedOptions[0];
+            
+            if (!select.value || !option) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            const member = membersData.find(m => m.id == select.value);
+            if (!member) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            const levelLabels = { 
+                beginner: 'Začiatočník', 
+                intermediate: 'Stredný', 
+                advanced: 'Pokročilý' 
+            };
+            
+            document.getElementById('memberInfoName').textContent = `${member.first_name} ${member.last_name}`;
+            document.getElementById('memberInfoLevel').textContent = levelLabels[member.skill_level] || 'Začiatočník';
+            document.getElementById('memberInfoPhone').textContent = member.phone ? `📞 ${member.phone}` : '📞 Neuvedené';
+            document.getElementById('memberInfoEmail').textContent = member.email ? `✉️ ${member.email}` : '✉️ Neuvedené';
+            
+            infoDiv.style.display = 'block';
+            
+            // Nastaviť úroveň
+            const levelRadio = document.querySelector(`input[name="bookingLevelRadio"][value="${member.skill_level || 'beginner'}"]`);
+            if (levelRadio) {
+                levelRadio.checked = true;
+                levelRadio.dispatchEvent(new Event('change'));
+            }
+        }
+        
+        // Listener pre radio buttony úrovne
+        document.querySelectorAll('input[name="bookingLevelRadio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                document.getElementById('bookingLevel').value = e.target.value;
+                // Vizuálna spätná väzba
+                document.querySelectorAll('.level-option').forEach(opt => {
+                    opt.style.borderColor = '#e9ecef';
+                    opt.style.background = 'white';
+                });
+                e.target.parentElement.style.borderColor = '#2d5a27';
+                e.target.parentElement.style.background = '#e8f5e9';
+            });
+        });
+        
         async function submitBooking(e) {
             e.preventDefault();
             
             const arenaId = document.getElementById('selectedArenaId').value;
             const date = document.getElementById('selectedDate').value;
-            const name = document.getElementById('bookingName').value;
-            const phone = document.getElementById('bookingPhone').value;
-            const email = document.getElementById('bookingEmail').value;
+            const bookingType = document.querySelector('input[name="bookingType"]:checked')?.value || 'new';
+            
+            let name, phone, email;
+            
+            if (bookingType === 'member') {
+                const memberSelect = document.getElementById('bookingMember');
+                const option = memberSelect.selectedOptions[0];
+                
+                if (!memberSelect.value) {
+                    showBookingMessage('Vyberte člena zo zoznamu', 'error');
+                    return;
+                }
+                
+                const member = membersData.find(m => m.id == memberSelect.value);
+                if (member) {
+                    name = `${member.first_name} ${member.last_name}`;
+                    phone = member.phone || '';
+                    email = member.email || '';
+                }
+            } else {
+                name = document.getElementById('bookingName').value;
+                phone = document.getElementById('bookingPhone').value;
+                email = document.getElementById('bookingEmail').value;
+            }
+            
             const riders = document.getElementById('bookingRiders').value;
             const level = document.getElementById('bookingLevel').value;
+            const serviceType = document.getElementById('bookingServiceType').value;
             const notes = document.getElementById('bookingNotes').value;
             
-            if (!selectedSlotData || !arenaId || !date || !name || !phone) {
-                showBookingMessage('Vyplňte všetky povinné údaje a vyberte čas', 'error');
+            if (!selectedSlotData || !arenaId || !date || !name) {
+                showBookingMessage('Vyplňte meno a vyberte čas', 'error');
+                return;
+            }
+            
+            if (!phone && bookingType === 'new') {
+                showBookingMessage('Pre nového zákazníka je telefón povinný', 'error');
                 return;
             }
             
             const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Odosielam...';
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span>⏳</span> Odosielam...';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳</span> Odosielam...';
             submitBtn.disabled = true;
             
             try {
@@ -1185,15 +1433,15 @@
                     body: JSON.stringify({
                         arena_id: parseInt(arenaId),
                         customer_name: name,
-                        customer_phone: phone,
-                        customer_email: email,
+                        customer_phone: phone || '',
+                        customer_email: email || '',
                         reservation_date: date,
                         start_time: selectedSlotData.startTime,
                         end_time: selectedSlotData.endTime,
                         riders_count: parseInt(riders),
                         skill_level: level || null,
                         notes: notes,
-                        service_type: 'lesson'
+                        service_type: serviceType
                     })
                 });
                 
@@ -1205,32 +1453,32 @@
                     loadWeekCalendar();
                 } else {
                     showBookingMessage(result.error || 'Chyba pri rezervácii', 'error');
-                    submitBtn.textContent = originalText;
+                    submitBtn.innerHTML = originalHTML;
                     submitBtn.disabled = false;
                 }
             } catch(err) {
                 showBookingMessage('Chyba pripojenia: ' + err.message, 'error');
-                submitBtn.textContent = originalText;
+                submitBtn.innerHTML = originalHTML;
                 submitBtn.disabled = false;
             }
         }
         
         function showBookingSuccess(name, date, time) {
-            const dateFormatted = new Date(date).toLocaleDateString('sk-SK');
+            const dateFormatted = new Date(date).toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             const container = document.getElementById('bookingFormContainer');
             
             container.innerHTML = `
                 <div style="text-align:center;padding:2rem">
                     <div style="font-size:4rem;margin-bottom:1rem">✅</div>
-                    <h3 style="color:#2d5a27;margin-bottom:1rem">Rezervácia úspešne odoslaná!</h3>
+                    <h3 style="color:#2d5a27;margin-bottom:1rem">Prihlásenie úspešne odoslané!</h3>
                     <p style="margin-bottom:0.5rem;font-size:1.1rem"><strong>${name}</strong></p>
-                    <p style="margin-bottom:1.5rem;color:#666;font-size:1rem">${dateFormatted} o ${time.substring(0,5)}</p>
+                    <p style="margin-bottom:1.5rem;color:#666;font-size:1rem">📅 ${dateFormatted}<br>🕐 ${time.substring(0,5)}</p>
                     <div style="background:#e8f5e9;padding:1.25rem;border-radius:8px;margin-bottom:2rem;border:1px solid #c8e6c9">
-                        <p style="margin:0;color:#2d5a27;font-size:0.95rem">📞 Budeme vás kontaktovať pre potvrdenie rezervácie.</p>
+                        <p style="margin:0;color:#2d5a27;font-size:0.95rem">📞 Budeme vás kontaktovať pre potvrdenie termínu.</p>
                     </div>
                     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
                         <button onclick="resetAndNewBooking()" style="padding:0.75rem 1.5rem;background:#2d5a27;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500">
-                            ➕ Nová rezervácia
+                            ➕ Ďalšie prihlásenie
                         </button>
                         <button onclick="closeBookingForm()" style="padding:0.75rem 1.5rem;background:white;color:#2d5a27;border:2px solid #2d5a27;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500">
                             ✓ Hotovo

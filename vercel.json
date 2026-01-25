@@ -14,6 +14,7 @@
     { "src": "/api/horses", "dest": "/api/horses.js" },
     { "src": "/api/riders/([^/]+)", "dest": "/api/riders-id.js?id=$1" },
     { "src": "/api/riders", "dest": "/api/riders.js" },
+    { "src": "/api/members-public", "dest": "/api/members-public.js" },
     { "src": "/api/trainers/([^/]+)", "dest": "/api/trainers-id.js?id=$1" },
     { "src": "/api/trainers", "dest": "/api/trainers.js" },
     { "src": "/api/employees/([^/]+)", "dest": "/api/employees-id.js?id=$1" },
