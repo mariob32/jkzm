@@ -2428,12 +2428,14 @@
     }
 
     function renderBookings() {
-        document.getElementById('bookingsTable').innerHTML = bookings.map(b => `
+        const el = document.getElementById('bookingsTable') || document.getElementById('reservationsTable');
+        if (!el) return; // Element neexistuje, preskoc
+        el.innerHTML = bookings.map(b => `
             <tr>
                 <td>${b.created_at?.split('T')[0] || '-'}</td>
-                <td><strong>${b.name}</strong><br><small>${b.email}</small></td>
+                <td><strong>${b.name || b.customer_name || '-'}</strong><br><small>${b.email || b.customer_email || '-'}</small></td>
                 <td>${b.service || '-'}</td>
-                <td>${b.preferred_date || '-'} ${b.preferred_time || ''}</td>
+                <td>${b.preferred_date || b.booking_date || '-'} ${b.preferred_time || b.start_time || ''}</td>
                 <td><span class="badge badge-${b.status === 'confirmed' ? 'success' : 'warning'}">${b.status}</span></td>
                 <td><button class="btn btn-sm btn-primary" onclick="confirmBooking('${b.id}')">✓</button></td>
             </tr>

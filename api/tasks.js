@@ -57,12 +57,11 @@ module.exports = async (req, res) => {
             
             const { data: tasks, error } = await query;
             
-            // Ak tabulka neexistuje, vrat prazdne pole
+            // Ak tabulka neexistuje alebo iny DB error, vrat prazdne pole
             if (error) {
-                if (error.code === '42P01' || error.message.includes('does not exist') || error.message.includes('relation')) {
-                    return res.status(200).json([]);
-                }
-                throw error;
+                console.error('Tasks GET error:', error.code, error.message);
+                // Graceful handling - vrat prazdne pole namiesto 500
+                return res.status(200).json([]);
             }
             
             // Fetch horse names separately if needed
