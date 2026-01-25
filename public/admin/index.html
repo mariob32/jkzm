@@ -1497,27 +1497,56 @@
         const opts = {method, headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}};
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(`/api/${endpoint}`, opts);
-        return res.json();
+        const data = await res.json();
+        // Ak je 401, presmeruj na login
+        if (res.status === 401) {
+            showToast('Neautorizovane - prihlaste sa znova', 'error');
+            localStorage.removeItem('jkzm_token');
+            setTimeout(() => location.reload(), 1500);
+            throw new Error('Unauthorized');
+        }
+        // Ak je error v response, vrat prazdne pole pre GET list endpointy
+        if (data && data.error && method === 'GET' && !endpoint.includes('/')) {
+            console.warn('API error for', endpoint, ':', data.error);
+            return [];
+        }
+        return data;
     }
 
     async function loadAll() {
+        console.log('Loading all data...');
         try {
-            [horses, riders, trainers, employees, trainings, vetRecords, payments, bookings, messages, competitions] = await Promise.all([
+            // Nacitaj paralelne, ale s fallbackom
+            const results = await Promise.allSettled([
                 api('horses'), api('riders'), api('trainers'), api('employees'), api('trainings'), 
                 api('vet-records'), api('payments'), api('bookings'), api('contact'), api('competitions')
             ]);
+            
+            // Bezpecne extrahovanie hodnot - skontroluj fulfilled status
+            const getValue = (result) => {
+                if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+                    return result.value;
+                }
+                return [];
+            };
+            
+            horses = getValue(results[0]);
+            riders = getValue(results[1]);
+            trainers = getValue(results[2]);
+            employees = getValue(results[3]);
+            trainings = getValue(results[4]);
+            vetRecords = getValue(results[5]);
+            payments = getValue(results[6]);
+            bookings = getValue(results[7]);
+            messages = getValue(results[8]);
+            competitions = getValue(results[9]);
+            
+            console.log('Loaded: horses=' + horses.length + ', riders=' + riders.length + ', trainers=' + trainers.length);
         } catch(e) {
-            // Fallback if some endpoints don't exist
-            horses = await api('horses').catch(() => []);
-            riders = await api('riders').catch(() => []);
-            trainers = await api('trainers').catch(() => []);
-            employees = await api('employees').catch(() => []);
-            trainings = await api('trainings').catch(() => []);
-            vetRecords = [];
-            payments = await api('payments').catch(() => []);
-            bookings = await api('bookings').catch(() => []);
-            messages = await api('contact').catch(() => []);
-            competitions = [];
+            console.error('loadAll error:', e);
+            horses = []; riders = []; trainers = []; employees = [];
+            trainings = []; vetRecords = []; payments = [];
+            bookings = []; messages = []; competitions = [];
         }
         renderAll();
         loadDashboard();
@@ -1571,9 +1600,20 @@
     }
 
     function populateSelects() {
-        // Horse selects
-        const horseOpts = '<option value="">Vyberte kona</option>' + horses.filter(h => h.status === 'active').map(h => `<option value="${h.id}">${h.name}</option>`).join('');
-        document.querySelectorAll('#trainingHorse, #vetHorse, #feedHorse, #vetHorseFilter, #vaccinationHorse').forEach(s => { if(s) s.innerHTML = horseOpts; });
+        // Horse selects - zobraz stable_name ak existuje
+        const activeHorses = horses.filter(h => h.status === 'active');
+        const horseOpts = activeHorses.length 
+            ? '<option value="">Vyberte kona</option>' + activeHorses.map(h => {
+                const label = h.stable_name ? `${h.stable_name} (${h.name})` : h.name;
+                return `<option value="${h.id}">${label}</option>`;
+            }).join('')
+            : '<option value="">Ziadne kone - najprv pridajte v sekcii Kone</option>';
+        
+        document.querySelectorAll('#trainingHorse, #vetHorse, #feedHorse, #vetHorseFilter, #vaccinationHorse').forEach(s => { 
+            if(s) s.innerHTML = horseOpts; 
+        });
+        
+        console.log('Populated horse selects with', activeHorses.length, 'horses');
         
         // Rider selects
         const riderOpts = '<option value="">Vyberte jazdca</option>' + riders.filter(r => r.status === 'active').map(r => `<option value="${r.id}">${r.first_name} ${r.last_name}</option>`).join('');
@@ -1723,8 +1763,111 @@
     }
 
     // Modal functions
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function openModal(id) { 
+        // Reset formuláru pre nové položky
+        if (id === 'horseModal') resetHorseForm();
+        if (id === 'riderModal') resetRiderForm();
+        if (id === 'trainerModal') resetTrainerForm();
+        if (id === 'employeeModal') resetEmployeeForm();
+        if (id === 'trainingModal') resetTrainingForm();
+        if (id === 'vetModal') resetVetForm();
+        if (id === 'feedingModal') resetFeedingForm();
+        document.getElementById(id).classList.add('active'); 
+    }
+    
+    // Zobraz modal BEZ resetovania (pre edit)
+    function showModalOnly(id) {
+        document.getElementById(id).classList.add('active');
+    }
+    
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // Reset forms
+    function resetHorseForm() {
+        document.getElementById('horseId').value = '';
+        document.getElementById('horseName').value = '';
+        document.getElementById('horseStableName').value = '';
+        document.getElementById('horseBreed').value = '';
+        document.getElementById('horseColor').value = '';
+        document.getElementById('horseSex').value = 'gelding';
+        document.getElementById('horseBirth').value = '';
+        document.getElementById('horseHeight').value = '';
+        document.getElementById('horseWeight').value = '';
+        document.getElementById('horsePassport').value = '';
+        document.getElementById('horseLifeNumber').value = '';
+        document.getElementById('horseMicrochip').value = '';
+        document.getElementById('horseFeiId').value = '';
+        document.getElementById('horseFeiExpiry').value = '';
+        document.getElementById('horseSjfLicense').value = '';
+        document.getElementById('horseSjfExpiry').value = '';
+        document.getElementById('horseOwner').value = '';
+        document.getElementById('horseLevel').value = 'beginner';
+        document.getElementById('horseStatus').value = 'active';
+        document.getElementById('horseNotes').value = '';
+        document.querySelectorAll('.horseDiscipline').forEach(c => c.checked = false);
+        document.getElementById('horseModalTitle').textContent = 'Pridat kona';
+    }
+    
+    function resetRiderForm() {
+        document.getElementById('riderId').value = '';
+        document.getElementById('riderFirstName').value = '';
+        document.getElementById('riderLastName').value = '';
+        document.getElementById('riderBirth').value = '';
+        document.getElementById('riderGender').value = 'female';
+        document.getElementById('riderEmail').value = '';
+        document.getElementById('riderPhone').value = '';
+        document.getElementById('riderSjfLicense').value = '';
+        document.getElementById('riderSjfType').value = 'none';
+        document.getElementById('riderSjfExpiry').value = '';
+        document.getElementById('riderSzvjDate').value = '';
+        document.getElementById('riderFeiId').value = '';
+        document.getElementById('riderFeiExpiry').value = '';
+        document.getElementById('riderCategory').value = 'senior';
+        document.getElementById('riderLevel').value = 'beginner';
+        document.getElementById('riderMedical').value = 'false';
+        document.getElementById('riderMedicalExpiry').value = '';
+        document.getElementById('riderModalTitle').textContent = 'Pridat jazdca';
+    }
+    
+    function resetTrainerForm() {
+        if (document.getElementById('trainerId')) document.getElementById('trainerId').value = '';
+        if (document.getElementById('trainerFirstName')) document.getElementById('trainerFirstName').value = '';
+        if (document.getElementById('trainerLastName')) document.getElementById('trainerLastName').value = '';
+        if (document.getElementById('trainerModalTitle')) document.getElementById('trainerModalTitle').textContent = 'Pridat trenera';
+    }
+    
+    function resetEmployeeForm() {
+        if (document.getElementById('employeeId')) document.getElementById('employeeId').value = '';
+        if (document.getElementById('employeeFirstName')) document.getElementById('employeeFirstName').value = '';
+        if (document.getElementById('employeeLastName')) document.getElementById('employeeLastName').value = '';
+        if (document.getElementById('employeeModalTitle')) document.getElementById('employeeModalTitle').textContent = 'Pridat zamestnanca';
+    }
+    
+    function resetTrainingForm() {
+        if (document.getElementById('trainingId')) document.getElementById('trainingId').value = '';
+        if (document.getElementById('trainingDate')) document.getElementById('trainingDate').value = new Date().toISOString().split('T')[0];
+        if (document.getElementById('trainingStartTime')) document.getElementById('trainingStartTime').value = '';
+        if (document.getElementById('trainingModalTitle')) document.getElementById('trainingModalTitle').textContent = 'Novy trening';
+    }
+    
+    function resetVetForm() {
+        if (document.getElementById('vetId')) document.getElementById('vetId').value = '';
+        if (document.getElementById('vetHorse')) document.getElementById('vetHorse').value = '';
+        if (document.getElementById('vetType')) document.getElementById('vetType').value = '';
+        if (document.getElementById('vetDate')) document.getElementById('vetDate').value = new Date().toISOString().split('T')[0];
+        if (document.getElementById('vetNextDate')) document.getElementById('vetNextDate').value = '';
+        if (document.getElementById('vetVeterinarian')) document.getElementById('vetVeterinarian').value = '';
+        if (document.getElementById('vetNotes')) document.getElementById('vetNotes').value = '';
+    }
+    
+    function resetFeedingForm() {
+        if (document.getElementById('feedingId')) document.getElementById('feedingId').value = '';
+        if (document.getElementById('feedHorse')) document.getElementById('feedHorse').value = '';
+        if (document.getElementById('feedDate')) document.getElementById('feedDate').value = new Date().toISOString().split('T')[0];
+        if (document.getElementById('feedTime')) document.getElementById('feedTime').value = 'morning';
+        if (document.getElementById('feedBy')) document.getElementById('feedBy').value = '';
+        if (document.getElementById('feedNotes')) document.getElementById('feedNotes').value = '';
+    }
 
     // CRUD - Horses
     async function saveHorse() {
@@ -1751,17 +1894,37 @@
             disciplines: Array.from(document.querySelectorAll('.horseDiscipline:checked')).map(c => c.value),
             notes: document.getElementById('horseNotes').value
         };
-        await api(id ? `horses/${id}` : 'horses', id ? 'PUT' : 'POST', data);
-        closeModal('horseModal');
-        showToast('Kôň uložený!', 'success');
-        horses = await api('horses');
-        renderHorses();
-        populateSelects();
+        
+        if (!data.name) {
+            showToast('Meno kona je povinne', 'error');
+            return;
+        }
+        
+        try {
+            const result = await api(id ? `horses/${id}` : 'horses', id ? 'PUT' : 'POST', data);
+            if (result && result.error) {
+                showToast(result.error, 'error');
+                return;
+            }
+            closeModal('horseModal');
+            showToast(id ? 'Kon upraveny!' : 'Kon pridany!', 'success');
+            // Refresh horses
+            const newHorses = await api('horses');
+            horses = Array.isArray(newHorses) ? newHorses : [];
+            renderHorses();
+            populateSelects();
+        } catch(e) {
+            console.error('saveHorse error:', e);
+            showToast('Chyba pri ukladani', 'error');
+        }
     }
 
     function editHorse(id) {
         const h = horses.find(x => x.id === id);
-        if (!h) return;
+        if (!h) {
+            showToast('Kon sa nenasiel', 'error');
+            return;
+        }
         document.getElementById('horseId').value = h.id;
         document.getElementById('horseName').value = h.name || '';
         document.getElementById('horseStableName').value = h.stable_name || '';
@@ -1783,17 +1946,28 @@
         document.getElementById('horseStatus').value = h.status || 'active';
         document.getElementById('horseNotes').value = h.notes || '';
         document.querySelectorAll('.horseDiscipline').forEach(c => c.checked = (h.disciplines || []).includes(c.value));
-        document.getElementById('horseModalTitle').textContent = 'Upraviť koňa';
-        openModal('horseModal');
+        document.getElementById('horseModalTitle').textContent = 'Upravit kona';
+        showModalOnly('horseModal');
     }
 
     async function deleteHorse(id) {
-        if (!confirm('Naozaj vymazať tohto koňa?')) return;
-        await api(`horses/${id}`, 'DELETE');
-        showToast('Kôň vymazaný', 'success');
-        horses = await api('horses');
-        renderHorses();
-        populateSelects();
+        if (!confirm('Naozaj vymazat tohto kona?')) return;
+        try {
+            const result = await api(`horses/${id}`, 'DELETE');
+            if (result && result.error) {
+                showToast(result.error, 'error');
+                return;
+            }
+            showToast('Kon vymazany', 'success');
+            // Refresh horses
+            const newHorses = await api('horses');
+            horses = Array.isArray(newHorses) ? newHorses : [];
+            renderHorses();
+            populateSelects();
+        } catch(e) {
+            console.error('deleteHorse error:', e);
+            showToast('Chyba pri mazani', 'error');
+        }
     }
 
     // CRUD - Riders
@@ -1845,8 +2019,8 @@
         document.getElementById('riderLevel').value = r.level || 'beginner';
         document.getElementById('riderMedical').value = r.medical_certificate_valid ? 'true' : 'false';
         document.getElementById('riderMedicalExpiry').value = r.medical_certificate_expiry?.split('T')[0] || '';
-        document.getElementById('riderModalTitle').textContent = 'Upraviť jazdca';
-        openModal('riderModal');
+        document.getElementById('riderModalTitle').textContent = 'Upravit jazdca';
+        showModalOnly('riderModal');
     }
 
     async function deleteRider(id) {
@@ -1895,7 +2069,8 @@
         document.getElementById('trainerEmployment').value = t.employment_type || 'full_time';
         document.getElementById('trainerRate').value = t.hourly_rate || '';
         document.getElementById('trainerBio').value = t.bio || '';
-        openModal('trainerModal');
+        document.getElementById('trainerModalTitle').textContent = 'Upravit trenera';
+        showModalOnly('trainerModal');
     }
 
     async function deleteTrainer(id) {
@@ -1936,7 +2111,8 @@
         document.getElementById('employeeEmail').value = e.email || '';
         document.getElementById('employeePhone').value = e.phone || '';
         document.getElementById('employeeType').value = e.employment_type || 'full_time';
-        openModal('employeeModal');
+        document.getElementById('employeeModalTitle').textContent = 'Upravit zamestnanca';
+        showModalOnly('employeeModal');
     }
 
     async function deleteEmployee(id) {
@@ -1986,7 +2162,8 @@
         document.getElementById('trainingDuration').value = t.duration_minutes || 60;
         document.getElementById('trainingPrice').value = t.price || '';
         document.getElementById('trainingNotes').value = t.notes || '';
-        openModal('trainingModal');
+        document.getElementById('trainingModalTitle').textContent = 'Upravit trening';
+        showModalOnly('trainingModal');
     }
 
     async function deleteTraining(id) {
@@ -2187,7 +2364,8 @@
         document.getElementById('vetNextDate').value = v.next_due_date || '';
         document.getElementById('vetVeterinarian').value = v.vet_name || '';
         document.getElementById('vetNotes').value = v.notes || '';
-        openModal('vetModal');
+        document.querySelector('#vetModal .modal-header h3').textContent = 'Upravit zaznam';
+        showModalOnly('vetModal');
     }
 
     async function deleteVetRecord(id) {
@@ -2228,14 +2406,14 @@
         document.getElementById('vaccinationId').value = '';
         document.getElementById('vaccinationHorse').value = '';
         document.getElementById('vaccinationType').value = '';
-        document.getElementById('vaccinationDate').value = '';
+        document.getElementById('vaccinationDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('vaccinationNextDate').value = '';
         document.getElementById('vaccinationBatch').value = '';
         document.getElementById('vaccinationVetName').value = '';
         document.getElementById('vaccinationVetLicense').value = '';
         document.getElementById('vaccinationNotes').value = '';
         document.getElementById('vaccinationModalTitle').textContent = 'Nove ockovanie';
-        openModal('vaccinationModal');
+        showModalOnly('vaccinationModal');
     }
 
     async function editVaccination(id) {
@@ -2251,7 +2429,7 @@
         document.getElementById('vaccinationVetLicense').value = v.vet_license || '';
         document.getElementById('vaccinationNotes').value = v.notes || '';
         document.getElementById('vaccinationModalTitle').textContent = 'Upravit ockovanie';
-        openModal('vaccinationModal');
+        showModalOnly('vaccinationModal');
     }
 
     async function saveVaccination() {

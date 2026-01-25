@@ -1,17 +1,17 @@
 {
-  "version": "6.5.0",
-  "build": "2026-01-25T09:30:00Z",
+  "version": "6.5.1",
+  "build": "2026-01-25T10:30:00Z",
   "features": [
-    "Vaccinations CRUD with Edit/Delete",
-    "Feeding items nested CRUD",
-    "Admin users management",
-    "Compliance dashboard",
-    "Vet tabs (records + vaccinations)"
+    "Fixed horse CRUD (edit/delete working)",
+    "Fixed horse select dropdowns in all modals",
+    "Fixed Promise.allSettled handling in loadAll",
+    "Added showModalOnly for edit forms",
+    "Better error handling in API calls"
   ],
   "changelog": {
+    "6.5.1": "Admin UI fixes: horse CRUD, select dropdowns, edit forms working correctly",
     "6.5.0": "Admin UI for vaccinations, feeding items, admin users, compliance dashboard",
     "6.4.1": "Fixed /api/health to be public, health-records endpoint for vet data",
-    "6.4.0": "API CRUD completion - feeding-items, vaccinations, competition-entries, admin-users",
-    "5.2.0": "Added O klube page with 2% dane section, QR code, forms download"
+    "6.4.0": "API CRUD completion - feeding-items, vaccinations, competition-entries, admin-users"
   }
 }
