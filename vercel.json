@@ -101,6 +101,13 @@
     { "src": "/api/audit-logs/([^/]+)", "dest": "/api/audit-logs-id.js?id=$1" },
     { "src": "/api/audit-logs", "dest": "/api/audit-logs.js" },
     
+    { "src": "/api/exports/stable-log", "dest": "/api/exports/stable-log.js" },
+    { "src": "/api/exports/visit-log", "dest": "/api/exports/visit-log.js" },
+    { "src": "/api/exports/horses-licenses", "dest": "/api/exports/horses-licenses.js" },
+    { "src": "/api/exports/vaccinations", "dest": "/api/exports/vaccinations.js" },
+    { "src": "/api/exports/documents", "dest": "/api/exports/documents.js" },
+    { "src": "/api/exports/horse-card", "dest": "/api/exports/horse-card.js" },
+    
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },
     { "src": "/assets/(.*)", "dest": "/public/assets/$1" },

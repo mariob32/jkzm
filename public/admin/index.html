@@ -189,6 +189,7 @@
                     <div class="nav-section-title">Systém</div>
                     <div class="nav-item" data-section="compliance"><span class="icon">🛡️</span>Compliance</div>
                     <div class="nav-item" data-section="audit-trail"><span class="icon">📋</span>Audit trail</div>
+                    <div class="nav-item" data-section="exports"><span class="icon">📄</span>Exporty</div>
                     <div class="nav-item" data-section="admin-users"><span class="icon">👤</span>Admin používatelia</div>
                 </div>
             </div>
@@ -855,6 +856,174 @@
                         <button class="btn btn-outline" onclick="loadAuditLogsPrev()" id="auditPrevBtn" disabled>Predchadzajuce</button>
                         <span id="auditPagination">Strana 1</span>
                         <button class="btn btn-outline" onclick="loadAuditLogsNext()" id="auditNextBtn">Nasledujuce</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXPORTS -->
+            <section id="exports" class="section">
+                <div class="header">
+                    <h1>Exporty a tlac</h1>
+                </div>
+                
+                <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:1.5rem">
+                    <div class="stat-card" onclick="showExportTab('stable-log')" style="cursor:pointer">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Mastalna kniha</div>
+                    </div>
+                    <div class="stat-card" onclick="showExportTab('visit-log')" style="cursor:pointer">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Navstevna kniha</div>
+                    </div>
+                    <div class="stat-card" onclick="showExportTab('licenses')" style="cursor:pointer">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Licencie SJF/FEI</div>
+                    </div>
+                    <div class="stat-card" onclick="showExportTab('vaccinations')" style="cursor:pointer">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">Ockovania</div>
+                    </div>
+                    <div class="stat-card" onclick="showExportTab('documents')" style="cursor:pointer">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Dokumenty</div>
+                    </div>
+                </div>
+
+                <!-- Tab: Mastalna kniha -->
+                <div id="export-stable-log" class="export-tab">
+                    <div class="card">
+                        <div class="card-header"><h3>Mastalna kniha</h3></div>
+                        <div class="card-body">
+                            <div class="form-row" style="margin-bottom:1rem">
+                                <div class="form-group"><label>Od</label><input type="date" class="form-control" id="exportStableFrom"></div>
+                                <div class="form-group"><label>Do</label><input type="date" class="form-control" id="exportStableTo"></div>
+                                <div class="form-group" style="align-self:flex-end">
+                                    <button class="btn btn-primary" onclick="loadExportStableLog()">Nacitat</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('stable-log')">CSV</button>
+                                    <button class="btn btn-outline" onclick="printExportStableLog()">Tlac</button>
+                                </div>
+                            </div>
+                            <table class="table">
+                                <thead><tr><th>Datum</th><th>Cas</th><th>Typ</th><th>Kon</th><th>Pas</th><th>Poznamka</th></tr></thead>
+                                <tbody id="exportStableTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Navstevna kniha -->
+                <div id="export-visit-log" class="export-tab" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><h3>Navstevna kniha</h3></div>
+                        <div class="card-body">
+                            <div class="form-row" style="margin-bottom:1rem">
+                                <div class="form-group"><label>Od</label><input type="date" class="form-control" id="exportVisitFrom"></div>
+                                <div class="form-group"><label>Do</label><input type="date" class="form-control" id="exportVisitTo"></div>
+                                <div class="form-group" style="align-self:flex-end">
+                                    <button class="btn btn-primary" onclick="loadExportVisitLog()">Nacitat</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('visit-log')">CSV</button>
+                                    <button class="btn btn-outline" onclick="printExportVisitLog()">Tlac</button>
+                                </div>
+                            </div>
+                            <table class="table">
+                                <thead><tr><th>Datum</th><th>Cas</th><th>Meno</th><th>Organizacia</th><th>Dovod</th><th>Kontakt</th></tr></thead>
+                                <tbody id="exportVisitTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Licencie -->
+                <div id="export-licenses" class="export-tab" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><h3>Licencie SJF/FEI</h3></div>
+                        <div class="card-body">
+                            <div class="form-row" style="margin-bottom:1rem">
+                                <div class="form-group"><label>Status</label>
+                                    <select class="form-control" id="exportLicenseStatus">
+                                        <option value="">Vsetky</option>
+                                        <option value="active">Iba aktivne</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"><label>Expiracia do (dni)</label>
+                                    <select class="form-control" id="exportLicenseExpiry">
+                                        <option value="">Vsetky</option>
+                                        <option value="30">30 dni</option>
+                                        <option value="60">60 dni</option>
+                                        <option value="90">90 dni</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="align-self:flex-end">
+                                    <button class="btn btn-primary" onclick="loadExportLicenses()">Nacitat</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('horses-licenses')">CSV</button>
+                                    <button class="btn btn-outline" onclick="printExportLicenses()">Tlac</button>
+                                </div>
+                            </div>
+                            <table class="table">
+                                <thead><tr><th>Kon</th><th>Pas</th><th>SJF cislo</th><th>SJF platnost</th><th>FEI cislo</th><th>FEI platnost</th></tr></thead>
+                                <tbody id="exportLicensesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Ockovania -->
+                <div id="export-vaccinations" class="export-tab" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><h3>Ockovania</h3></div>
+                        <div class="card-body">
+                            <div class="form-row" style="margin-bottom:1rem">
+                                <div class="form-group"><label>Filter</label>
+                                    <select class="form-control" id="exportVaccFilter">
+                                        <option value="">Vsetky</option>
+                                        <option value="30">Expiracia do 30 dni</option>
+                                        <option value="60">Expiracia do 60 dni</option>
+                                        <option value="overdue">Iba oneskorene</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="align-self:flex-end">
+                                    <button class="btn btn-primary" onclick="loadExportVaccinations()">Nacitat</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('vaccinations')">CSV</button>
+                                    <button class="btn btn-outline" onclick="printExportVaccinations()">Tlac</button>
+                                </div>
+                            </div>
+                            <table class="table">
+                                <thead><tr><th>Kon</th><th>Typ vakciny</th><th>Datum</th><th>Dalsi termin</th><th>Veterinar</th></tr></thead>
+                                <tbody id="exportVaccTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Dokumenty -->
+                <div id="export-documents" class="export-tab" style="display:none">
+                    <div class="card">
+                        <div class="card-header"><h3>Dokumenty</h3></div>
+                        <div class="card-body">
+                            <div class="form-row" style="margin-bottom:1rem">
+                                <div class="form-group"><label>Od</label><input type="date" class="form-control" id="exportDocsFrom"></div>
+                                <div class="form-group"><label>Do</label><input type="date" class="form-control" id="exportDocsTo"></div>
+                                <div class="form-group"><label>Kategoria</label>
+                                    <select class="form-control" id="exportDocsCategory">
+                                        <option value="">Vsetky</option>
+                                        <option value="pas">Pas</option>
+                                        <option value="poistenie">Poistenie</option>
+                                        <option value="veterinar">Veterinar</option>
+                                        <option value="sutaz">Sutaz</option>
+                                        <option value="ine">Ine</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="align-self:flex-end">
+                                    <button class="btn btn-primary" onclick="loadExportDocuments()">Nacitat</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('documents')">CSV</button>
+                                    <button class="btn btn-outline" onclick="printExportDocuments()">Tlac</button>
+                                </div>
+                            </div>
+                            <table class="table">
+                                <thead><tr><th>Datum</th><th>Nazov</th><th>Kategoria</th><th>Kon</th><th>Subor</th></tr></thead>
+                                <tbody id="exportDocsTable"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1928,6 +2097,7 @@
             if (hash === 'tasks') setTimeout(loadTasks, 100);
             if (hash === 'notifications') setTimeout(loadNotifications, 100);
             if (hash === 'audit-trail') { setTimeout(initAuditFilters, 100); setTimeout(loadAuditLogs, 150); }
+            if (hash === 'exports') setTimeout(() => showExportTab('stable-log'), 100);
             if (hash === 'articles') setTimeout(loadArticles, 100);
             if (hash === 'gallery') setTimeout(loadAlbums, 100);
             if (hash === 'pages') setTimeout(loadPages, 100);
@@ -6640,6 +6810,287 @@
                     users.map(u => `<option value="${u.id}">${u.name || u.email}</option>`).join('');
             }
         } catch(e) { console.error(e); }
+    }
+
+    // ===== EXPORTS =====
+    let exportData = { stableLog: [], visitLog: [], licenses: [], vaccinations: [], documents: [] };
+
+    function showExportTab(tab) {
+        document.querySelectorAll('.export-tab').forEach(t => t.style.display = 'none');
+        const el = document.getElementById('export-' + tab);
+        if (el) el.style.display = 'block';
+    }
+
+    async function loadExportStableLog() {
+        const from = document.getElementById('exportStableFrom')?.value || '';
+        const to = document.getElementById('exportStableTo')?.value || '';
+        let url = '/api/exports/stable-log?';
+        if (from) url += `from=${from}&`;
+        if (to) url += `to=${to}`;
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            exportData.stableLog = await res.json();
+            renderExportStableLog();
+        } catch(e) { console.error(e); }
+    }
+
+    function renderExportStableLog() {
+        const tbody = document.getElementById('exportStableTable');
+        if (!tbody) return;
+        tbody.innerHTML = exportData.stableLog.map(r => `
+            <tr>
+                <td>${r.event_date || ''}</td>
+                <td>${r.event_time || ''}</td>
+                <td>${r.event_type || ''}</td>
+                <td>${r.horses ? (r.horses.stable_name || r.horses.name) : ''}</td>
+                <td>${r.horses?.passport_number || ''}</td>
+                <td>${(r.notes || '').substring(0, 50)}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center">Ziadne zaznamy</td></tr>';
+    }
+
+    async function loadExportVisitLog() {
+        const from = document.getElementById('exportVisitFrom')?.value || '';
+        const to = document.getElementById('exportVisitTo')?.value || '';
+        let url = '/api/exports/visit-log?';
+        if (from) url += `from=${from}&`;
+        if (to) url += `to=${to}`;
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            exportData.visitLog = await res.json();
+            renderExportVisitLog();
+        } catch(e) { console.error(e); }
+    }
+
+    function renderExportVisitLog() {
+        const tbody = document.getElementById('exportVisitTable');
+        if (!tbody) return;
+        tbody.innerHTML = exportData.visitLog.map(r => `
+            <tr>
+                <td>${r.arrival_date || ''}</td>
+                <td>${r.arrival_time || ''}</td>
+                <td>${r.visitor_name || ''}</td>
+                <td>${r.organization || ''}</td>
+                <td>${r.purpose || ''}</td>
+                <td>${r.contact_phone || r.contact_email || ''}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center">Ziadne zaznamy</td></tr>';
+    }
+
+    async function loadExportLicenses() {
+        const status = document.getElementById('exportLicenseStatus')?.value || '';
+        const expiry = document.getElementById('exportLicenseExpiry')?.value || '';
+        let url = '/api/exports/horses-licenses?';
+        if (status) url += `status=${status}&`;
+        if (expiry) url += `expiry_days=${expiry}`;
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            exportData.licenses = await res.json();
+            renderExportLicenses();
+        } catch(e) { console.error(e); }
+    }
+
+    function renderExportLicenses() {
+        const tbody = document.getElementById('exportLicensesTable');
+        if (!tbody) return;
+        tbody.innerHTML = exportData.licenses.map(r => `
+            <tr>
+                <td>${r.stable_name || r.name || ''}</td>
+                <td>${r.passport_number || ''}</td>
+                <td>${r.sjf_license_number || ''}</td>
+                <td>${r.sjf_license_valid_until || '-'}</td>
+                <td>${r.fei_passport_number || ''}</td>
+                <td>${r.fei_passport_expiry || '-'}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center">Ziadne zaznamy</td></tr>';
+    }
+
+    async function loadExportVaccinations() {
+        const filter = document.getElementById('exportVaccFilter')?.value || '';
+        let url = '/api/exports/vaccinations?';
+        if (filter === 'overdue') url += 'overdue_only=true';
+        else if (filter) url += `expiry_days=${filter}`;
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            exportData.vaccinations = await res.json();
+            renderExportVaccinations();
+        } catch(e) { console.error(e); }
+    }
+
+    function renderExportVaccinations() {
+        const tbody = document.getElementById('exportVaccTable');
+        if (!tbody) return;
+        tbody.innerHTML = exportData.vaccinations.map(r => `
+            <tr>
+                <td>${r.horses ? (r.horses.stable_name || r.horses.name) : ''}</td>
+                <td>${r.vaccine_type || ''}</td>
+                <td>${r.vaccination_date || ''}</td>
+                <td>${r.next_date || '-'}</td>
+                <td>${r.vet_name || ''}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center">Ziadne zaznamy</td></tr>';
+    }
+
+    async function loadExportDocuments() {
+        const from = document.getElementById('exportDocsFrom')?.value || '';
+        const to = document.getElementById('exportDocsTo')?.value || '';
+        const category = document.getElementById('exportDocsCategory')?.value || '';
+        let url = '/api/exports/documents?';
+        if (from) url += `from=${from}&`;
+        if (to) url += `to=${to}&`;
+        if (category) url += `category=${category}`;
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+            exportData.documents = await res.json();
+            renderExportDocuments();
+        } catch(e) { console.error(e); }
+    }
+
+    function renderExportDocuments() {
+        const tbody = document.getElementById('exportDocsTable');
+        if (!tbody) return;
+        tbody.innerHTML = exportData.documents.map(r => `
+            <tr>
+                <td>${r.document_date || ''}</td>
+                <td>${r.title || ''}</td>
+                <td>${r.category || ''}</td>
+                <td>${r.horses ? (r.horses.stable_name || r.horses.name) : ''}</td>
+                <td>${r.file_name || ''}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center">Ziadne zaznamy</td></tr>';
+    }
+
+    function downloadExportCSV(type) {
+        let url = `/api/exports/${type}?format=csv&`;
+        if (type === 'stable-log') {
+            url += `from=${document.getElementById('exportStableFrom')?.value || ''}&to=${document.getElementById('exportStableTo')?.value || ''}`;
+        } else if (type === 'visit-log') {
+            url += `from=${document.getElementById('exportVisitFrom')?.value || ''}&to=${document.getElementById('exportVisitTo')?.value || ''}`;
+        } else if (type === 'horses-licenses') {
+            url += `status=${document.getElementById('exportLicenseStatus')?.value || ''}&expiry_days=${document.getElementById('exportLicenseExpiry')?.value || ''}`;
+        } else if (type === 'vaccinations') {
+            const f = document.getElementById('exportVaccFilter')?.value || '';
+            if (f === 'overdue') url += 'overdue_only=true';
+            else if (f) url += `expiry_days=${f}`;
+        } else if (type === 'documents') {
+            url += `from=${document.getElementById('exportDocsFrom')?.value || ''}&to=${document.getElementById('exportDocsTo')?.value || ''}&category=${document.getElementById('exportDocsCategory')?.value || ''}`;
+        }
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '';
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+            .then(res => res.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                a.href = blobUrl;
+                a.click();
+                URL.revokeObjectURL(blobUrl);
+            });
+    }
+
+    function printExportStableLog() {
+        const from = document.getElementById('exportStableFrom')?.value || 'od zaciatku';
+        const to = document.getElementById('exportStableTo')?.value || 'do dnes';
+        const rows = exportData.stableLog.map(r => `
+            <tr>
+                <td>${r.event_date || ''}</td>
+                <td>${r.event_time || ''}</td>
+                <td>${r.event_type || ''}</td>
+                <td>${r.horses ? (r.horses.stable_name || r.horses.name) : ''}</td>
+                <td>${r.horses?.passport_number || ''}</td>
+                <td>${r.horses?.microchip || ''}</td>
+                <td>${r.notes || ''}</td>
+            </tr>
+        `).join('');
+        printExportTable('Mastalna kniha', `Obdobie: ${from} - ${to}`, 
+            '<tr><th>Datum</th><th>Cas</th><th>Typ</th><th>Kon</th><th>Pas</th><th>Cip</th><th>Poznamka</th></tr>', rows);
+    }
+
+    function printExportVisitLog() {
+        const from = document.getElementById('exportVisitFrom')?.value || 'od zaciatku';
+        const to = document.getElementById('exportVisitTo')?.value || 'do dnes';
+        const rows = exportData.visitLog.map(r => `
+            <tr>
+                <td>${r.arrival_date || ''}</td>
+                <td>${r.arrival_time || ''}</td>
+                <td>${r.visitor_name || ''}</td>
+                <td>${r.organization || ''}</td>
+                <td>${r.purpose || ''}</td>
+                <td>${r.contact_phone || ''}</td>
+                <td>${r.signature_text || ''}</td>
+            </tr>
+        `).join('');
+        printExportTable('Navstevna kniha', `Obdobie: ${from} - ${to}`,
+            '<tr><th>Datum</th><th>Cas</th><th>Meno</th><th>Organizacia</th><th>Dovod</th><th>Kontakt</th><th>Podpis</th></tr>', rows);
+    }
+
+    function printExportLicenses() {
+        const rows = exportData.licenses.map(r => `
+            <tr>
+                <td>${r.stable_name || r.name || ''}</td>
+                <td>${r.passport_number || ''}</td>
+                <td>${r.microchip || ''}</td>
+                <td>${r.sjf_license_number || ''}</td>
+                <td>${r.sjf_license_valid_until || '-'}</td>
+                <td>${r.fei_passport_number || ''}</td>
+                <td>${r.fei_passport_expiry || '-'}</td>
+                <td>${r.fei_registered ? 'Ano' : 'Nie'}</td>
+            </tr>
+        `).join('');
+        printExportTable('Licencie SJF/FEI', `Datum: ${new Date().toLocaleDateString('sk')}`,
+            '<tr><th>Kon</th><th>Pas</th><th>Cip</th><th>SJF c.</th><th>SJF platnost</th><th>FEI c.</th><th>FEI platnost</th><th>FEI reg.</th></tr>', rows);
+    }
+
+    function printExportVaccinations() {
+        const rows = exportData.vaccinations.map(r => `
+            <tr>
+                <td>${r.horses ? (r.horses.stable_name || r.horses.name) : ''}</td>
+                <td>${r.horses?.passport_number || ''}</td>
+                <td>${r.vaccine_type || ''}</td>
+                <td>${r.vaccination_date || ''}</td>
+                <td>${r.next_date || '-'}</td>
+                <td>${r.batch_number || ''}</td>
+                <td>${r.vet_name || ''}</td>
+            </tr>
+        `).join('');
+        printExportTable('Prehad ockovani', `Datum: ${new Date().toLocaleDateString('sk')}`,
+            '<tr><th>Kon</th><th>Pas</th><th>Typ vakciny</th><th>Datum</th><th>Dalsi termin</th><th>Sarza</th><th>Veterinar</th></tr>', rows);
+    }
+
+    function printExportDocuments() {
+        const from = document.getElementById('exportDocsFrom')?.value || 'od zaciatku';
+        const to = document.getElementById('exportDocsTo')?.value || 'do dnes';
+        const rows = exportData.documents.map(r => `
+            <tr>
+                <td>${r.document_date || ''}</td>
+                <td>${r.title || ''}</td>
+                <td>${r.category || ''}</td>
+                <td>${r.horses ? (r.horses.stable_name || r.horses.name) : ''}</td>
+                <td>${r.file_name || ''}</td>
+                <td>${r.description || ''}</td>
+            </tr>
+        `).join('');
+        printExportTable('Dokumenty', `Obdobie: ${from} - ${to}`,
+            '<tr><th>Datum</th><th>Nazov</th><th>Kategoria</th><th>Kon</th><th>Subor</th><th>Poznamka</th></tr>', rows);
+    }
+
+    function printExportTable(title, subtitle, headerRow, bodyRows) {
+        const html = `
+            <h2 style="text-align:center;margin-bottom:0.5rem">JAZDECKY KLUB ZELENA MILA</h2>
+            <h3 style="text-align:center;margin-bottom:0.5rem">${title}</h3>
+            <p style="text-align:center;margin-bottom:1.5rem">${subtitle}</p>
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem">
+                <thead style="background:#f0f0f0">${headerRow}</thead>
+                <tbody>${bodyRows}</tbody>
+            </table>
+            <p style="margin-top:2rem;font-size:0.8rem;color:#666;text-align:center">
+                Dokument bol vytvoreny elektronickym evidencnym systemom prevadzky. Datum: ${new Date().toLocaleDateString('sk')}
+            </p>
+        `;
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printModalTitle').textContent = 'Tlac - ' + title;
+        showModal('printModal');
     }
     </script>
 </body>
