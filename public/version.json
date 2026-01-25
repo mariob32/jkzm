@@ -1,17 +1,15 @@
 {
-  "version": "6.5.1",
-  "build": "2026-01-25T10:30:00Z",
+  "version": "6.5.2",
+  "build": "2026-01-25T10:35:00Z",
   "features": [
-    "Fixed horse CRUD (edit/delete working)",
-    "Fixed horse select dropdowns in all modals",
-    "Fixed Promise.allSettled handling in loadAll",
-    "Added showModalOnly for edit forms",
-    "Better error handling in API calls"
+    "Fixed saveVaccination - now switches to Vaccinations tab after save",
+    "Fixed saveVetRecord - now calls renderVetRecords after save",
+    "Added error handling to save functions"
   ],
   "changelog": {
+    "6.5.2": "Fixed vaccination/vet record save - data now visible after save",
     "6.5.1": "Admin UI fixes: horse CRUD, select dropdowns, edit forms working correctly",
     "6.5.0": "Admin UI for vaccinations, feeding items, admin users, compliance dashboard",
-    "6.4.1": "Fixed /api/health to be public, health-records endpoint for vet data",
-    "6.4.0": "API CRUD completion - feeding-items, vaccinations, competition-entries, admin-users"
+    "6.4.1": "Fixed /api/health to be public, health-records endpoint for vet data"
   }
 }

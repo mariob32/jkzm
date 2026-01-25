@@ -2203,6 +2203,7 @@
 
     // CRUD - Vet Records
     async function saveVetRecord() {
+        const id = document.getElementById('vetId')?.value;
         const horseId = document.getElementById('vetHorse').value;
         const data = {
             horse_id: horseId || null,
@@ -2210,15 +2211,34 @@
             record_date: document.getElementById('vetDate').value,
             next_due_date: document.getElementById('vetNextDate').value || null,
             vet_name: document.getElementById('vetVeterinarian').value,
-            vaccine_name: document.getElementById('vetVaccineName').value,
-            vaccine_batch: document.getElementById('vetVaccineBatch').value,
+            vaccine_name: document.getElementById('vetVaccineName')?.value || null,
+            vaccine_batch: document.getElementById('vetVaccineBatch')?.value || null,
             notes: document.getElementById('vetNotes').value,
-            cost: document.getElementById('vetCost').value || null
+            cost: document.getElementById('vetCost')?.value || null
         };
-        await api('vet-records', 'POST', data);
-        closeModal('vetModal');
-        showToast('Veterinárny záznam uložený!', 'success');
-        vetRecords = await api('vet-records').catch(() => []);
+        
+        try {
+            let result;
+            if (id) {
+                result = await api(`vet-records/${id}`, 'PUT', data);
+            } else {
+                result = await api('vet-records', 'POST', data);
+            }
+            
+            if (result && result.error) {
+                showToast(result.error, 'error');
+                return;
+            }
+            
+            closeModal('vetModal');
+            showToast('Veterinarny zaznam ulozeny!', 'success');
+            vetRecords = await api('vet-records').catch(() => []);
+            if (!Array.isArray(vetRecords)) vetRecords = [];
+            renderVetRecords();
+        } catch(e) {
+            console.error('saveVetRecord error:', e);
+            showToast('Chyba pri ukladani', 'error');
+        }
     }
 
     // CRUD - Feeding
@@ -2450,15 +2470,33 @@
             return;
         }
         
-        if (id) {
-            await api(`vaccinations/${id}`, 'PUT', data);
-        } else {
-            await api('vaccinations', 'POST', data);
+        try {
+            let result;
+            if (id) {
+                result = await api(`vaccinations/${id}`, 'PUT', data);
+            } else {
+                result = await api('vaccinations', 'POST', data);
+            }
+            
+            if (result && result.error) {
+                showToast(result.error, 'error');
+                return;
+            }
+            
+            closeModal('vaccinationModal');
+            showToast('Ockovanie ulozene', 'success');
+            
+            // Prepni na tab Ockovania a nacitaj data
+            document.querySelectorAll('[data-vet-tab]').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-vet-tab="vaccinations"]').classList.add('active');
+            document.getElementById('vetRecordsTab').style.display = 'none';
+            document.getElementById('vaccinationsTab').style.display = 'block';
+            
+            await loadVaccinations();
+        } catch(e) {
+            console.error('saveVaccination error:', e);
+            showToast('Chyba pri ukladani', 'error');
         }
-        
-        closeModal('vaccinationModal');
-        showToast('Ockovanie ulozene', 'success');
-        await loadVaccinations();
     }
 
     async function deleteVaccination(id) {
