@@ -171,9 +171,9 @@ async function getAvailability(res, arena_id, date, skill_level = null) {
     const maxRiders = schedule.max_riders || 4;
     const allowedLevels = schedule.allowed_levels || 'all';
     
-    // Kontrola či je úroveň povolená
+    // Kontrola či je úroveň povolená - len ak je explicitne zadaná a rozvrh má obmedzenia
     let levelAllowed = true;
-    if (skill_level && allowedLevels !== 'all') {
+    if (skill_level && skill_level !== '' && allowedLevels !== 'all') {
         const levels = allowedLevels.split(',');
         levelAllowed = levels.includes(skill_level);
     }

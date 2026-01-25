@@ -352,6 +352,10 @@
                     <!-- Info o vybranom slote -->
                 </div>
                 
+                <div id="selectedTimeInfo" style="display:none;padding:0.75rem;background:#fff3cd;border-radius:6px;margin-bottom:1rem;font-size:0.9rem">
+                    <!-- Info o vybranom čase -->
+                </div>
+                
                 <form id="bookingForm" onsubmit="submitBooking(event)">
                     <input type="hidden" id="selectedArenaId">
                     <input type="hidden" id="selectedDate">
@@ -1138,6 +1142,8 @@
             document.getElementById('bookingFormContainer').style.display = 'block';
             document.getElementById('selectedArenaId').value = arenaId;
             document.getElementById('selectedDate').value = date;
+            document.getElementById('selectedTimeInfo').style.display = 'none';
+            selectedSlotData = null;
             
             // Nastav úroveň podľa filtra
             if (levelFilter !== 'all') {
@@ -1163,11 +1169,11 @@
         }
         
         async function loadDaySlots(arenaId, date) {
-            const level = document.getElementById('bookingLevel').value;
+            // Nenačítavame s level filterom - všetky časy sú dostupné
+            // Level sa kontroluje až pri odoslaní rezervácie
             
             try {
                 let url = `/api/reservations?arena_id=${arenaId}&date=${date}&availability=true`;
-                if (level) url += `&skill_level=${level}`;
                 
                 const res = await fetch(url);
                 const data = await res.json();
@@ -1183,18 +1189,20 @@
                     <div style="margin-top:1rem">
                         <label style="font-weight:500;display:block;margin-bottom:0.5rem">Vyberte čas:</label>
                         <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
-                            ${data.slots.map(slot => `
+                            ${data.slots.map(slot => {
+                                const hasSpots = slot.available_spots > 0;
+                                return `
                                 <button type="button" onclick="selectTimeSlot('${slot.start_time}', '${slot.end_time}', ${slot.available_spots}, this)"
                                     class="time-slot-btn"
-                                    style="padding:0.5rem 1rem;border:2px solid ${slot.is_available ? '#2d5a27' : '#dc3545'};
-                                           background:${slot.is_available ? 'white' : '#f8d7da'};
-                                           border-radius:6px;cursor:${slot.is_available ? 'pointer' : 'not-allowed'};
-                                           opacity:${slot.is_available ? '1' : '0.5'}"
-                                    ${!slot.is_available ? 'disabled' : ''}>
+                                    style="padding:0.5rem 1rem;border:2px solid ${hasSpots ? '#2d5a27' : '#dc3545'};
+                                           background:${hasSpots ? 'white' : '#f8d7da'};
+                                           border-radius:6px;cursor:${hasSpots ? 'pointer' : 'not-allowed'};
+                                           opacity:${hasSpots ? '1' : '0.5'}"
+                                    ${!hasSpots ? 'disabled' : ''}>
                                     <div style="font-weight:600">${slot.start_time.substring(0,5)}</div>
-                                    <div style="font-size:0.7rem;color:#666">${slot.available_spots}/${slot.max_spots}</div>
-                                </button>
-                            `).join('')}
+                                    <div style="font-size:0.7rem;color:#666">${slot.available_spots}/${slot.max_spots} voľných</div>
+                                </button>`;
+                            }).join('')}
                         </div>
                     </div>`;
                     
@@ -1209,15 +1217,30 @@
             selectedSlotData = { startTime, endTime, availableSpots };
             document.getElementById('selectedTime').value = startTime;
             
-            // Označ vybraný
-            document.querySelectorAll('.time-slot-btn').forEach(b => b.style.background = 'white');
+            // Označ vybraný - reset všetkých a zvýrazni aktuálny
+            document.querySelectorAll('.time-slot-btn').forEach(b => {
+                b.style.background = 'white';
+                b.style.borderColor = '#2d5a27';
+                b.style.transform = 'scale(1)';
+            });
             btn.style.background = '#e8f5e9';
+            btn.style.borderColor = '#1a4d1a';
+            btn.style.transform = 'scale(1.05)';
             
-            // Uprav max jazdcov
+            // Uprav max jazdcov podľa dostupnosti
             const ridersSelect = document.getElementById('bookingRiders');
             ridersSelect.innerHTML = '';
-            for (let i = 1; i <= Math.min(availableSpots, 4); i++) {
-                ridersSelect.innerHTML += `<option value="${i}">${i}</option>`;
+            const maxRiders = Math.min(availableSpots, 4);
+            for (let i = 1; i <= maxRiders; i++) {
+                const suffix = i === 1 ? 'jazdec' : (i < 5 ? 'jazdci' : 'jazdcov');
+                ridersSelect.innerHTML += `<option value="${i}">${i} ${suffix}</option>`;
+            }
+            
+            // Zobraz info o vybranom čase
+            const timeInfo = document.getElementById('selectedTimeInfo');
+            if (timeInfo) {
+                timeInfo.innerHTML = `<span style="color:#2d5a27">✓ Vybraný čas: <strong>${startTime.substring(0,5)} - ${endTime.substring(0,5)}</strong> (${availableSpots} voľných miest)</span>`;
+                timeInfo.style.display = 'block';
             }
         }
         
