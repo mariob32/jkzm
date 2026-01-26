@@ -111,6 +111,8 @@
     { "src": "/api/exports/notifications", "dest": "/api/exports/notifications.js" },
     { "src": "/api/exports/export-pack", "dest": "/api/exports/export-pack.js" },
     { "src": "/api/exports/audit-logs", "dest": "/api/exports/audit-logs.js" },
+    { "src": "/api/exports/svps-pack", "dest": "/api/exports/svps-pack.js" },
+    { "src": "/api/exports/sjf-pack", "dest": "/api/exports/sjf-pack.js" },
     
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },

@@ -933,18 +933,46 @@
             <!-- EXPORTS -->
             <section id="exports" class="section">
                 <div class="header">
-                    <h1>Exporty a tlac</h1>
+                    <h1>Exporty a tlač</h1>
                     <button class="btn btn-primary" onclick="downloadExportPack()">📦 Export balík (ZIP)</button>
+                </div>
+                
+                <!-- OFICIALNE EXPORTY -->
+                <div class="card" style="margin-bottom:1.5rem;border:2px solid var(--primary)">
+                    <div class="card-header" style="background:var(--primary);color:white">
+                        <h3>🏛️ Oficiálne exporty</h3>
+                        <span style="font-size:0.85rem">Pre ŠVPS a SJF - právne použiteľné balíky</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                            <div style="padding:1rem;background:var(--light);border-radius:8px">
+                                <h4 style="margin-bottom:0.5rem">🏛️ ŠVPS Export</h4>
+                                <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">
+                                    Maštaľná kniha, očkovania, dokumenty<br>
+                                    Pre kontrolu Štátnej veterinárnej správy
+                                </p>
+                                <button class="btn btn-primary" onclick="downloadSvpsExport()">Stiahnuť ŠVPS balík</button>
+                            </div>
+                            <div style="padding:1rem;background:var(--light);border-radius:8px">
+                                <h4 style="margin-bottom:0.5rem">🐎 SJF Export</h4>
+                                <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">
+                                    Licencie koní, jazdcov, trénerov, súťaže<br>
+                                    Pre Slovenskú jazdeckú federáciu
+                                </p>
+                                <button class="btn btn-primary" onclick="downloadSjfExport()">Stiahnuť SJF balík</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:1.5rem">
                     <div class="stat-card" onclick="showExportTab('stable-log')" style="cursor:pointer">
                         <div class="stat-value">1</div>
-                        <div class="stat-label">Mastalna kniha</div>
+                        <div class="stat-label">Maštaľná kniha</div>
                     </div>
                     <div class="stat-card" onclick="showExportTab('visit-log')" style="cursor:pointer">
                         <div class="stat-value">2</div>
-                        <div class="stat-label">Navstevna kniha</div>
+                        <div class="stat-label">Návštevná kniha</div>
                     </div>
                     <div class="stat-card" onclick="showExportTab('licenses')" style="cursor:pointer">
                         <div class="stat-value">3</div>
@@ -952,7 +980,7 @@
                     </div>
                     <div class="stat-card" onclick="showExportTab('vaccinations')" style="cursor:pointer">
                         <div class="stat-value">4</div>
-                        <div class="stat-label">Ockovania</div>
+                        <div class="stat-label">Očkovania</div>
                     </div>
                     <div class="stat-card" onclick="showExportTab('documents')" style="cursor:pointer">
                         <div class="stat-value">5</div>
@@ -963,19 +991,19 @@
                 <!-- Tab: Mastalna kniha -->
                 <div id="export-stable-log" class="export-tab">
                     <div class="card">
-                        <div class="card-header"><h3>Mastalna kniha</h3></div>
+                        <div class="card-header"><h3>Maštaľná kniha</h3></div>
                         <div class="card-body">
                             <div class="form-row" style="margin-bottom:1rem">
                                 <div class="form-group"><label>Od</label><input type="date" class="form-control" id="exportStableFrom"></div>
                                 <div class="form-group"><label>Do</label><input type="date" class="form-control" id="exportStableTo"></div>
                                 <div class="form-group" style="align-self:flex-end">
-                                    <button class="btn btn-primary" onclick="loadExportStableLog()">Nacitat</button>
+                                    <button class="btn btn-primary" onclick="loadExportStableLog()">Načítať</button>
                                     <button class="btn btn-outline" onclick="downloadExportCSV('stable-log')">Export CSV</button>
-                                    <button class="btn btn-outline" onclick="printExportStableLog()">Tlac</button>
+                                    <button class="btn btn-outline" onclick="printExportStableLog()">Tlač</button>
                                 </div>
                             </div>
                             <table class="table">
-                                <thead><tr><th>Datum</th><th>Cas</th><th>Typ</th><th>Kon</th><th>Pas</th><th>Poznamka</th></tr></thead>
+                                <thead><tr><th>Dátum</th><th>Čas</th><th>Typ</th><th>Kôň</th><th>Pas</th><th>Poznámka</th></tr></thead>
                                 <tbody id="exportStableTable"></tbody>
                             </table>
                         </div>
@@ -7120,7 +7148,7 @@
     }
 
     function downloadExportPack() {
-        showToast('Generujem export balik...', 'info');
+        showToast('Generujem export balík...', 'info');
         fetch('/api/exports/export-pack', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(res => {
                 if (!res.ok) throw new Error('Export failed');
@@ -7133,11 +7161,55 @@
                 a.download = `jkzm_export-pack_${today}.zip`;
                 a.click();
                 URL.revokeObjectURL(a.href);
-                showToast('Export balik stiahnuty', 'success');
+                showToast('Export balík stiahnutý', 'success');
             })
             .catch(e => {
                 console.error('Export pack error:', e);
-                showToast('Chyba pri generovani export balika', 'error');
+                showToast('Chyba pri generovaní export balíka', 'error');
+            });
+    }
+
+    function downloadSvpsExport() {
+        showToast('Generujem ŠVPS export...', 'info');
+        fetch('/api/exports/svps-pack', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            })
+            .then(blob => {
+                const today = new Date().toISOString().split('T')[0];
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `jkzm_svps_export_${today}.zip`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                showToast('ŠVPS export pripravený', 'success');
+            })
+            .catch(e => {
+                console.error('SVPS export error:', e);
+                showToast('Chyba pri generovaní ŠVPS exportu', 'error');
+            });
+    }
+
+    function downloadSjfExport() {
+        showToast('Generujem SJF export...', 'info');
+        fetch('/api/exports/sjf-pack', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            })
+            .then(blob => {
+                const today = new Date().toISOString().split('T')[0];
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `jkzm_sjf_export_${today}.zip`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                showToast('SJF export pripravený', 'success');
+            })
+            .catch(e => {
+                console.error('SJF export error:', e);
+                showToast('Chyba pri generovaní SJF exportu', 'error');
             });
     }
 
