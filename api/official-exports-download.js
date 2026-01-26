@@ -52,6 +52,9 @@ module.exports = async (req, res) => {
         let zipBuffer;
         if (Buffer.isBuffer(data.zip_bytes)) {
             zipBuffer = data.zip_bytes;
+        } else if (data.zip_bytes && data.zip_bytes.type === 'Buffer' && Array.isArray(data.zip_bytes.data)) {
+            // Handle JSON Buffer format from Supabase
+            zipBuffer = Buffer.from(data.zip_bytes.data);
         } else if (typeof data.zip_bytes === 'string') {
             // Handle hex-encoded bytea
             if (data.zip_bytes.startsWith('\\x')) {
