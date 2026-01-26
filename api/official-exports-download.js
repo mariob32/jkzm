@@ -55,8 +55,8 @@ module.exports = async (req, res) => {
         if (Buffer.isBuffer(zb)) {
             zipBuffer = zb;
         } else if (zb && zb.type === 'Buffer' && Array.isArray(zb.data)) {
-            // Supabase returns JSON serialized Buffer
-            zipBuffer = Buffer.from(zb.data);
+            // Supabase returns JSON serialized Buffer - convert array to Uint8Array then to Buffer
+            zipBuffer = Buffer.from(new Uint8Array(zb.data));
         } else if (typeof zb === 'string') {
             if (zb.startsWith('\\x')) {
                 zipBuffer = Buffer.from(zb.slice(2), 'hex');
@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
                 zipBuffer = Buffer.from(zb, 'base64');
             }
         } else if (Array.isArray(zb)) {
-            zipBuffer = Buffer.from(zb);
+            zipBuffer = Buffer.from(new Uint8Array(zb));
         } else {
             return res.status(500).json({ error: 'Unknown zip_bytes format', type: typeof zb });
         }
@@ -73,13 +73,13 @@ module.exports = async (req, res) => {
         const shortId = data.id.split('-')[0];
         const filename = `jkzm_${data.type}_export_${exportDate}_${shortId}.zip`;
 
-        // Send as binary using raw response
-        res.writeHead(200, {
-            'Content-Type': 'application/octet-stream',
-            'Content-Disposition': `attachment; filename="${filename}"`,
-            'Content-Length': zipBuffer.length
-        });
-        res.end(zipBuffer, 'binary');
+        // Set headers for binary download
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Length', zipBuffer.byteLength);
+        
+        // Send the buffer - use send() which should handle Buffer correctly in Vercel
+        return res.send(zipBuffer);
 
     } catch (e) {
         console.error('Official export download API error:', e.message);
