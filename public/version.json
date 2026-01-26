@@ -1,17 +1,16 @@
 {
-  "version": "6.13.0",
-  "build": "2026-01-26T11:00:00Z",
+  "version": "6.13.1",
+  "build": "2026-01-26T12:00:00Z",
   "features": [
-    "OFICIALNE EXPORTY pre SVPS a SJF",
-    "SVPS balík: kone, maštaľná kniha, očkovania, dokumenty",
-    "SJF balík: licencie koní, jazdcov, trénerov, súťaže",
-    "README.txt v každom balíku",
-    "Audit logging pre oficiálne exporty"
+    "AUDIT HARDENING - entity_id nullable, safe defaults",
+    "Official export audit s detailmi (files, generated_at)",
+    "Quick filter 'Len exporty' v audit trail",
+    "DB migracia pre entity_id DROP NOT NULL"
   ],
   "changelog": {
+    "6.13.1": "Audit hardening + DB migracia + export audit detaily",
     "6.13.0": "Oficiálne exporty ŠVPS a SJF - právne použiteľné balíky",
     "6.12.0": "AUDIT TRAIL PRO - before/after data, diff, filtrovanie, export",
-    "6.11.7": "CSV newline fix + jednotné názvy + Export balík (ZIP)",
-    "6.11.6": "Zjednotené CSV exporty + autocomplete v login formulári"
+    "6.11.7": "CSV newline fix + jednotné názvy + Export balík (ZIP)"
   }
 }

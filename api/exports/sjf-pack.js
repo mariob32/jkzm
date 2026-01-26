@@ -166,7 +166,8 @@ module.exports = async (req, res) => {
         // Generate ZIP
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
 
-        // Audit log
+        // Audit log with full details
+        const files = ['horses.csv', 'riders.csv', 'trainers.csv', 'competitions.csv', 'README.txt'];
         await logAudit(supabase, {
             action: 'export',
             entity_type: 'official-export',
@@ -176,7 +177,12 @@ module.exports = async (req, res) => {
             ip,
             user_agent,
             before_data: null,
-            after_data: { type: 'sjf', filters: { from, to }, date: today }
+            after_data: {
+                type: 'sjf',
+                filters: { from: from || null, to: to || null },
+                files: files,
+                generated_at: new Date().toISOString()
+            }
         });
 
         const filename = `jkzm_sjf_export_${today}.zip`;

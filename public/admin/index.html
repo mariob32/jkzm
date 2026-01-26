@@ -871,6 +871,7 @@
                                     <option value="tasks">Úlohy</option>
                                     <option value="notifications">Upozornenia</option>
                                     <option value="exports">Exporty</option>
+                                    <option value="official-export">Oficiálne exporty</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -889,6 +890,7 @@
                             </div>
                             <div class="form-group" style="align-self:flex-end">
                                 <button class="btn btn-primary" onclick="loadAuditLogs()">Filtrovať</button>
+                                <button class="btn btn-outline" onclick="filterAuditExports()">Len exporty</button>
                             </div>
                         </div>
                     </div>
@@ -6878,6 +6880,15 @@
 
     function closeAuditDetailModal() {
         document.getElementById('auditDetailModal').style.display = 'none';
+    }
+
+    function filterAuditExports() {
+        document.getElementById('auditEntityFilter').value = 'official-export';
+        document.getElementById('auditActionFilter').value = 'export';
+        document.getElementById('auditActorFilter').value = '';
+        document.getElementById('auditFromDate').value = '';
+        document.getElementById('auditToDate').value = '';
+        loadAuditLogs();
     }
 
     async function downloadAuditCSV() {

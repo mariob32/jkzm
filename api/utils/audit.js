@@ -38,7 +38,7 @@ function buildDiff(beforeObj, afterObj) {
 }
 
 /**
- * Log audit entry to database
+ * Log audit entry to database (fail-safe)
  * @param {object} supabase - Supabase client
  * @param {object} params - Audit parameters
  * @returns {Promise<void>}
@@ -57,21 +57,25 @@ async function logAudit(supabase, {
     try {
         const diff = buildDiff(before_data, after_data);
         
-        await supabase.from('audit_logs').insert({
-            action,
-            entity_type,
-            entity_id,
-            actor_id,
+        const { error } = await supabase.from('audit_logs').insert({
+            action: action || 'unknown',
+            entity_type: entity_type || 'system',
+            entity_id: entity_id || null,
+            actor_id: actor_id || null,
             actor_name: actor_name || 'admin',
-            ip,
-            user_agent,
-            before_data,
-            after_data,
-            diff
+            ip: ip || null,
+            user_agent: user_agent || null,
+            before_data: before_data || null,
+            after_data: after_data || null,
+            diff: diff || null
         });
+        
+        if (error) {
+            console.error('AUDIT_FAIL:', error.message, { action, entity_type, entity_id });
+        }
     } catch (e) {
         // Fail-safe: audit error should not break main request
-        console.error('Audit log error:', e.message);
+        console.error('AUDIT_FAIL:', e.message, { action, entity_type, entity_id });
     }
 }
 
