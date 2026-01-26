@@ -1,6 +1,6 @@
 {
-  "version": "6.11.3",
-  "build": "2026-01-25T19:40:00Z",
+  "version": "6.11.4",
+  "build": "2026-01-26T06:55:00Z",
   "features": [
     "Ulohy - profi modul so stavmi, prioritami, filtrami",
     "Upozornenia - manualne a automaticke z pravidiel",
@@ -10,8 +10,9 @@
     "5 predvolenych pravidiel (SJF, FEI, ockovania, poistenie, pas)"
   ],
   "changelog": {
-    "6.11.3": "Fix renderBookings null error + graceful API error handling",
-    "6.11.2": "Graceful handling chybajucich tabuliek + migracny SQL",
+    "6.11.4": "Fix CSV export tasks - odstraneny JOIN",
+    "6.11.3": "Fix tasks FK constraint na created_by",
+    "6.11.2": "Graceful error handling",
     "6.11.1": "Fix API - odstranene problematicke JOINy",
     "6.11.0": "Ulohy a Upozornenia - profi implementacia"
   }

@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
         
         let query = supabase
             .from('tasks')
-            .select('*, horses:horse_id(id, name, stable_name, passport_number)')
+            .select('*')
             .order('due_date', { ascending: true });
         
         if (from) query = query.gte('created_at', from);
@@ -30,8 +30,25 @@ module.exports = async (req, res) => {
             }
         }
         
-        const { data, error } = await query;
+        const { data: tasks, error } = await query;
         if (error) throw error;
+
+        // Fetch horses separately
+        const horseIds = [...new Set((tasks || []).filter(t => t.horse_id).map(t => t.horse_id))];
+        let horsesMap = {};
+        if (horseIds.length > 0) {
+            const { data: horses } = await supabase
+                .from('horses')
+                .select('id, name, stable_name, passport_number')
+                .in('id', horseIds);
+            horsesMap = (horses || []).reduce((acc, h) => { acc[h.id] = h; return acc; }, {});
+        }
+
+        // Merge data
+        const data = (tasks || []).map(t => ({
+            ...t,
+            horses: t.horse_id ? horsesMap[t.horse_id] || null : null
+        }));
 
         if (format === 'csv') {
             const priorityLabels = { low: 'Nizka', normal: 'Normalna', high: 'Vysoka', urgent: 'Urgentna' };
