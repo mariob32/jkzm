@@ -14,6 +14,36 @@ function getToday() {
     return new Date().toISOString().split('T')[0];
 }
 
+function toBuffer(input) {
+    // Already a Buffer
+    if (Buffer.isBuffer(input)) {
+        return input;
+    }
+    
+    // JSON serialized Buffer: { type: 'Buffer', data: [...] }
+    if (input && typeof input === 'object' && input.type === 'Buffer' && Array.isArray(input.data)) {
+        return Buffer.from(input.data);
+    }
+    
+    // Hex string from Postgres bytea: \x504b0304...
+    if (typeof input === 'string' && input.startsWith('\\x')) {
+        return Buffer.from(input.slice(2), 'hex');
+    }
+    
+    // Base64 string
+    if (typeof input === 'string') {
+        return Buffer.from(input, 'base64');
+    }
+    
+    // Array of bytes
+    if (Array.isArray(input)) {
+        return Buffer.from(input);
+    }
+    
+    // Fallback
+    return Buffer.from(input);
+}
+
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -48,23 +78,7 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'ZIP data not available' });
         }
 
-        // Convert from Supabase bytea format to Buffer
-        let zipBuffer;
-        if (Buffer.isBuffer(data.zip_bytes)) {
-            zipBuffer = data.zip_bytes;
-        } else if (data.zip_bytes && data.zip_bytes.type === 'Buffer' && Array.isArray(data.zip_bytes.data)) {
-            // Handle JSON Buffer format from Supabase
-            zipBuffer = Buffer.from(data.zip_bytes.data);
-        } else if (typeof data.zip_bytes === 'string') {
-            // Handle hex-encoded bytea
-            if (data.zip_bytes.startsWith('\\x')) {
-                zipBuffer = Buffer.from(data.zip_bytes.slice(2), 'hex');
-            } else {
-                zipBuffer = Buffer.from(data.zip_bytes, 'base64');
-            }
-        } else {
-            zipBuffer = Buffer.from(data.zip_bytes);
-        }
+        const zipBuffer = toBuffer(data.zip_bytes);
 
         const exportDate = data.created_at ? data.created_at.split('T')[0] : getToday();
         const shortId = data.id.split('-')[0];
