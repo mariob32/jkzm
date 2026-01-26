@@ -101,7 +101,6 @@
     { "src": "/api/audit-logs/([^/]+)", "dest": "/api/audit-logs-id.js?id=$1" },
     { "src": "/api/audit-logs", "dest": "/api/audit-logs.js" },
     
-    { "src": "/api/official-exports/([^/]+)/download", "dest": "/api/official-exports-download.js?id=$1" },
     { "src": "/api/official-exports/([^/]+)", "dest": "/api/official-exports-id.js?id=$1" },
     { "src": "/api/official-exports", "dest": "/api/official-exports.js" },
     

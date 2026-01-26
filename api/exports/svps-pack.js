@@ -12,7 +12,7 @@ const { logAudit, getRequestInfo } = require('../utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
-const VERSION = '6.14.0';
+const VERSION = '6.15.0';
 
 function verifyToken(req) {
     const auth = req.headers.authorization;
@@ -54,6 +54,7 @@ module.exports = async (req, res) => {
         const zip = new JSZip();
         const today = getToday();
         const generatedAt = new Date().toISOString();
+        const exportId = crypto.randomUUID();
         const fileContents = {};
         const checksums = {};
 
@@ -69,7 +70,6 @@ module.exports = async (req, res) => {
         );
         fileContents['horses.csv'] = horsesCSV;
 
-        // Build horses map for lookups
         const horsesMap = (horses || []).reduce((acc, h) => { acc[h.id] = h; return acc; }, {});
 
         // 2) STABLE-LOG.CSV
@@ -166,7 +166,7 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
         };
         fileContents['MANIFEST.json'] = JSON.stringify(manifest, null, 2);
 
-        // Calculate checksums for all files except CHECKSUMS.sha256
+        // Calculate checksums
         for (const [filename, content] of Object.entries(fileContents)) {
             checksums[filename] = sha256(content);
         }
@@ -185,11 +185,27 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
         // Generate ZIP buffer
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
         const sizeBytes = zipBuffer.length;
+        const filename = `jkzm_svps_export_${today}.zip`;
+        const storagePath = `official-exports/${exportId}.zip`;
 
-        // Save to official_exports table
-        const { data: exportRecord, error: insertError } = await supabase
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+            .from('exports')
+            .upload(storagePath, zipBuffer, {
+                contentType: 'application/zip',
+                upsert: true
+            });
+
+        if (uploadError) {
+            console.error('Storage upload error:', uploadError.message);
+            return res.status(500).json({ error: 'Failed to upload export: ' + uploadError.message });
+        }
+
+        // Save metadata to DB (without zip_bytes)
+        const { error: insertError } = await supabase
             .from('official_exports')
             .insert({
+                id: exportId,
                 type: 'svps',
                 actor_id: user.id || null,
                 actor_name: user.email || user.name || 'admin',
@@ -199,19 +215,25 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
                 files: files,
                 manifest: manifest,
                 sha256: checksums,
-                zip_bytes: zipBuffer,
+                storage_path: storagePath,
                 size_bytes: sizeBytes
-            })
-            .select('id')
-            .single();
+            });
 
-        const exportId = exportRecord?.id || null;
-        
         if (insertError) {
-            console.error('SVPS export DB save error:', insertError.message);
+            console.error('DB insert error:', insertError.message);
         }
 
-        // Audit log with full details
+        // Generate signed URL for download
+        const { data: urlData, error: urlError } = await supabase.storage
+            .from('exports')
+            .createSignedUrl(storagePath, 3600);
+
+        if (urlError) {
+            console.error('Signed URL error:', urlError.message);
+            return res.status(500).json({ error: 'Failed to generate download URL' });
+        }
+
+        // Audit log
         await logAudit(supabase, {
             action: 'export',
             entity_type: 'official-export',
@@ -227,14 +249,18 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
                 files: files,
                 generated_at: generatedAt,
                 size_bytes: sizeBytes,
-                export_id: exportId
+                export_id: exportId,
+                storage_path: storagePath
             }
         });
 
-        const filename = `jkzm_svps_export_${today}.zip`;
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        return res.status(200).send(zipBuffer);
+        return res.status(200).json({
+            success: true,
+            export_id: exportId,
+            filename: filename,
+            size_bytes: sizeBytes,
+            download_url: urlData.signedUrl
+        });
 
     } catch (e) {
         console.error('SVPS export error:', e.message);

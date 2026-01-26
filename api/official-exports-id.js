@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('official_exports')
-            .select('id, type, created_at, actor_id, actor_name, ip, user_agent, filters, files, manifest, sha256, size_bytes')
+            .select('id, type, created_at, actor_id, actor_name, ip, user_agent, filters, files, manifest, sha256, storage_path, size_bytes')
             .eq('id', id)
             .single();
 
@@ -40,7 +40,22 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'Export not found' });
         }
 
-        return res.status(200).json(data);
+        // Generate signed URL if storage_path exists
+        let download_url = null;
+        if (data.storage_path) {
+            const { data: urlData, error: urlError } = await supabase.storage
+                .from('exports')
+                .createSignedUrl(data.storage_path, 3600);
+            
+            if (!urlError && urlData) {
+                download_url = urlData.signedUrl;
+            }
+        }
+
+        return res.status(200).json({
+            ...data,
+            download_url
+        });
 
     } catch (e) {
         console.error('Official export detail API error:', e.message);

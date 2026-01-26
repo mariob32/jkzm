@@ -7222,19 +7222,17 @@
     function downloadSvpsExport() {
         showToast('Generujem ŠVPS export...', 'info');
         fetch('/api/exports/svps-pack', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
-            .then(res => {
-                if (!res.ok) throw new Error('Export failed');
-                return res.blob();
-            })
-            .then(blob => {
-                const today = new Date().toISOString().split('T')[0];
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `jkzm_svps_export_${today}.zip`;
-                a.click();
-                URL.revokeObjectURL(a.href);
-                showToast('ŠVPS export pripravený', 'success');
-                loadOfficialExports();
+            .then(res => res.json())
+            .then(data => {
+                if (data.download_url) {
+                    window.open(data.download_url, '_blank');
+                    showToast('ŠVPS export pripravený', 'success');
+                    loadOfficialExports();
+                } else if (data.error) {
+                    showToast('Chyba: ' + data.error, 'error');
+                } else {
+                    showToast('Download URL nie je dostupná', 'error');
+                }
             })
             .catch(e => {
                 console.error('SVPS export error:', e);
@@ -7245,19 +7243,17 @@
     function downloadSjfExport() {
         showToast('Generujem SJF export...', 'info');
         fetch('/api/exports/sjf-pack', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
-            .then(res => {
-                if (!res.ok) throw new Error('Export failed');
-                return res.blob();
-            })
-            .then(blob => {
-                const today = new Date().toISOString().split('T')[0];
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `jkzm_sjf_export_${today}.zip`;
-                a.click();
-                URL.revokeObjectURL(a.href);
-                showToast('SJF export pripravený', 'success');
-                loadOfficialExports();
+            .then(res => res.json())
+            .then(data => {
+                if (data.download_url) {
+                    window.open(data.download_url, '_blank');
+                    showToast('SJF export pripravený', 'success');
+                    loadOfficialExports();
+                } else if (data.error) {
+                    showToast('Chyba: ' + data.error, 'error');
+                } else {
+                    showToast('Download URL nie je dostupná', 'error');
+                }
             })
             .catch(e => {
                 console.error('SJF export error:', e);
@@ -7313,26 +7309,16 @@
     }
     
     function downloadOfficialExport(id) {
-        showToast('Sťahujem export...', 'info');
-        fetch(`/api/official-exports/${id}/download`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
-            .then(res => {
-                if (!res.ok) throw new Error('Download failed');
-                return res.json();
-            })
-            .then(json => {
-                // Decode base64 to binary
-                const binaryString = atob(json.data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
+        showToast('Získavam odkaz na stiahnutie...', 'info');
+        fetch(`/api/official-exports/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
+            .then(res => res.json())
+            .then(data => {
+                if (data.download_url) {
+                    window.open(data.download_url, '_blank');
+                    showToast('Export stiahnutý', 'success');
+                } else {
+                    showToast('Download URL nie je dostupná', 'error');
                 }
-                const blob = new Blob([bytes], { type: json.contentType });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = json.filename;
-                a.click();
-                URL.revokeObjectURL(a.href);
-                showToast('Export stiahnutý', 'success');
             })
             .catch(e => {
                 console.error('Download official export error:', e);

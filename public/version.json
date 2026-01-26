@@ -1,16 +1,16 @@
 {
-  "version": "6.14.1",
-  "build": "2026-01-26T15:00:00Z",
+  "version": "6.15.0",
+  "build": "2026-01-26T16:00:00Z",
   "features": [
-    "Fix: bytea Buffer konverzia pre download z DB",
-    "MANIFEST.json + CHECKSUMS.sha256 v oficialnych exportoch",
-    "Official exports archiv v DB (official_exports tabulka)",
-    "Historia exportov s download podla ID"
+    "STORAGE ARCHITECTURE - ZIP subory v Supabase Storage",
+    "Signed URL download - bypass Vercel serialization",
+    "Metadata v DB, binarne data v Storage",
+    "Zjednodusena architektura exportov"
   ],
   "changelog": {
-    "6.14.1": "Fix bytea download - JSON Buffer konverzia",
-    "6.14.0": "Pravne pouzitelne exporty - manifest, checksums, archiv v DB",
+    "6.15.0": "Storage architecture - ZIP v Supabase Storage + signed URL",
+    "6.14.x": "Bytea experimenty (deprecated)",
     "6.13.2": "Audit list include after_data + CSV export rozsirenie",
-    "6.13.1": "Audit hardening + DB migracia + export audit detaily"
+    "6.13.1": "Audit hardening + DB migracia"
   }
 }
