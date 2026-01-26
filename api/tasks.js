@@ -102,8 +102,8 @@ module.exports = async (req, res) => {
                     horse_id: horse_id || null,
                     entity_type: entity_type || null,
                     entity_id: entity_id || null,
-                    assigned_to: assigned_to || null,
-                    created_by: user.id || null
+                    assigned_to: assigned_to || null
+                    // created_by removed - FK constraint issue
                 })
                 .select('*')
                 .single();
