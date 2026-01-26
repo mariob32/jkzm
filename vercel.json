@@ -109,6 +109,7 @@
     { "src": "/api/exports/horse-card", "dest": "/api/exports/horse-card.js" },
     { "src": "/api/exports/tasks", "dest": "/api/exports/tasks.js" },
     { "src": "/api/exports/notifications", "dest": "/api/exports/notifications.js" },
+    { "src": "/api/exports/export-pack", "dest": "/api/exports/export-pack.js" },
     
     { "src": "/admin/(.*)", "dest": "/public/admin/$1" },
     { "src": "/admin", "dest": "/public/admin/index.html" },

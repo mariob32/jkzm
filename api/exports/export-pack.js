@@ -1,5 +1,10 @@
+let JSZip;
+try {
+    JSZip = require('jszip');
+} catch (e) {
+    JSZip = null;
+}
 const { createClient } = require('@supabase/supabase-js');
-const JSZip = require('jszip');
 const { buildCSV, buildEmptyCSV, getToday, escapeValue, DELIMITER, BOM, NEWLINE } = require('../utils/csv');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
@@ -123,6 +128,10 @@ module.exports = async (req, res) => {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    if (!JSZip) {
+        return res.status(500).json({ error: 'JSZip library not available' });
+    }
+
     try {
         const zip = new JSZip();
         const today = getToday();
@@ -143,6 +152,6 @@ module.exports = async (req, res) => {
         
     } catch (e) {
         console.error('Export pack error:', e.message);
-        return res.status(500).json({ error: 'Failed to generate export pack' });
+        return res.status(500).json({ error: e.message || 'Failed to generate export pack' });
     }
 };
