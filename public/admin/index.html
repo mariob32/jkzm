@@ -472,6 +472,12 @@
                                     <option value="week">Do 7 dni</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label>Kon</label>
+                                <select class="form-control" id="taskHorseFilter" onchange="loadTasks()">
+                                    <option value="">Vsetky kone</option>
+                                </select>
+                            </div>
                             <div class="form-group" style="align-self:flex-end">
                                 <button class="btn btn-outline" onclick="loadTasks()">Obnovit</button>
                             </div>
@@ -2299,6 +2305,15 @@
         document.querySelectorAll('#trainingHorse, #vetHorse, #feedHorse, #vetHorseFilter, #vaccinationHorse').forEach(s => { 
             if(s) s.innerHTML = horseOpts; 
         });
+        
+        // Task horse filter - s moznostou "Vsetky kone"
+        const taskHorseFilter = document.getElementById('taskHorseFilter');
+        if (taskHorseFilter) {
+            taskHorseFilter.innerHTML = '<option value="">Vsetky kone</option>' + activeHorses.map(h => {
+                const label = h.stable_name ? `${h.stable_name} (${h.name})` : h.name;
+                return `<option value="${h.id}">${label}</option>`;
+            }).join('');
+        }
         
         console.log('Populated horse selects with', activeHorses.length, 'horses');
         
@@ -6622,14 +6637,48 @@
     }
 
     function downloadTasksCSV() {
-        const url = '/api/exports/tasks?format=csv&status=' + (document.getElementById('taskStatusFilter')?.value || 'all');
+        // Zozbieraj vsetky aktivne filtre z UI
+        const status = document.getElementById('taskStatusFilter')?.value || 'all';
+        const priority = document.getElementById('taskPriorityFilter')?.value || '';
+        const dueFilter = document.getElementById('taskDueFilter')?.value || '';
+        const horseFilter = document.getElementById('taskHorseFilter')?.value || '';
+        
+        // Zostav URL s filtrami
+        let params = new URLSearchParams();
+        if (status) params.append('status', status);
+        if (priority && priority !== 'all') params.append('priority', priority);
+        if (horseFilter) params.append('horse_id', horseFilter);
+        
+        // Due filter -> from/to
+        if (dueFilter === 'today') {
+            const today = new Date().toISOString().split('T')[0];
+            params.append('from', today);
+            params.append('to', today);
+        } else if (dueFilter === 'week') {
+            const today = new Date();
+            const weekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            params.append('from', today.toISOString().split('T')[0]);
+            params.append('to', weekLater.toISOString().split('T')[0]);
+        }
+        
+        const url = '/api/exports/tasks?' + params.toString();
+        
         fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
-            .then(r => r.blob())
+            .then(r => {
+                if (!r.ok) throw new Error('Export failed');
+                return r.blob();
+            })
             .then(blob => {
+                const today = new Date().toISOString().split('T')[0];
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = 'ulohy.csv';
+                a.download = `tasks_${today}.csv`;
                 a.click();
+                URL.revokeObjectURL(a.href);
+            })
+            .catch(e => {
+                console.error('CSV export error:', e);
+                showToast('Chyba pri exporte CSV', 'error');
             });
     }
 

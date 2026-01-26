@@ -1,15 +1,16 @@
 {
-  "version": "6.11.4",
-  "build": "2026-01-26T06:55:00Z",
+  "version": "6.11.5",
+  "build": "2026-01-26T08:10:00Z",
   "features": [
     "Ulohy - profi modul so stavmi, prioritami, filtrami",
     "Upozornenia - manualne a automaticke z pravidiel",
-    "Filtre: stav, priorita, termin (Dnes/Po termine/Do 7 dni)",
+    "Filtre: stav, priorita, termin, kon",
+    "Excel-friendly CSV export (UTF-8 BOM, oddelovac ;)",
     "Rule runner s dedup logikou",
-    "Tlac a CSV export uloh a upozorneni",
-    "5 predvolenych pravidiel (SJF, FEI, ockovania, poistenie, pas)"
+    "Tlac a CSV export uloh a upozorneni"
   ],
   "changelog": {
+    "6.11.5": "Excel-friendly CSV export uloh + horse filter v UI",
     "6.11.4": "Fix CSV export tasks - odstraneny JOIN",
     "6.11.3": "Fix tasks FK constraint na created_by",
     "6.11.2": "Graceful error handling",

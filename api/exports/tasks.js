@@ -1,6 +1,20 @@
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
+/**
+ * Excel-friendly CSV escape function
+ * - ak field obsahuje ; alebo " alebo newline → obaliť do "
+ * - " vnútri → zdvojiť na ""
+ */
+function escapeCSV(value) {
+    if (value === null || value === undefined) return '';
+    const str = String(value);
+    if (str.includes(';') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+}
+
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -12,70 +26,127 @@ module.exports = async (req, res) => {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    // CSV header row - presne v tomto poradi
+    const headers = ['id', 'title', 'description', 'priority', 'status', 'due_date', 'horse_id', 'horse_name', 'created_at', 'updated_at'];
+    const BOM = '\uFEFF'; // UTF-8 BOM pre Excel
+
     try {
-        const { from, to, status, format } = req.query;
+        const { from, to, status, priority, horse_id } = req.query;
+        
+        // Default: ak nic nie je zadane, export active uloh z poslednych 90 dni
+        const defaultFrom = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         
         let query = supabase
             .from('tasks')
-            .select('*')
-            .order('due_date', { ascending: true });
+            .select('id, title, description, priority, status, due_date, horse_id, created_at, updated_at')
+            .order('due_date', { ascending: true, nullsFirst: false })
+            .order('created_at', { ascending: false });
         
-        if (from) query = query.gte('created_at', from);
-        if (to) query = query.lte('created_at', to + 'T23:59:59');
+        // Status filter
         if (status && status !== 'all') {
             if (status === 'active') {
                 query = query.in('status', ['open', 'in_progress']);
             } else {
                 query = query.eq('status', status);
             }
+        } else if (!status) {
+            // Default: active
+            query = query.in('status', ['open', 'in_progress']);
+        }
+        
+        // Date filters
+        if (from) {
+            query = query.gte('created_at', from);
+        } else {
+            query = query.gte('created_at', defaultFrom);
+        }
+        if (to) {
+            query = query.lte('created_at', to + 'T23:59:59');
+        }
+        
+        // Priority filter
+        if (priority && priority !== 'all') {
+            query = query.eq('priority', priority);
+        }
+        
+        // Horse filter
+        if (horse_id) {
+            query = query.eq('horse_id', horse_id);
         }
         
         const { data: tasks, error } = await query;
-        if (error) throw error;
+        
+        // Ak tabulka neexistuje alebo chyba - vrat len header
+        if (error) {
+            console.error('Export tasks DB error:', error.message);
+            const csvHeader = headers.join(';');
+            const today = new Date().toISOString().split('T')[0];
+            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            res.setHeader('Content-Disposition', `attachment; filename="tasks_${today}.csv"`);
+            return res.status(200).send(BOM + csvHeader);
+        }
+        
+        // Ak prazdne - vrat len header
+        if (!tasks || tasks.length === 0) {
+            const csvHeader = headers.join(';');
+            const today = new Date().toISOString().split('T')[0];
+            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            res.setHeader('Content-Disposition', `attachment; filename="tasks_${today}.csv"`);
+            return res.status(200).send(BOM + csvHeader);
+        }
 
-        // Fetch horses separately
-        const horseIds = [...new Set((tasks || []).filter(t => t.horse_id).map(t => t.horse_id))];
+        // Fetch horses separately (bez JOIN-u)
+        const horseIds = [...new Set(tasks.filter(t => t.horse_id).map(t => t.horse_id))];
         let horsesMap = {};
         if (horseIds.length > 0) {
-            const { data: horses } = await supabase
-                .from('horses')
-                .select('id, name, stable_name, passport_number')
-                .in('id', horseIds);
-            horsesMap = (horses || []).reduce((acc, h) => { acc[h.id] = h; return acc; }, {});
+            try {
+                const { data: horses, error: horsesError } = await supabase
+                    .from('horses')
+                    .select('id, name, stable_name')
+                    .in('id', horseIds);
+                if (!horsesError && horses) {
+                    horsesMap = horses.reduce((acc, h) => { 
+                        acc[h.id] = h.stable_name || h.name || ''; 
+                        return acc; 
+                    }, {});
+                }
+            } catch (e) {
+                console.error('Export tasks - horses fetch error:', e.message);
+                // Pokracuj bez horse_name
+            }
         }
 
-        // Merge data
-        const data = (tasks || []).map(t => ({
-            ...t,
-            horses: t.horse_id ? horsesMap[t.horse_id] || null : null
-        }));
-
-        if (format === 'csv') {
-            const priorityLabels = { low: 'Nizka', normal: 'Normalna', high: 'Vysoka', urgent: 'Urgentna' };
-            const statusLabels = { open: 'Otvorena', in_progress: 'Rozpracovana', completed: 'Dokoncena', cancelled: 'Zrusena' };
-            
-            const headers = ['Nazov', 'Popis', 'Priorita', 'Stav', 'Termin', 'Kon', 'Vytvorena'];
-            const rows = (data || []).map(row => [
-                row.title || '',
-                (row.description || '').replace(/"/g, '""').replace(/\n/g, ' '),
-                priorityLabels[row.priority] || row.priority,
-                statusLabels[row.status] || row.status,
-                row.due_date || '',
-                row.horses ? (row.horses.stable_name || row.horses.name) : '',
-                row.created_at ? row.created_at.split('T')[0] : ''
-            ]);
-            
-            const csv = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
-            
-            const filename = `ulohy-${from || 'all'}-${to || 'all'}.csv`;
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            return res.status(200).send('\uFEFF' + csv);
-        }
-
-        return res.status(200).json(data || []);
+        // Build CSV rows
+        const rows = tasks.map(t => {
+            const horseName = t.horse_id ? (horsesMap[t.horse_id] || '') : '';
+            return [
+                escapeCSV(t.id),
+                escapeCSV(t.title),
+                escapeCSV(t.description),
+                escapeCSV(t.priority),
+                escapeCSV(t.status),
+                escapeCSV(t.due_date),
+                escapeCSV(t.horse_id),
+                escapeCSV(horseName),
+                escapeCSV(t.created_at),
+                escapeCSV(t.updated_at)
+            ].join(';');
+        });
+        
+        const csv = [headers.join(';'), ...rows].join('\n');
+        const today = new Date().toISOString().split('T')[0];
+        
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="tasks_${today}.csv"`);
+        return res.status(200).send(BOM + csv);
+        
     } catch (e) {
-        console.error('Export tasks error:', e);
-        res.status(500).json({ error: e.message });
+        // Pri akejkolvek chybe - vrat prazdny CSV s headerom, nie 500
+        console.error('Export tasks error:', e.message);
+        const csvHeader = headers.join(';');
+        const today = new Date().toISOString().split('T')[0];
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="tasks_${today}.csv"`);
+        return res.status(200).send(BOM + csvHeader);
     }
 };
