@@ -52,6 +52,13 @@ module.exports = async (req, res) => {
         let zipBuffer;
         let zb = data.zip_bytes;
         
+        // Debug: what type is zb?
+        const zbType = typeof zb;
+        const zbIsBuffer = Buffer.isBuffer(zb);
+        const zbIsArray = Array.isArray(zb);
+        const zbHasType = zb && typeof zb === 'object' && zb.type;
+        const zbFirst = typeof zb === 'string' ? zb.substring(0, 50) : (zb && zb.type ? zb.type : 'n/a');
+        
         // If it's a string that looks like JSON, parse it first
         if (typeof zb === 'string' && zb.startsWith('{')) {
             try {
@@ -75,12 +82,19 @@ module.exports = async (req, res) => {
         } else if (Array.isArray(zb)) {
             zipBuffer = Buffer.from(zb);
         } else {
-            return res.status(500).json({ error: 'Unknown zip_bytes format', type: typeof zb });
+            return res.status(500).json({ 
+                error: 'Unknown zip_bytes format', 
+                zbType, zbIsBuffer, zbIsArray, zbHasType, zbFirst 
+            });
         }
 
         // Verify ZIP signature
         if (zipBuffer.length < 4 || zipBuffer[0] !== 0x50 || zipBuffer[1] !== 0x4B) {
-            return res.status(500).json({ error: 'Invalid ZIP data', firstBytes: [zipBuffer[0], zipBuffer[1]] });
+            return res.status(500).json({ 
+                error: 'Invalid ZIP data', 
+                firstBytes: [zipBuffer[0], zipBuffer[1]],
+                zbType, zbIsBuffer, zbIsArray, zbHasType, zbFirst
+            });
         }
 
         const exportDate = data.created_at ? data.created_at.split('T')[0] : getToday();
