@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
         return res.status(200).json({
             status: 'ok',
             timestamp: new Date().toISOString(),
-            version: '6.14.6'
+            version: '6.14.7'
         });
     }
     

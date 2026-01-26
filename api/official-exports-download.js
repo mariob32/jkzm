@@ -55,7 +55,8 @@ module.exports = async (req, res) => {
         if (Buffer.isBuffer(zb)) {
             zipBuffer = zb;
         } else if (zb && zb.type === 'Buffer' && Array.isArray(zb.data)) {
-            zipBuffer = Buffer.from(new Uint8Array(zb.data));
+            // Supabase returns JSON serialized Buffer
+            zipBuffer = Buffer.from(zb.data);
         } else if (typeof zb === 'string') {
             if (zb.startsWith('\\x')) {
                 zipBuffer = Buffer.from(zb.slice(2), 'hex');
@@ -63,9 +64,14 @@ module.exports = async (req, res) => {
                 zipBuffer = Buffer.from(zb, 'base64');
             }
         } else if (Array.isArray(zb)) {
-            zipBuffer = Buffer.from(new Uint8Array(zb));
+            zipBuffer = Buffer.from(zb);
         } else {
             return res.status(500).json({ error: 'Unknown zip_bytes format', type: typeof zb });
+        }
+
+        // Verify ZIP signature
+        if (zipBuffer.length < 4 || zipBuffer[0] !== 0x50 || zipBuffer[1] !== 0x4B) {
+            return res.status(500).json({ error: 'Invalid ZIP data', firstBytes: [zipBuffer[0], zipBuffer[1]] });
         }
 
         const exportDate = data.created_at ? data.created_at.split('T')[0] : getToday();
