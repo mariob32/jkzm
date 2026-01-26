@@ -4,6 +4,7 @@ try {
 } catch (e) {
     JSZip = null;
 }
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 const { escapeValue, DELIMITER, BOM, NEWLINE } = require('../utils/csv');
@@ -11,6 +12,7 @@ const { logAudit, getRequestInfo } = require('../utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
+const VERSION = '6.14.0';
 
 function verifyToken(req) {
     const auth = req.headers.authorization;
@@ -28,21 +30,9 @@ function buildCSV(headers, rows) {
     return BOM + headerLine + NEWLINE + dataLines.join(NEWLINE) + NEWLINE;
 }
 
-const README_TEXT = `SJF EXPORT - Jazdecký klub Zelená míľa
-======================================
-
-Export pre Slovenskú jazdeckú federáciu (SJF).
-Obsahuje licenčné a športové údaje.
-
-Obsah balíka:
-- horses.csv - Kone s SJF/FEI licenciami
-- riders.csv - Jazdci s SJF licenciami
-- trainers.csv - Tréneri s SJF licenciami
-- competitions.csv - Súťažné výsledky
-
-Dátum exportu: ${getToday()}
-Systém: JKZM (Jazdecký klub Zelená míľa)
-`;
+function sha256(content) {
+    return crypto.createHash('sha256').update(content).digest('hex');
+}
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -63,6 +53,9 @@ module.exports = async (req, res) => {
     try {
         const zip = new JSZip();
         const today = getToday();
+        const generatedAt = new Date().toISOString();
+        const fileContents = {};
+        const checksums = {};
 
         // 1) HORSES.CSV - SJF/FEI data
         const { data: horses } = await supabase
@@ -74,10 +67,7 @@ module.exports = async (req, res) => {
             ['name', 'sjf_license_number', 'sjf_license_valid_until', 'fei_id', 'fei_passport_number'],
             (horses || []).map(h => [h.name, h.sjf_license_number, h.sjf_license_valid_until, h.fei_id, h.fei_passport_number])
         );
-        zip.file('horses.csv', horsesCSV);
-
-        // Build horses map
-        const horsesMap = (horses || []).reduce((acc, h) => { acc[h.name] = h; return acc; }, {});
+        fileContents['horses.csv'] = horsesCSV;
 
         // 2) RIDERS.CSV
         const { data: riders } = await supabase
@@ -89,10 +79,7 @@ module.exports = async (req, res) => {
             ['name', 'sjf_id', 'license_valid_until'],
             (riders || []).map(r => [r.name, r.sjf_id, r.license_valid_until])
         );
-        zip.file('riders.csv', ridersCSV);
-
-        // Build riders map
-        const ridersMap = (riders || []).reduce((acc, r) => { acc[r.id] = r; return acc; }, {});
+        fileContents['riders.csv'] = ridersCSV;
 
         // 3) TRAINERS.CSV
         const { data: trainers } = await supabase
@@ -104,12 +91,12 @@ module.exports = async (req, res) => {
             ['name', 'sjf_id', 'license_valid_until'],
             (trainers || []).map(t => [t.name, t.sjf_id, t.license_valid_until])
         );
-        zip.file('trainers.csv', trainersCSV);
+        fileContents['trainers.csv'] = trainersCSV;
 
         // 4) COMPETITIONS.CSV
         let compQuery = supabase
             .from('competitions')
-            .select('name, date')
+            .select('id, name, date')
             .order('date', { ascending: false });
         
         if (from) compQuery = compQuery.gte('date', from);
@@ -117,12 +104,11 @@ module.exports = async (req, res) => {
         
         const { data: competitions } = await compQuery;
         
-        // Get competition entries with results
         let entriesData = [];
         if (competitions && competitions.length > 0) {
             const { data: entries } = await supabase
                 .from('competition_entries')
-                .select('competition_id, horse_id, rider_id');
+                .select('id, competition_id, horse_id, rider_id');
             
             const { data: results } = await supabase
                 .from('competition_results')
@@ -158,20 +144,91 @@ module.exports = async (req, res) => {
             ['competition_name', 'date', 'horse_name', 'rider_name', 'result'],
             entriesData
         );
-        zip.file('competitions.csv', competitionsCSV);
+        fileContents['competitions.csv'] = competitionsCSV;
 
         // 5) README.TXT
-        zip.file('README.txt', README_TEXT.replace('${getToday()}', today));
+        const readmeText = `SJF EXPORT - Jazdecký klub Zelená míľa
+======================================
 
-        // Generate ZIP
+Export pre Slovenskú jazdeckú federáciu (SJF).
+Obsahuje licenčné a športové údaje.
+
+Obsah balíka:
+- horses.csv - Kone s SJF/FEI licenciami
+- riders.csv - Jazdci s SJF licenciami
+- trainers.csv - Tréneri s SJF licenciami
+- competitions.csv - Súťažné výsledky
+- MANIFEST.json - Metadata exportu
+- CHECKSUMS.sha256 - Kontrolné súčty
+
+Dátum exportu: ${today}
+Systém: JKZM (Jazdecký klub Zelená míľa)
+`;
+        fileContents['README.txt'] = readmeText;
+
+        // 6) MANIFEST.json
+        const files = ['horses.csv', 'riders.csv', 'trainers.csv', 'competitions.csv', 'README.txt', 'MANIFEST.json', 'CHECKSUMS.sha256'];
+        const manifest = {
+            system: 'JKZM',
+            version: VERSION,
+            type: 'sjf',
+            generated_at: generatedAt,
+            filters: { from: from || null, to: to || null },
+            files: files,
+            note: 'Oficiálny export balík'
+        };
+        fileContents['MANIFEST.json'] = JSON.stringify(manifest, null, 2);
+
+        // Calculate checksums for all files except CHECKSUMS.sha256
+        for (const [filename, content] of Object.entries(fileContents)) {
+            checksums[filename] = sha256(content);
+        }
+
+        // 7) CHECKSUMS.sha256
+        const checksumLines = Object.entries(checksums)
+            .map(([filename, hash]) => `${hash}  ${filename}`)
+            .join('\n');
+        fileContents['CHECKSUMS.sha256'] = checksumLines + '\n';
+
+        // Add all files to ZIP
+        for (const [filename, content] of Object.entries(fileContents)) {
+            zip.file(filename, content);
+        }
+
+        // Generate ZIP buffer
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+        const sizeBytes = zipBuffer.length;
+
+        // Save to official_exports table
+        const { data: exportRecord, error: insertError } = await supabase
+            .from('official_exports')
+            .insert({
+                type: 'sjf',
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                filters: { from: from || null, to: to || null },
+                files: files,
+                manifest: manifest,
+                sha256: checksums,
+                zip_bytes: zipBuffer,
+                size_bytes: sizeBytes
+            })
+            .select('id')
+            .single();
+
+        const exportId = exportRecord?.id || null;
+        
+        if (insertError) {
+            console.error('SJF export DB save error:', insertError.message);
+        }
 
         // Audit log with full details
-        const files = ['horses.csv', 'riders.csv', 'trainers.csv', 'competitions.csv', 'README.txt'];
         await logAudit(supabase, {
             action: 'export',
             entity_type: 'official-export',
-            entity_id: null,
+            entity_id: exportId,
             actor_id: user.id || null,
             actor_name: user.email || user.name || 'admin',
             ip,
@@ -181,7 +238,9 @@ module.exports = async (req, res) => {
                 type: 'sjf',
                 filters: { from: from || null, to: to || null },
                 files: files,
-                generated_at: new Date().toISOString()
+                generated_at: generatedAt,
+                size_bytes: sizeBytes,
+                export_id: exportId
             }
         });
 

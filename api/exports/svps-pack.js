@@ -4,6 +4,7 @@ try {
 } catch (e) {
     JSZip = null;
 }
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 const { escapeValue, DELIMITER, BOM, NEWLINE } = require('../utils/csv');
@@ -11,6 +12,7 @@ const { logAudit, getRequestInfo } = require('../utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
+const VERSION = '6.14.0';
 
 function verifyToken(req) {
     const auth = req.headers.authorization;
@@ -28,22 +30,9 @@ function buildCSV(headers, rows) {
     return BOM + headerLine + NEWLINE + dataLines.join(NEWLINE) + NEWLINE;
 }
 
-const README_TEXT = `ŠVPS EXPORT - Jazdecký klub Zelená míľa
-========================================
-
-Tento export je určený pre potreby ŠVPS SR.
-Obsahuje evidenciu koní, pohybov v maštali,
-očkovaní a súvisiacich dokumentov.
-
-Obsah balíka:
-- horses.csv - Zoznam koní s pasovými údajmi
-- stable-log.csv - Maštaľná kniha (príjmy, odchody, karanténa)
-- vaccinations.csv - Očkovania
-- documents.csv - Súvisiace dokumenty
-
-Dátum exportu: ${getToday()}
-Systém: JKZM (Jazdecký klub Zelená míľa)
-`;
+function sha256(content) {
+    return crypto.createHash('sha256').update(content).digest('hex');
+}
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -64,6 +53,9 @@ module.exports = async (req, res) => {
     try {
         const zip = new JSZip();
         const today = getToday();
+        const generatedAt = new Date().toISOString();
+        const fileContents = {};
+        const checksums = {};
 
         // 1) HORSES.CSV
         const { data: horses } = await supabase
@@ -75,7 +67,7 @@ module.exports = async (req, res) => {
             ['id', 'name', 'passport_number', 'microchip', 'status'],
             (horses || []).map(h => [h.id, h.name, h.passport_number, h.microchip, h.status])
         );
-        zip.file('horses.csv', horsesCSV);
+        fileContents['horses.csv'] = horsesCSV;
 
         // Build horses map for lookups
         const horsesMap = (horses || []).reduce((acc, h) => { acc[h.id] = h; return acc; }, {});
@@ -98,7 +90,7 @@ module.exports = async (req, res) => {
                 return [s.event_date, s.event_type, horse.name || '', horse.passport_number || '', s.notes];
             })
         );
-        zip.file('stable-log.csv', stableCSV);
+        fileContents['stable-log.csv'] = stableCSV;
 
         // 3) VACCINATIONS.CSV
         let vaccQuery = supabase
@@ -118,7 +110,7 @@ module.exports = async (req, res) => {
                 return [horse.name || '', v.vaccine_type, v.vaccination_date, v.next_date, v.vet_name];
             })
         );
-        zip.file('vaccinations.csv', vaccCSV);
+        fileContents['vaccinations.csv'] = vaccCSV;
 
         // 4) DOCUMENTS.CSV
         let docsQuery = supabase
@@ -138,20 +130,92 @@ module.exports = async (req, res) => {
                 return [horse.name || '', d.category, d.title, d.document_date, d.file_name];
             })
         );
-        zip.file('documents.csv', docsCSV);
+        fileContents['documents.csv'] = docsCSV;
 
         // 5) README.TXT
-        zip.file('README.txt', README_TEXT.replace('${getToday()}', today));
+        const readmeText = `ŠVPS EXPORT - Jazdecký klub Zelená míľa
+========================================
 
-        // Generate ZIP
+Tento export je určený pre potreby ŠVPS SR.
+Obsahuje evidenciu koní, pohybov v maštali,
+očkovaní a súvisiacich dokumentov.
+
+Obsah balíka:
+- horses.csv - Zoznam koní s pasovými údajmi
+- stable-log.csv - Maštaľná kniha (príjmy, odchody, karanténa)
+- vaccinations.csv - Očkovania
+- documents.csv - Súvisiace dokumenty
+- MANIFEST.json - Metadata exportu
+- CHECKSUMS.sha256 - Kontrolné súčty
+
+Dátum exportu: ${today}
+Systém: JKZM (Jazdecký klub Zelená míľa)
+`;
+        fileContents['README.txt'] = readmeText;
+
+        // 6) MANIFEST.json
+        const files = ['horses.csv', 'stable-log.csv', 'vaccinations.csv', 'documents.csv', 'README.txt', 'MANIFEST.json', 'CHECKSUMS.sha256'];
+        const manifest = {
+            system: 'JKZM',
+            version: VERSION,
+            type: 'svps',
+            generated_at: generatedAt,
+            filters: { from: from || null, to: to || null },
+            files: files,
+            note: 'Oficiálny export balík'
+        };
+        fileContents['MANIFEST.json'] = JSON.stringify(manifest, null, 2);
+
+        // Calculate checksums for all files except CHECKSUMS.sha256
+        for (const [filename, content] of Object.entries(fileContents)) {
+            checksums[filename] = sha256(content);
+        }
+
+        // 7) CHECKSUMS.sha256
+        const checksumLines = Object.entries(checksums)
+            .map(([filename, hash]) => `${hash}  ${filename}`)
+            .join('\n');
+        fileContents['CHECKSUMS.sha256'] = checksumLines + '\n';
+
+        // Add all files to ZIP
+        for (const [filename, content] of Object.entries(fileContents)) {
+            zip.file(filename, content);
+        }
+
+        // Generate ZIP buffer
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+        const sizeBytes = zipBuffer.length;
+
+        // Save to official_exports table
+        const { data: exportRecord, error: insertError } = await supabase
+            .from('official_exports')
+            .insert({
+                type: 'svps',
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                filters: { from: from || null, to: to || null },
+                files: files,
+                manifest: manifest,
+                sha256: checksums,
+                zip_bytes: zipBuffer,
+                size_bytes: sizeBytes
+            })
+            .select('id')
+            .single();
+
+        const exportId = exportRecord?.id || null;
+        
+        if (insertError) {
+            console.error('SVPS export DB save error:', insertError.message);
+        }
 
         // Audit log with full details
-        const files = ['horses.csv', 'stable-log.csv', 'vaccinations.csv', 'documents.csv', 'README.txt'];
         await logAudit(supabase, {
             action: 'export',
             entity_type: 'official-export',
-            entity_id: null,
+            entity_id: exportId,
             actor_id: user.id || null,
             actor_name: user.email || user.name || 'admin',
             ip,
@@ -161,7 +225,9 @@ module.exports = async (req, res) => {
                 type: 'svps',
                 filters: { from: from || null, to: to || null },
                 files: files,
-                generated_at: new Date().toISOString()
+                generated_at: generatedAt,
+                size_bytes: sizeBytes,
+                export_id: exportId
             }
         });
 

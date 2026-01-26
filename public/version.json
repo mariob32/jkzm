@@ -1,15 +1,16 @@
 {
-  "version": "6.13.2",
-  "build": "2026-01-26T13:00:00Z",
+  "version": "6.14.0",
+  "build": "2026-01-26T14:00:00Z",
   "features": [
-    "Audit list - after_data pre export queries",
-    "CSV export - volitelny after_data_json stlpec",
-    "Admin UI - checkbox Zahrnut after_data"
+    "MANIFEST.json + CHECKSUMS.sha256 v oficialnych exportoch",
+    "Official exports archiv v DB (official_exports tabulka)",
+    "Historia exportov s download podla ID",
+    "API: /api/official-exports, /api/official-exports/{id}, /api/official-exports/{id}/download"
   ],
   "changelog": {
+    "6.14.0": "Pravne pouzitelne exporty - manifest, checksums, archiv v DB",
     "6.13.2": "Audit list include after_data + CSV export rozsirenie",
     "6.13.1": "Audit hardening + DB migracia + export audit detaily",
-    "6.13.0": "Oficiálne exporty ŠVPS a SJF - právne použiteľné balíky",
-    "6.12.0": "AUDIT TRAIL PRO - before/after data, diff, filtrovanie, export"
+    "6.13.0": "Oficiálne exporty ŠVPS a SJF - právne použiteľné balíky"
   }
 }

@@ -945,13 +945,13 @@
                 <!-- OFICIALNE EXPORTY -->
                 <div class="card" style="margin-bottom:1.5rem;border:2px solid var(--primary)">
                     <div class="card-header" style="background:var(--primary);color:white">
-                        <h3>🏛️ Oficiálne exporty</h3>
+                        <h3>Oficiálne exporty</h3>
                         <span style="font-size:0.85rem">Pre ŠVPS a SJF - právne použiteľné balíky</span>
                     </div>
                     <div class="card-body">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
                             <div style="padding:1rem;background:var(--light);border-radius:8px">
-                                <h4 style="margin-bottom:0.5rem">🏛️ ŠVPS Export</h4>
+                                <h4 style="margin-bottom:0.5rem">ŠVPS Export</h4>
                                 <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">
                                     Maštaľná kniha, očkovania, dokumenty<br>
                                     Pre kontrolu Štátnej veterinárnej správy
@@ -959,13 +959,47 @@
                                 <button class="btn btn-primary" onclick="downloadSvpsExport()">Stiahnuť ŠVPS balík</button>
                             </div>
                             <div style="padding:1rem;background:var(--light);border-radius:8px">
-                                <h4 style="margin-bottom:0.5rem">🐎 SJF Export</h4>
+                                <h4 style="margin-bottom:0.5rem">SJF Export</h4>
                                 <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1rem">
                                     Licencie koní, jazdcov, trénerov, súťaže<br>
                                     Pre Slovenskú jazdeckú federáciu
                                 </p>
                                 <button class="btn btn-primary" onclick="downloadSjfExport()">Stiahnuť SJF balík</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- HISTORIA EXPORTOV -->
+                <div class="card" style="margin-bottom:1.5rem">
+                    <div class="card-header">
+                        <h3>História exportov</h3>
+                        <div class="header-actions">
+                            <select class="form-control" id="officialExportTypeFilter" style="width:auto;display:inline-block" onchange="loadOfficialExports()">
+                                <option value="">Všetky typy</option>
+                                <option value="svps">ŠVPS</option>
+                                <option value="sjf">SJF</option>
+                            </select>
+                            <button class="btn btn-outline" onclick="loadOfficialExports()">Obnoviť</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Dátum a čas</th>
+                                    <th>Typ</th>
+                                    <th>Autor</th>
+                                    <th>Veľkosť</th>
+                                    <th>Od</th>
+                                    <th>Do</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="officialExportsTable"></tbody>
+                        </table>
+                        <div id="officialExportsEmpty" style="text-align:center;padding:2rem;color:var(--gray);display:none">
+                            Žiadne exporty v histórii
                         </div>
                     </div>
                 </div>
@@ -2206,7 +2240,7 @@
             if (hash === 'tasks') setTimeout(loadTasks, 100);
             if (hash === 'notifications') setTimeout(loadNotifications, 100);
             if (hash === 'audit-trail') { setTimeout(initAuditFilters, 100); setTimeout(loadAuditLogs, 150); }
-            if (hash === 'exports') setTimeout(() => showExportTab('stable-log'), 100);
+            if (hash === 'exports') { setTimeout(() => showExportTab('stable-log'), 100); setTimeout(loadOfficialExports, 150); }
             if (hash === 'articles') setTimeout(loadArticles, 100);
             if (hash === 'gallery') setTimeout(loadAlbums, 100);
             if (hash === 'pages') setTimeout(loadPages, 100);
@@ -7200,6 +7234,7 @@
                 a.click();
                 URL.revokeObjectURL(a.href);
                 showToast('ŠVPS export pripravený', 'success');
+                loadOfficialExports();
             })
             .catch(e => {
                 console.error('SVPS export error:', e);
@@ -7222,10 +7257,84 @@
                 a.click();
                 URL.revokeObjectURL(a.href);
                 showToast('SJF export pripravený', 'success');
+                loadOfficialExports();
             })
             .catch(e => {
                 console.error('SJF export error:', e);
                 showToast('Chyba pri generovaní SJF exportu', 'error');
+            });
+    }
+
+    let officialExports = [];
+    
+    async function loadOfficialExports() {
+        const type = document.getElementById('officialExportTypeFilter')?.value || '';
+        let url = '/api/official-exports?limit=50';
+        if (type) url += `&type=${type}`;
+        
+        try {
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });
+            const json = await res.json();
+            officialExports = json.data || [];
+            renderOfficialExportsTable();
+        } catch(e) {
+            console.error('Load official exports error:', e);
+            showToast('Chyba pri načítaní histórie exportov', 'error');
+        }
+    }
+    
+    function renderOfficialExportsTable() {
+        const tbody = document.getElementById('officialExportsTable');
+        const empty = document.getElementById('officialExportsEmpty');
+        
+        if (!officialExports || officialExports.length === 0) {
+            tbody.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        
+        empty.style.display = 'none';
+        tbody.innerHTML = officialExports.map(e => {
+            const date = new Date(e.created_at).toLocaleString('sk');
+            const typeLabel = e.type === 'svps' ? 'ŠVPS' : 'SJF';
+            const sizeKB = e.size_bytes ? Math.round(e.size_bytes / 1024) + ' KB' : '-';
+            const from = e.filters?.from || '-';
+            const to = e.filters?.to || '-';
+            return `<tr>
+                <td>${date}</td>
+                <td><span class="badge badge-${e.type === 'svps' ? 'info' : 'success'}">${typeLabel}</span></td>
+                <td>${e.actor_name || '-'}</td>
+                <td>${sizeKB}</td>
+                <td>${from}</td>
+                <td>${to}</td>
+                <td><button class="btn btn-sm btn-outline" onclick="downloadOfficialExport('${e.id}')">Stiahnuť</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    function downloadOfficialExport(id) {
+        showToast('Sťahujem export...', 'info');
+        fetch(`/api/official-exports/${id}/download`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
+            .then(res => {
+                if (!res.ok) throw new Error('Download failed');
+                const disposition = res.headers.get('Content-Disposition');
+                let filename = 'export.zip';
+                if (disposition && disposition.includes('filename=')) {
+                    filename = disposition.split('filename=')[1].replace(/"/g, '');
+                }
+                return res.blob().then(blob => ({ blob, filename }));
+            })
+            .then(({ blob, filename }) => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                showToast('Export stiahnutý', 'success');
+            })
+            .catch(e => {
+                console.error('Download official export error:', e);
+                showToast('Chyba pri sťahovaní exportu', 'error');
             });
     }
 

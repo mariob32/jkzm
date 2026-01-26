@@ -101,6 +101,10 @@
     { "src": "/api/audit-logs/([^/]+)", "dest": "/api/audit-logs-id.js?id=$1" },
     { "src": "/api/audit-logs", "dest": "/api/audit-logs.js" },
     
+    { "src": "/api/official-exports/([^/]+)/download", "dest": "/api/official-exports-download.js?id=$1" },
+    { "src": "/api/official-exports/([^/]+)", "dest": "/api/official-exports-id.js?id=$1" },
+    { "src": "/api/official-exports", "dest": "/api/official-exports.js" },
+    
     { "src": "/api/exports/stable-log", "dest": "/api/exports/stable-log.js" },
     { "src": "/api/exports/visit-log", "dest": "/api/exports/visit-log.js" },
     { "src": "/api/exports/horses-licenses", "dest": "/api/exports/horses-licenses.js" },
