@@ -50,7 +50,16 @@ module.exports = async (req, res) => {
 
         // Convert zip_bytes to actual binary buffer
         let zipBuffer;
-        const zb = data.zip_bytes;
+        let zb = data.zip_bytes;
+        
+        // If it's a string that looks like JSON, parse it first
+        if (typeof zb === 'string' && zb.startsWith('{')) {
+            try {
+                zb = JSON.parse(zb);
+            } catch (e) {
+                // Not JSON, continue
+            }
+        }
         
         if (Buffer.isBuffer(zb)) {
             zipBuffer = zb;
