@@ -78,7 +78,19 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'ZIP data not available' });
         }
 
+        // Debug: log type of zip_bytes
+        console.log('zip_bytes type:', typeof data.zip_bytes, 'isBuffer:', Buffer.isBuffer(data.zip_bytes));
+        if (data.zip_bytes && typeof data.zip_bytes === 'object') {
+            console.log('zip_bytes keys:', Object.keys(data.zip_bytes));
+        }
+
         const zipBuffer = toBuffer(data.zip_bytes);
+        
+        // Verify it's a valid ZIP (starts with PK)
+        if (zipBuffer[0] !== 0x50 || zipBuffer[1] !== 0x4B) {
+            console.error('Invalid ZIP signature:', zipBuffer[0], zipBuffer[1]);
+            return res.status(500).json({ error: 'Invalid ZIP data in database' });
+        }
 
         const exportDate = data.created_at ? data.created_at.split('T')[0] : getToday();
         const shortId = data.id.split('-')[0];
@@ -87,7 +99,9 @@ module.exports = async (req, res) => {
         res.setHeader('Content-Type', 'application/zip');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.setHeader('Content-Length', zipBuffer.length);
-        return res.status(200).send(zipBuffer);
+        res.status(200);
+        res.end(zipBuffer);
+        return;
 
     } catch (e) {
         console.error('Official export download API error:', e.message);
