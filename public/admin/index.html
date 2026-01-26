@@ -7317,17 +7317,19 @@
         fetch(`/api/official-exports/${id}/download`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(res => {
                 if (!res.ok) throw new Error('Download failed');
-                const disposition = res.headers.get('Content-Disposition');
-                let filename = 'export.zip';
-                if (disposition && disposition.includes('filename=')) {
-                    filename = disposition.split('filename=')[1].replace(/"/g, '');
-                }
-                return res.blob().then(blob => ({ blob, filename }));
+                return res.json();
             })
-            .then(({ blob, filename }) => {
+            .then(json => {
+                // Decode base64 to binary
+                const binaryString = atob(json.data);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                const blob = new Blob([bytes], { type: json.contentType });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = filename;
+                a.download = json.filename;
                 a.click();
                 URL.revokeObjectURL(a.href);
                 showToast('Export stiahnutý', 'success');

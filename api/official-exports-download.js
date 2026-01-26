@@ -55,7 +55,6 @@ module.exports = async (req, res) => {
         if (Buffer.isBuffer(zb)) {
             zipBuffer = zb;
         } else if (zb && zb.type === 'Buffer' && Array.isArray(zb.data)) {
-            // Supabase returns JSON serialized Buffer - convert array to Uint8Array then to Buffer
             zipBuffer = Buffer.from(new Uint8Array(zb.data));
         } else if (typeof zb === 'string') {
             if (zb.startsWith('\\x')) {
@@ -73,13 +72,15 @@ module.exports = async (req, res) => {
         const shortId = data.id.split('-')[0];
         const filename = `jkzm_${data.type}_export_${exportDate}_${shortId}.zip`;
 
-        // Set headers for binary download
-        res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.setHeader('Content-Length', zipBuffer.byteLength);
+        // Return as base64 JSON - client will decode
+        const base64 = zipBuffer.toString('base64');
         
-        // Send the buffer - use send() which should handle Buffer correctly in Vercel
-        return res.send(zipBuffer);
+        return res.status(200).json({
+            filename: filename,
+            contentType: 'application/zip',
+            size: zipBuffer.length,
+            data: base64
+        });
 
     } catch (e) {
         console.error('Official export download API error:', e.message);
