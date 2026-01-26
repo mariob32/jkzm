@@ -1,5 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
+const { sendCSV, sendEmptyCSV } = require('../utils/csv');
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
+const HEADERS = ['id', 'event_date', 'event_time', 'event_type', 'horse_id', 'horse_name', 'passport_number', 'microchip', 'notes', 'responsible_person', 'created_at'];
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,43 +17,66 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { from, to, format } = req.query;
+        const { from, to, event_type } = req.query;
         
         let query = supabase
             .from('stable_log')
-            .select('*, horses(id, name, stable_name, passport_number, microchip)')
-            .order('event_date', { ascending: false });
+            .select('id, event_date, event_time, event_type, horse_id, notes, responsible_person, created_at')
+            .order('event_date', { ascending: false })
+            .order('event_time', { ascending: false });
         
         if (from) query = query.gte('event_date', from);
         if (to) query = query.lte('event_date', to);
+        if (event_type) query = query.eq('event_type', event_type);
         
-        const { data, error } = await query;
-        if (error) throw error;
-
-        if (format === 'csv') {
-            const headers = ['Datum', 'Cas', 'Typ udalosti', 'Kon', 'Pas', 'Cip', 'Poznamka', 'Zodpovedna osoba'];
-            const rows = (data || []).map(row => [
-                row.event_date || '',
-                row.event_time || '',
-                row.event_type || '',
-                row.horses ? (row.horses.stable_name || row.horses.name) : '',
-                row.horses?.passport_number || '',
-                row.horses?.microchip || '',
-                (row.notes || '').replace(/"/g, '""'),
-                row.responsible_person || ''
-            ]);
-            
-            const csv = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
-            
-            const filename = `mastalna-kniha-${from || 'all'}-${to || 'all'}.csv`;
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            return res.status(200).send('\uFEFF' + csv);
+        const { data: logs, error } = await query;
+        
+        if (error) {
+            console.error('Export stable-log DB error:', error.message);
+            return sendEmptyCSV(res, HEADERS, 'stable-log');
+        }
+        
+        if (!logs || logs.length === 0) {
+            return sendEmptyCSV(res, HEADERS, 'stable-log');
         }
 
-        return res.status(200).json(data || []);
+        // Fetch horses separately (bez JOIN-u)
+        const horseIds = [...new Set(logs.filter(l => l.horse_id).map(l => l.horse_id))];
+        let horsesMap = {};
+        if (horseIds.length > 0) {
+            try {
+                const { data: horses } = await supabase
+                    .from('horses')
+                    .select('id, name, stable_name, passport_number, microchip')
+                    .in('id', horseIds);
+                if (horses) {
+                    horsesMap = horses.reduce((acc, h) => { 
+                        acc[h.id] = { 
+                            name: h.stable_name || h.name || '', 
+                            passport: h.passport_number || '',
+                            chip: h.microchip || ''
+                        }; 
+                        return acc; 
+                    }, {});
+                }
+            } catch (e) {
+                console.error('Export stable-log - horses fetch error:', e.message);
+            }
+        }
+
+        const rows = logs.map(l => {
+            const horse = l.horse_id ? (horsesMap[l.horse_id] || {}) : {};
+            return [
+                l.id, l.event_date, l.event_time, l.event_type, l.horse_id,
+                horse.name || '', horse.passport || '', horse.chip || '',
+                l.notes, l.responsible_person, l.created_at
+            ];
+        });
+        
+        return sendCSV(res, HEADERS, rows, 'stable-log');
+        
     } catch (e) {
-        console.error('Export stable-log error:', e);
-        res.status(500).json({ error: e.message });
+        console.error('Export stable-log error:', e.message);
+        return sendEmptyCSV(res, HEADERS, 'stable-log');
     }
 };

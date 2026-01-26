@@ -1,5 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
+const { sendCSV, sendEmptyCSV } = require('../utils/csv');
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
+const HEADERS = ['id', 'name', 'stable_name', 'passport_number', 'microchip', 'sjf_license_number', 'sjf_license_valid_until', 'fei_id', 'fei_passport_number', 'fei_passport_expiry', 'fei_registered', 'status'];
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,61 +17,56 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { status, expiry_days, format } = req.query;
+        const { status, expiry_days } = req.query;
         
         let query = supabase
             .from('horses')
             .select('id, name, stable_name, passport_number, microchip, fei_id, fei_passport_number, fei_passport_expiry, fei_registered, sjf_license_number, sjf_license_valid_until, status')
-            .order('stable_name');
+            .order('stable_name', { ascending: true });
         
         if (status === 'active') {
             query = query.eq('status', 'active');
         }
         
-        const { data, error } = await query;
-        if (error) throw error;
-
-        let filtered = data || [];
+        const { data: horses, error } = await query;
         
+        if (error) {
+            console.error('Export horses-licenses DB error:', error.message);
+            return sendEmptyCSV(res, HEADERS, 'horses-licenses');
+        }
+        
+        if (!horses || horses.length === 0) {
+            return sendEmptyCSV(res, HEADERS, 'horses-licenses');
+        }
+
+        // Filter by expiry if requested
+        let filtered = horses;
         if (expiry_days) {
             const days = parseInt(expiry_days);
-            const today = new Date();
-            const cutoff = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
-            const cutoffStr = cutoff.toISOString().split('T')[0];
+            const cutoff = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
             
             filtered = filtered.filter(h => {
                 const sjfExpiry = h.sjf_license_valid_until;
                 const feiExpiry = h.fei_passport_expiry;
-                return (sjfExpiry && sjfExpiry <= cutoffStr) || (feiExpiry && feiExpiry <= cutoffStr);
+                return (sjfExpiry && sjfExpiry <= cutoff) || (feiExpiry && feiExpiry <= cutoff);
             });
         }
 
-        if (format === 'csv') {
-            const headers = ['Kon', 'Volacia meno', 'Pas', 'Cip', 'SJF cislo', 'SJF platnost do', 'FEI cislo', 'FEI platnost do', 'FEI registrovany', 'Status'];
-            const rows = filtered.map(row => [
-                row.name || '',
-                row.stable_name || '',
-                row.passport_number || '',
-                row.microchip || '',
-                row.sjf_license_number || '',
-                row.sjf_license_valid_until || '',
-                row.fei_passport_number || '',
-                row.fei_passport_expiry || '',
-                row.fei_registered ? 'Ano' : 'Nie',
-                row.status || ''
-            ]);
-            
-            const csv = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
-            
-            const filename = `kone-licencie-${new Date().toISOString().split('T')[0]}.csv`;
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            return res.status(200).send('\uFEFF' + csv);
+        if (filtered.length === 0) {
+            return sendEmptyCSV(res, HEADERS, 'horses-licenses');
         }
 
-        return res.status(200).json(filtered);
+        const rows = filtered.map(h => [
+            h.id, h.name, h.stable_name, h.passport_number, h.microchip,
+            h.sjf_license_number, h.sjf_license_valid_until,
+            h.fei_id, h.fei_passport_number, h.fei_passport_expiry,
+            h.fei_registered ? 'true' : 'false', h.status
+        ]);
+        
+        return sendCSV(res, HEADERS, rows, 'horses-licenses');
+        
     } catch (e) {
-        console.error('Export horses-licenses error:', e);
-        res.status(500).json({ error: e.message });
+        console.error('Export horses-licenses error:', e.message);
+        return sendEmptyCSV(res, HEADERS, 'horses-licenses');
     }
 };

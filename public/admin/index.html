@@ -116,8 +116,8 @@
             <h2>Admin Panel</h2>
             <p style="text-align:center;color:var(--gray);margin-bottom:1.5rem">Jazdecký klub Zelená míľa<br><small>Profesionálny systém podľa SJF/ŠVPS/FEI</small></p>
             <form id="loginForm">
-                <div class="form-group"><label>Email</label><input type="email" class="form-control" id="loginEmail" value="admin@jkzm.sk" required></div>
-                <div class="form-group"><label>Heslo</label><input type="password" class="form-control" id="loginPassword" value="admin123" required></div>
+                <div class="form-group"><label>Email</label><input type="email" class="form-control" id="loginEmail" value="admin@jkzm.sk" required autocomplete="email"></div>
+                <div class="form-group"><label>Heslo</label><input type="password" class="form-control" id="loginPassword" value="admin123" required autocomplete="current-password"></div>
                 <button type="submit" class="btn btn-primary" style="width:100%;padding:0.875rem;margin-top:0.5rem">Prihlásiť sa</button>
             </form>
         </div>
@@ -1866,8 +1866,8 @@
                 <form id="adminUserForm">
                     <input type="hidden" id="adminUserId">
                     <div class="form-group"><label>Uzivatelske meno *</label><input type="text" class="form-control" id="adminUserUsername" required></div>
-                    <div class="form-group"><label>Email</label><input type="email" class="form-control" id="adminUserEmail"></div>
-                    <div class="form-group" id="adminUserPasswordGroup"><label>Heslo *</label><input type="password" class="form-control" id="adminUserPassword" placeholder="Min. 6 znakov"></div>
+                    <div class="form-group"><label>Email</label><input type="email" class="form-control" id="adminUserEmail" autocomplete="email"></div>
+                    <div class="form-group" id="adminUserPasswordGroup"><label>Heslo *</label><input type="password" class="form-control" id="adminUserPassword" placeholder="Min. 6 znakov" autocomplete="new-password"></div>
                     <div class="form-row">
                         <div class="form-group"><label>Rola</label><select class="form-control" id="adminUserRole"><option value="admin">Admin</option><option value="editor">Editor</option><option value="viewer">Viewer</option></select></div>
                         <div class="form-group"><label>Status</label><select class="form-control" id="adminUserActive"><option value="true">Aktivny</option><option value="false">Neaktivny</option></select></div>

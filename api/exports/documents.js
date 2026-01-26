@@ -1,5 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
+const { sendCSV, sendEmptyCSV } = require('../utils/csv');
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
+const HEADERS = ['id', 'document_date', 'title', 'category', 'horse_id', 'horse_name', 'entity_type', 'entity_id', 'file_name', 'file_url', 'description', 'created_at'];
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,42 +17,61 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { from, to, category, format } = req.query;
+        const { from, to, category, horse_id, entity_type } = req.query;
         
         let query = supabase
             .from('documents_v2')
-            .select('*, horses(id, name, stable_name)')
+            .select('id, document_date, title, category, horse_id, entity_type, entity_id, file_name, file_url, description, created_at')
             .order('document_date', { ascending: false });
         
         if (from) query = query.gte('document_date', from);
         if (to) query = query.lte('document_date', to);
         if (category) query = query.eq('category', category);
+        if (horse_id) query = query.eq('horse_id', horse_id);
+        if (entity_type) query = query.eq('entity_type', entity_type);
         
-        const { data, error } = await query;
-        if (error) throw error;
-
-        if (format === 'csv') {
-            const headers = ['Datum', 'Nazov', 'Kategoria', 'Kon', 'Subor', 'Poznamka'];
-            const rows = (data || []).map(row => [
-                row.document_date || '',
-                row.title || '',
-                row.category || '',
-                row.horses ? (row.horses.stable_name || row.horses.name) : '',
-                row.file_name || '',
-                (row.description || '').replace(/"/g, '""')
-            ]);
-            
-            const csv = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
-            
-            const filename = `dokumenty-${from || 'all'}-${to || 'all'}.csv`;
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            return res.status(200).send('\uFEFF' + csv);
+        const { data: docs, error } = await query;
+        
+        if (error) {
+            console.error('Export documents DB error:', error.message);
+            return sendEmptyCSV(res, HEADERS, 'documents');
+        }
+        
+        if (!docs || docs.length === 0) {
+            return sendEmptyCSV(res, HEADERS, 'documents');
         }
 
-        return res.status(200).json(data || []);
+        // Fetch horses separately (bez JOIN-u)
+        const horseIds = [...new Set(docs.filter(d => d.horse_id).map(d => d.horse_id))];
+        let horsesMap = {};
+        if (horseIds.length > 0) {
+            try {
+                const { data: horses } = await supabase
+                    .from('horses')
+                    .select('id, name, stable_name')
+                    .in('id', horseIds);
+                if (horses) {
+                    horsesMap = horses.reduce((acc, h) => { 
+                        acc[h.id] = h.stable_name || h.name || ''; 
+                        return acc; 
+                    }, {});
+                }
+            } catch (e) {
+                console.error('Export documents - horses fetch error:', e.message);
+            }
+        }
+
+        const rows = docs.map(d => [
+            d.id, d.document_date, d.title, d.category,
+            d.horse_id, d.horse_id ? (horsesMap[d.horse_id] || '') : '',
+            d.entity_type, d.entity_id, d.file_name, d.file_url,
+            d.description, d.created_at
+        ]);
+        
+        return sendCSV(res, HEADERS, rows, 'documents');
+        
     } catch (e) {
-        console.error('Export documents error:', e);
-        res.status(500).json({ error: e.message });
+        console.error('Export documents error:', e.message);
+        return sendEmptyCSV(res, HEADERS, 'documents');
     }
 };

@@ -1,5 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
+const { sendCSV, sendEmptyCSV } = require('../utils/csv');
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
+const HEADERS = ['id', 'arrival_date', 'arrival_time', 'departure_time', 'visitor_name', 'organization', 'purpose', 'contact_phone', 'contact_email', 'signature_text', 'notes', 'created_at'];
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,44 +17,39 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { from, to, format } = req.query;
+        const { from, to } = req.query;
         
         let query = supabase
             .from('visit_log')
-            .select('*')
-            .order('arrival_date', { ascending: false });
+            .select('id, arrival_date, arrival_time, departure_time, visitor_name, organization, purpose, contact_phone, contact_email, signature_text, notes, created_at')
+            .order('arrival_date', { ascending: false })
+            .order('arrival_time', { ascending: false });
         
         if (from) query = query.gte('arrival_date', from);
         if (to) query = query.lte('arrival_date', to);
         
-        const { data, error } = await query;
-        if (error) throw error;
-
-        if (format === 'csv') {
-            const headers = ['Datum prichodu', 'Cas prichodu', 'Meno', 'Organizacia', 'Dovod', 'Kontakt tel', 'Kontakt email', 'Podpis', 'Poznamka'];
-            const rows = (data || []).map(row => [
-                row.arrival_date || '',
-                row.arrival_time || '',
-                row.visitor_name || '',
-                row.organization || '',
-                row.purpose || '',
-                row.contact_phone || '',
-                row.contact_email || '',
-                row.signature_text || '',
-                (row.notes || '').replace(/"/g, '""')
-            ]);
-            
-            const csv = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
-            
-            const filename = `navstevna-kniha-${from || 'all'}-${to || 'all'}.csv`;
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            return res.status(200).send('\uFEFF' + csv);
+        const { data: visits, error } = await query;
+        
+        if (error) {
+            console.error('Export visit-log DB error:', error.message);
+            return sendEmptyCSV(res, HEADERS, 'visit-log');
+        }
+        
+        if (!visits || visits.length === 0) {
+            return sendEmptyCSV(res, HEADERS, 'visit-log');
         }
 
-        return res.status(200).json(data || []);
+        const rows = visits.map(v => [
+            v.id, v.arrival_date, v.arrival_time, v.departure_time,
+            v.visitor_name, v.organization, v.purpose,
+            v.contact_phone, v.contact_email, v.signature_text,
+            v.notes, v.created_at
+        ]);
+        
+        return sendCSV(res, HEADERS, rows, 'visit-log');
+        
     } catch (e) {
-        console.error('Export visit-log error:', e);
-        res.status(500).json({ error: e.message });
+        console.error('Export visit-log error:', e.message);
+        return sendEmptyCSV(res, HEADERS, 'visit-log');
     }
 };

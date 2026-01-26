@@ -1,20 +1,19 @@
 {
-  "version": "6.11.5",
-  "build": "2026-01-26T08:10:00Z",
+  "version": "6.11.6",
+  "build": "2026-01-26T08:30:00Z",
   "features": [
     "Ulohy - profi modul so stavmi, prioritami, filtrami",
     "Upozornenia - manualne a automaticke z pravidiel",
-    "Filtre: stav, priorita, termin, kon",
-    "Excel-friendly CSV export (UTF-8 BOM, oddelovac ;)",
-    "Rule runner s dedup logikou",
-    "Tlac a CSV export uloh a upozorneni"
+    "Zjednotene CSV exporty - Excel-friendly (UTF-8 BOM, delimiter ;)",
+    "CSV helper modul pre konzistentne exporty",
+    "Vsetky exporty: tasks, stable-log, visit-log, vaccinations, documents, notifications, horses-licenses"
   ],
   "changelog": {
+    "6.11.6": "Zjednotene CSV exporty + autocomplete v login formulari",
     "6.11.5": "Excel-friendly CSV export uloh + horse filter v UI",
     "6.11.4": "Fix CSV export tasks - odstraneny JOIN",
     "6.11.3": "Fix tasks FK constraint na created_by",
     "6.11.2": "Graceful error handling",
-    "6.11.1": "Fix API - odstranene problematicke JOINy",
-    "6.11.0": "Ulohy a Upozornenia - profi implementacia"
+    "6.11.1": "Fix API - odstranene problematicke JOINy"
   }
 }

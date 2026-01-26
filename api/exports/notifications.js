@@ -1,5 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
+const { sendCSV, sendEmptyCSV } = require('../utils/csv');
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
+const HEADERS = ['id', 'title', 'message', 'severity', 'source', 'horse_id', 'horse_name', 'entity_type', 'entity_id', 'is_read', 'is_dismissed', 'expires_at', 'created_at'];
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,48 +17,67 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { from, to, severity, source, format } = req.query;
+        const { from, to, severity, source, is_dismissed } = req.query;
         
         let query = supabase
             .from('notifications')
-            .select('*, horses:assigned_horse_id(id, name, stable_name)')
-            .eq('is_dismissed', false)
+            .select('id, title, message, severity, source, assigned_horse_id, entity_type, entity_id, is_read, is_dismissed, expires_at, created_at')
             .order('created_at', { ascending: false });
+        
+        // Default: nezrusene
+        if (is_dismissed === 'true') {
+            query = query.eq('is_dismissed', true);
+        } else if (is_dismissed !== 'all') {
+            query = query.eq('is_dismissed', false);
+        }
         
         if (from) query = query.gte('created_at', from);
         if (to) query = query.lte('created_at', to + 'T23:59:59');
         if (severity && severity !== 'all') query = query.eq('severity', severity);
         if (source && source !== 'all') query = query.eq('source', source);
         
-        const { data, error } = await query;
-        if (error) throw error;
-
-        if (format === 'csv') {
-            const severityLabels = { info: 'Info', warning: 'Varovanie', danger: 'Kriticke' };
-            const sourceLabels = { manual: 'Manualne', rule: 'Automaticke' };
-            
-            const headers = ['Nazov', 'Sprava', 'Zavaznost', 'Zdroj', 'Kon', 'Precitane', 'Vytvorene'];
-            const rows = (data || []).map(row => [
-                row.title || '',
-                (row.message || '').replace(/"/g, '""').replace(/\n/g, ' '),
-                severityLabels[row.severity] || row.severity,
-                sourceLabels[row.source] || row.source,
-                row.horses ? (row.horses.stable_name || row.horses.name) : '',
-                row.is_read ? 'Ano' : 'Nie',
-                row.created_at ? row.created_at.split('T')[0] : ''
-            ]);
-            
-            const csv = [headers.join(';'), ...rows.map(r => r.map(c => `"${c}"`).join(';'))].join('\n');
-            
-            const filename = `upozornenia-${from || 'all'}-${to || 'all'}.csv`;
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            return res.status(200).send('\uFEFF' + csv);
+        const { data: notifications, error } = await query;
+        
+        if (error) {
+            console.error('Export notifications DB error:', error.message);
+            return sendEmptyCSV(res, HEADERS, 'notifications');
+        }
+        
+        if (!notifications || notifications.length === 0) {
+            return sendEmptyCSV(res, HEADERS, 'notifications');
         }
 
-        return res.status(200).json(data || []);
+        // Fetch horses separately (bez JOIN-u)
+        const horseIds = [...new Set(notifications.filter(n => n.assigned_horse_id).map(n => n.assigned_horse_id))];
+        let horsesMap = {};
+        if (horseIds.length > 0) {
+            try {
+                const { data: horses } = await supabase
+                    .from('horses')
+                    .select('id, name, stable_name')
+                    .in('id', horseIds);
+                if (horses) {
+                    horsesMap = horses.reduce((acc, h) => { 
+                        acc[h.id] = h.stable_name || h.name || ''; 
+                        return acc; 
+                    }, {});
+                }
+            } catch (e) {
+                console.error('Export notifications - horses fetch error:', e.message);
+            }
+        }
+
+        const rows = notifications.map(n => [
+            n.id, n.title, n.message, n.severity, n.source,
+            n.assigned_horse_id, n.assigned_horse_id ? (horsesMap[n.assigned_horse_id] || '') : '',
+            n.entity_type, n.entity_id, n.is_read, n.is_dismissed,
+            n.expires_at, n.created_at
+        ]);
+        
+        return sendCSV(res, HEADERS, rows, 'notifications');
+        
     } catch (e) {
-        console.error('Export notifications error:', e);
-        res.status(500).json({ error: e.message });
+        console.error('Export notifications error:', e.message);
+        return sendEmptyCSV(res, HEADERS, 'notifications');
     }
 };
