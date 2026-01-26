@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -16,14 +17,17 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovany' });
+    const user = verifyToken(req);
+    if (!user) return res.status(401).json({ error: 'Neautorizovany' });
+    
+    const { ip, user_agent } = getRequestInfo(req);
 
     try {
         if (req.method === 'GET') {
             const { horse_id, category, date_from, date_to, stable_log_id, visit_log_id, search, is_club } = req.query;
             
             let query = supabase.from('documents_v2')
-                .select('*, horses(id, name, stable_name)')
+                .select('*')
                 .order('document_date', { ascending: false });
             
             if (horse_id) query = query.eq('horse_id', horse_id);
@@ -43,7 +47,6 @@ module.exports = async (req, res) => {
         }
 
         if (req.method === 'POST') {
-            const user = verifyToken(req);
             const { 
                 title, description, category, document_date, file_url, file_name,
                 mime_type, file_size, tags, horse_id, rider_id, trainer_id, 
@@ -76,6 +79,19 @@ module.exports = async (req, res) => {
                 }])
                 .select().single();
             if (error) throw error;
+            
+            await logAudit(supabase, {
+                action: 'create',
+                entity_type: 'documents_v2',
+                entity_id: data.id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: data
+            });
+            
             return res.status(201).json(data);
         }
 

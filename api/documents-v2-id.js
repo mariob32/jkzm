@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -16,20 +17,24 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovany' });
+    const user = verifyToken(req);
+    if (!user) return res.status(401).json({ error: 'Neautorizovany' });
 
     const id = req.query.id;
+    const { ip, user_agent } = getRequestInfo(req);
 
     try {
         if (req.method === 'GET') {
             const { data, error } = await supabase.from('documents_v2')
-                .select('*, horses(id, name, stable_name)')
+                .select('*')
                 .eq('id', id).single();
             if (error || !data) return res.status(404).json({ error: 'Not found' });
             return res.status(200).json(data);
         }
 
         if (req.method === 'PUT') {
+            const { data: before } = await supabase.from('documents_v2').select('*').eq('id', id).single();
+            
             const { 
                 title, description, category, document_date, file_url, file_name,
                 mime_type, file_size, tags, horse_id, rider_id, trainer_id, 
@@ -58,12 +63,40 @@ module.exports = async (req, res) => {
                 })
                 .eq('id', id).select().single();
             if (error) throw error;
+            
+            await logAudit(supabase, {
+                action: 'update',
+                entity_type: 'documents_v2',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: before,
+                after_data: data
+            });
+            
             return res.status(200).json(data);
         }
 
         if (req.method === 'DELETE') {
+            const { data: before } = await supabase.from('documents_v2').select('*').eq('id', id).single();
+            
             const { error } = await supabase.from('documents_v2').delete().eq('id', id);
             if (error) throw error;
+            
+            await logAudit(supabase, {
+                action: 'delete',
+                entity_type: 'documents_v2',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: before,
+                after_data: null
+            });
+            
             return res.status(200).json({ message: 'Deleted' });
         }
 

@@ -5,9 +5,18 @@ try {
     JSZip = null;
 }
 const { createClient } = require('@supabase/supabase-js');
+const jwt = require('jsonwebtoken');
 const { buildCSV, buildEmptyCSV, getToday, escapeValue, DELIMITER, BOM, NEWLINE } = require('../utils/csv');
+const { logAudit, getRequestInfo } = require('../utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
+
+function verifyToken(req) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return null;
+    try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
+}
 
 // Export configurations
 const EXPORTS = {
@@ -132,6 +141,9 @@ module.exports = async (req, res) => {
         return res.status(500).json({ error: 'JSZip library not available' });
     }
 
+    const user = verifyToken(req);
+    const { ip, user_agent } = getRequestInfo(req);
+
     try {
         const zip = new JSZip();
         const today = getToday();
@@ -144,6 +156,19 @@ module.exports = async (req, res) => {
         
         // Generate ZIP
         const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+        
+        // Audit log - EXPORT
+        await logAudit(supabase, {
+            action: 'export',
+            entity_type: 'exports',
+            entity_id: null,
+            actor_id: user?.id || null,
+            actor_name: user?.email || user?.name || 'admin',
+            ip,
+            user_agent,
+            before_data: null,
+            after_data: { type: 'export-pack', date: today, files: Object.keys(EXPORTS).length }
+        });
         
         const filename = `jkzm_export-pack_${today}.zip`;
         res.setHeader('Content-Type', 'application/zip');

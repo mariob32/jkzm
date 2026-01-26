@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -8,17 +9,6 @@ function verifyToken(req) {
     const auth = req.headers.authorization;
     if (!auth || !auth.startsWith('Bearer ')) return null;
     try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
-}
-
-async function logAudit(entity_type, entity_id, action, user, before_data, after_data) {
-    try {
-        await supabase.from('audit_logs').insert({
-            entity_type, entity_id, action,
-            changed_by: user?.id || null,
-            changed_by_name: user?.name || user?.email || null,
-            before_data, after_data, changed_fields: null
-        });
-    } catch (e) { console.error('Audit error:', e); }
 }
 
 module.exports = async (req, res) => {
@@ -37,6 +27,9 @@ module.exports = async (req, res) => {
         if (req.method === 'POST') {
             const user = verifyToken(req);
             if (!user) return res.status(401).json({ error: 'Neautorizovany' });
+            
+            const { ip, user_agent } = getRequestInfo(req);
+            
             const { 
                 name, stable_name, breed, color, sex, birth_date, country_of_birth,
                 passport_number, life_number, microchip,
@@ -62,7 +55,18 @@ module.exports = async (req, res) => {
                 .select().single();
             if (error) throw error;
             
-            await logAudit('horses', data.id, 'INSERT', user, null, data);
+            await logAudit(supabase, {
+                action: 'create',
+                entity_type: 'horses',
+                entity_id: data.id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: data
+            });
+            
             return res.status(201).json(data);
         }
 

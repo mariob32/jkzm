@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -8,27 +9,6 @@ function verifyToken(req) {
     const auth = req.headers.authorization;
     if (!auth || !auth.startsWith('Bearer ')) return null;
     try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
-}
-
-async function logAudit(entity_type, entity_id, action, user, before_data, after_data) {
-    try {
-        let changed_fields = null;
-        if (action === 'UPDATE' && before_data && after_data) {
-            changed_fields = [];
-            for (const key of Object.keys(after_data)) {
-                if (key === 'updated_at' || key === 'created_at') continue;
-                if (JSON.stringify(before_data[key]) !== JSON.stringify(after_data[key])) {
-                    changed_fields.push(key);
-                }
-            }
-        }
-        await supabase.from('audit_logs').insert({
-            entity_type, entity_id, action,
-            changed_by: user?.id || null,
-            changed_by_name: user?.name || user?.email || null,
-            before_data, after_data, changed_fields
-        });
-    } catch (e) { console.error('Audit error:', e); }
 }
 
 module.exports = async (req, res) => {
@@ -48,6 +28,8 @@ module.exports = async (req, res) => {
 
         const user = verifyToken(req);
         if (!user) return res.status(401).json({ error: 'Neautorizovany' });
+        
+        const { ip, user_agent } = getRequestInfo(req);
 
         if (req.method === 'PUT') {
             const { data: before } = await supabase.from('horses').select('*').eq('id', id).single();
@@ -77,7 +59,18 @@ module.exports = async (req, res) => {
                 .eq('id', id).select().single();
             if (error) throw error;
             
-            await logAudit('horses', id, 'UPDATE', user, before, data);
+            await logAudit(supabase, {
+                action: 'update',
+                entity_type: 'horses',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: before,
+                after_data: data
+            });
+            
             return res.status(200).json(data);
         }
 
@@ -86,7 +79,18 @@ module.exports = async (req, res) => {
             const { error } = await supabase.from('horses').delete().eq('id', id);
             if (error) throw error;
             
-            await logAudit('horses', id, 'DELETE', user, before, null);
+            await logAudit(supabase, {
+                action: 'delete',
+                entity_type: 'horses',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: before,
+                after_data: null
+            });
+            
             return res.status(200).json({ message: 'Deleted' });
         }
 

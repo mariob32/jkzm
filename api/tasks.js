@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -18,6 +19,8 @@ module.exports = async (req, res) => {
 
     const user = verifyToken(req);
     if (!user) return res.status(401).json({ error: 'Neautorizovany' });
+
+    const { ip, user_agent } = getRequestInfo(req);
 
     try {
         if (req.method === 'GET') {
@@ -57,14 +60,11 @@ module.exports = async (req, res) => {
             
             const { data: tasks, error } = await query;
             
-            // Ak tabulka neexistuje alebo iny DB error, vrat prazdne pole
             if (error) {
                 console.error('Tasks GET error:', error.code, error.message);
-                // Graceful handling - vrat prazdne pole namiesto 500
                 return res.status(200).json([]);
             }
             
-            // Fetch horse names separately if needed
             const horseIds = [...new Set((tasks || []).filter(t => t.horse_id).map(t => t.horse_id))];
             let horsesMap = {};
             if (horseIds.length > 0) {
@@ -75,7 +75,6 @@ module.exports = async (req, res) => {
                 horsesMap = (horses || []).reduce((acc, h) => { acc[h.id] = h; return acc; }, {});
             }
             
-            // Merge horse data
             const result = (tasks || []).map(t => ({
                 ...t,
                 horses: t.horse_id ? horsesMap[t.horse_id] || null : null
@@ -103,7 +102,6 @@ module.exports = async (req, res) => {
                     entity_type: entity_type || null,
                     entity_id: entity_id || null,
                     assigned_to: assigned_to || null
-                    // created_by removed - FK constraint issue
                 })
                 .select('*')
                 .single();
@@ -115,7 +113,19 @@ module.exports = async (req, res) => {
                 throw error;
             }
             
-            // Fetch horse if exists
+            // Audit log - CREATE
+            await logAudit(supabase, {
+                action: 'create',
+                entity_type: 'tasks',
+                entity_id: data.id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: data
+            });
+            
             if (data && data.horse_id) {
                 const { data: horse } = await supabase
                     .from('horses')

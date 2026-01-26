@@ -14,50 +14,53 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            const { from, to, entity_type, action, changed_by, q, limit, offset } = req.query;
+            const { from, to, entity_type, action, actor_name, entity_id, limit } = req.query;
             
             let query = supabase
                 .from('audit_logs')
-                .select('*', { count: 'exact' })
+                .select('id, created_at, action, entity_type, entity_id, actor_name, actor_id, ip, user_agent, diff', { count: 'exact' })
                 .order('created_at', { ascending: false });
             
             if (from) query = query.gte('created_at', from);
             if (to) query = query.lte('created_at', to + 'T23:59:59');
-            if (entity_type) query = query.eq('entity_type', entity_type);
-            if (action) query = query.eq('action', action);
-            if (changed_by) query = query.eq('changed_by', changed_by);
-            if (q) {
-                query = query.or(`entity_id.eq.${q},changed_by_name.ilike.%${q}%`);
-            }
+            if (entity_type && entity_type !== 'all') query = query.eq('entity_type', entity_type);
+            if (action && action !== 'all') query = query.eq('action', action);
+            if (entity_id) query = query.eq('entity_id', entity_id);
+            if (actor_name) query = query.ilike('actor_name', `%${actor_name}%`);
             
-            const limitNum = parseInt(limit) || 50;
-            const offsetNum = parseInt(offset) || 0;
-            query = query.range(offsetNum, offsetNum + limitNum - 1);
+            const limitNum = Math.min(parseInt(limit) || 100, 500);
+            query = query.limit(limitNum);
             
             const { data, error, count } = await query;
-            if (error) throw error;
+            
+            if (error) {
+                console.error('Audit logs GET error:', error.message);
+                return res.status(200).json({ data: [], total: 0 });
+            }
             
             return res.status(200).json({ data: data || [], total: count || 0 });
         }
 
         if (req.method === 'POST') {
-            const { entity_type, entity_id, action, changed_by, changed_by_name, before_data, after_data, changed_fields } = req.body;
+            const { entity_type, entity_id, action, actor_id, actor_name, ip, user_agent, before_data, after_data, diff } = req.body;
             
-            if (!entity_type || !entity_id || !action) {
-                return res.status(400).json({ error: 'entity_type, entity_id a action su povinne' });
+            if (!entity_type || !action) {
+                return res.status(400).json({ error: 'entity_type a action su povinne' });
             }
             
             const { data, error } = await supabase
                 .from('audit_logs')
                 .insert({
                     entity_type,
-                    entity_id,
+                    entity_id: entity_id || null,
                     action,
-                    changed_by: changed_by || null,
-                    changed_by_name: changed_by_name || null,
+                    actor_id: actor_id || null,
+                    actor_name: actor_name || 'admin',
+                    ip: ip || null,
+                    user_agent: user_agent || null,
                     before_data: before_data || null,
                     after_data: after_data || null,
-                    changed_fields: changed_fields || null
+                    diff: diff || null
                 })
                 .select()
                 .single();

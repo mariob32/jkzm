@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -22,11 +23,13 @@ module.exports = async (req, res) => {
     const id = req.query.id;
     if (!id) return res.status(400).json({ error: 'ID je povinne' });
 
+    const { ip, user_agent } = getRequestInfo(req);
+
     try {
         if (req.method === 'GET') {
             const { data, error } = await supabase
                 .from('tasks')
-                .select('*, horses:horse_id(id, name, stable_name), assignee:assigned_to(id, name, email)')
+                .select('*')
                 .eq('id', id)
                 .single();
             
@@ -36,6 +39,9 @@ module.exports = async (req, res) => {
         }
 
         if (req.method === 'PUT') {
+            // Fetch original data for audit
+            const { data: beforeData } = await supabase.from('tasks').select('*').eq('id', id).single();
+            
             const { title, description, priority, status, due_date, horse_id, entity_type, entity_id, assigned_to } = req.body;
             
             const updates = {
@@ -63,20 +69,51 @@ module.exports = async (req, res) => {
                 .from('tasks')
                 .update(updates)
                 .eq('id', id)
-                .select('*, horses:horse_id(id, name, stable_name)')
+                .select('*')
                 .single();
             
             if (error) throw error;
+            
+            // Audit log - UPDATE
+            await logAudit(supabase, {
+                action: 'update',
+                entity_type: 'tasks',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: beforeData,
+                after_data: data
+            });
+            
             return res.status(200).json(data);
         }
 
         if (req.method === 'DELETE') {
+            // Fetch original data for audit
+            const { data: beforeData } = await supabase.from('tasks').select('*').eq('id', id).single();
+            
             const { error } = await supabase
                 .from('tasks')
                 .delete()
                 .eq('id', id);
             
             if (error) throw error;
+            
+            // Audit log - DELETE
+            await logAudit(supabase, {
+                action: 'delete',
+                entity_type: 'tasks',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: beforeData,
+                after_data: null
+            });
+            
             return res.status(200).json({ success: true, message: 'Uloha zmazana' });
         }
 
