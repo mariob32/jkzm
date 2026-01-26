@@ -838,6 +838,9 @@
                 <div class="header">
                     <h1>Audit Trail Pro</h1>
                     <div class="header-actions">
+                        <label style="display:flex;align-items:center;gap:0.5rem;margin-right:1rem;font-size:0.9rem">
+                            <input type="checkbox" id="auditIncludeAfterData"> Zahrnúť after_data
+                        </label>
                         <button class="btn btn-outline" onclick="downloadAuditCSV()">Export CSV</button>
                         <button class="btn btn-outline" onclick="printAuditTrail()">Tlač</button>
                         <button class="btn btn-primary" onclick="loadAuditLogs()">Obnoviť</button>
@@ -6897,6 +6900,7 @@
         const entity_type = document.getElementById('auditEntityFilter')?.value || '';
         const action = document.getElementById('auditActionFilter')?.value || '';
         const actor_name = document.getElementById('auditActorFilter')?.value || '';
+        const includeAfterData = document.getElementById('auditIncludeAfterData')?.checked;
         
         let url = `/api/exports/audit-logs?`;
         if (from) url += `from=${from}&`;
@@ -6904,6 +6908,7 @@
         if (entity_type) url += `entity_type=${entity_type}&`;
         if (action) url += `action=${action}&`;
         if (actor_name) url += `actor_name=${encodeURIComponent(actor_name)}&`;
+        if (includeAfterData) url += `include_after_data=1&`;
         
         try {
             const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } });

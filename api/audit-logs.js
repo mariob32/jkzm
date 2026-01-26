@@ -16,9 +16,15 @@ module.exports = async (req, res) => {
         if (req.method === 'GET') {
             const { from, to, entity_type, action, actor_name, entity_id, limit } = req.query;
             
+            // Include after_data for export queries
+            const isExportQuery = entity_type === 'official-export' || action === 'export';
+            const selectFields = isExportQuery
+                ? 'id, created_at, action, entity_type, entity_id, actor_name, actor_id, ip, user_agent, diff, after_data'
+                : 'id, created_at, action, entity_type, entity_id, actor_name, actor_id, ip, user_agent, diff';
+            
             let query = supabase
                 .from('audit_logs')
-                .select('id, created_at, action, entity_type, entity_id, actor_name, actor_id, ip, user_agent, diff', { count: 'exact' })
+                .select(selectFields, { count: 'exact' })
                 .order('created_at', { ascending: false });
             
             if (from) query = query.gte('created_at', from);
