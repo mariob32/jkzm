@@ -14,36 +14,6 @@ function getToday() {
     return new Date().toISOString().split('T')[0];
 }
 
-function toBuffer(input) {
-    // Already a Buffer
-    if (Buffer.isBuffer(input)) {
-        return input;
-    }
-    
-    // JSON serialized Buffer: { type: 'Buffer', data: [...] }
-    if (input && typeof input === 'object' && input.type === 'Buffer' && Array.isArray(input.data)) {
-        return Buffer.from(input.data);
-    }
-    
-    // Hex string from Postgres bytea: \x504b0304...
-    if (typeof input === 'string' && input.startsWith('\\x')) {
-        return Buffer.from(input.slice(2), 'hex');
-    }
-    
-    // Base64 string
-    if (typeof input === 'string') {
-        return Buffer.from(input, 'base64');
-    }
-    
-    // Array of bytes
-    if (Array.isArray(input)) {
-        return Buffer.from(input);
-    }
-    
-    // Fallback
-    return Buffer.from(input);
-}
-
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -78,30 +48,38 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'ZIP data not available' });
         }
 
-        // Debug: log type of zip_bytes
-        console.log('zip_bytes type:', typeof data.zip_bytes, 'isBuffer:', Buffer.isBuffer(data.zip_bytes));
-        if (data.zip_bytes && typeof data.zip_bytes === 'object') {
-            console.log('zip_bytes keys:', Object.keys(data.zip_bytes));
-        }
-
-        const zipBuffer = toBuffer(data.zip_bytes);
+        // Convert zip_bytes to actual binary buffer
+        let zipBuffer;
+        const zb = data.zip_bytes;
         
-        // Verify it's a valid ZIP (starts with PK)
-        if (zipBuffer[0] !== 0x50 || zipBuffer[1] !== 0x4B) {
-            console.error('Invalid ZIP signature:', zipBuffer[0], zipBuffer[1]);
-            return res.status(500).json({ error: 'Invalid ZIP data in database' });
+        if (Buffer.isBuffer(zb)) {
+            zipBuffer = zb;
+        } else if (zb && zb.type === 'Buffer' && Array.isArray(zb.data)) {
+            // Supabase returns JSON serialized Buffer
+            zipBuffer = Buffer.from(zb.data);
+        } else if (typeof zb === 'string') {
+            if (zb.startsWith('\\x')) {
+                zipBuffer = Buffer.from(zb.slice(2), 'hex');
+            } else {
+                zipBuffer = Buffer.from(zb, 'base64');
+            }
+        } else if (Array.isArray(zb)) {
+            zipBuffer = Buffer.from(zb);
+        } else {
+            return res.status(500).json({ error: 'Unknown zip_bytes format', type: typeof zb });
         }
 
         const exportDate = data.created_at ? data.created_at.split('T')[0] : getToday();
         const shortId = data.id.split('-')[0];
         const filename = `jkzm_${data.type}_export_${exportDate}_${shortId}.zip`;
 
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.setHeader('Content-Length', zipBuffer.length);
-        res.status(200);
-        res.end(zipBuffer);
-        return;
+        // Send as binary using raw response
+        res.writeHead(200, {
+            'Content-Type': 'application/octet-stream',
+            'Content-Disposition': `attachment; filename="${filename}"`,
+            'Content-Length': zipBuffer.length
+        });
+        res.end(zipBuffer, 'binary');
 
     } catch (e) {
         console.error('Official export download API error:', e.message);
