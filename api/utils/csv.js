@@ -1,10 +1,11 @@
 /**
  * JKZM CSV Helper - Excel-friendly CSV export utilities
- * UTF-8 BOM + delimiter `;` + proper escaping
+ * UTF-8 BOM + delimiter `;` + proper escaping + newline terminator
  */
 
 const BOM = '\uFEFF';
 const DELIMITER = ';';
+const NEWLINE = '\n';
 
 /**
  * Escape CSV value for Excel compatibility
@@ -21,25 +22,40 @@ function escapeValue(value) {
 }
 
 /**
+ * Get today's date in YYYY-MM-DD format
+ */
+function getToday() {
+    return new Date().toISOString().split('T')[0];
+}
+
+/**
  * Build CSV string from headers and rows
  * @param {string[]} headers - Array of header names
  * @param {Array<Array<any>>} rows - Array of row arrays
- * @returns {string} CSV string with BOM
+ * @returns {string} CSV string with BOM and trailing newline
  */
 function buildCSV(headers, rows) {
     const headerLine = headers.join(DELIMITER);
     const dataLines = rows.map(row => row.map(escapeValue).join(DELIMITER));
-    return BOM + [headerLine, ...dataLines].join('\n');
+    return BOM + [headerLine, ...dataLines].join(NEWLINE) + NEWLINE;
+}
+
+/**
+ * Build header-only CSV string
+ * @param {string[]} headers - Array of header names
+ * @returns {string} CSV string with BOM and trailing newline
+ */
+function buildEmptyCSV(headers) {
+    return BOM + headers.join(DELIMITER) + NEWLINE;
 }
 
 /**
  * Set HTTP response headers for CSV download
  * @param {object} res - Express/Vercel response object
- * @param {string} filenamePrefix - Prefix for filename (e.g., 'tasks', 'vaccinations')
+ * @param {string} exportName - Export name (e.g., 'tasks', 'vaccinations')
  */
-function setCSVHeaders(res, filenamePrefix) {
-    const today = new Date().toISOString().split('T')[0];
-    const filename = `${filenamePrefix}_${today}.csv`;
+function setCSVHeaders(res, exportName) {
+    const filename = `jkzm_${exportName}_${getToday()}.csv`;
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 }
@@ -48,11 +64,11 @@ function setCSVHeaders(res, filenamePrefix) {
  * Send empty CSV with headers only (for errors or no data)
  * @param {object} res - Express/Vercel response object
  * @param {string[]} headers - Array of header names
- * @param {string} filenamePrefix - Prefix for filename
+ * @param {string} exportName - Export name for filename
  */
-function sendEmptyCSV(res, headers, filenamePrefix) {
-    setCSVHeaders(res, filenamePrefix);
-    return res.status(200).send(BOM + headers.join(DELIMITER));
+function sendEmptyCSV(res, headers, exportName) {
+    setCSVHeaders(res, exportName);
+    return res.status(200).send(buildEmptyCSV(headers));
 }
 
 /**
@@ -60,18 +76,21 @@ function sendEmptyCSV(res, headers, filenamePrefix) {
  * @param {object} res - Express/Vercel response object
  * @param {string[]} headers - Array of header names
  * @param {Array<Array<any>>} rows - Array of row arrays
- * @param {string} filenamePrefix - Prefix for filename
+ * @param {string} exportName - Export name for filename
  */
-function sendCSV(res, headers, rows, filenamePrefix) {
-    setCSVHeaders(res, filenamePrefix);
+function sendCSV(res, headers, rows, exportName) {
+    setCSVHeaders(res, exportName);
     return res.status(200).send(buildCSV(headers, rows));
 }
 
 module.exports = {
     BOM,
     DELIMITER,
+    NEWLINE,
     escapeValue,
+    getToday,
     buildCSV,
+    buildEmptyCSV,
     setCSVHeaders,
     sendEmptyCSV,
     sendCSV

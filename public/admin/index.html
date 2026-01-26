@@ -434,7 +434,7 @@
                     <h1>Ulohy</h1>
                     <div class="header-actions">
                         <button class="btn btn-outline" onclick="printTasks()">Tlac</button>
-                        <button class="btn btn-outline" onclick="downloadTasksCSV()">CSV</button>
+                        <button class="btn btn-outline" onclick="downloadTasksCSV()">Export CSV</button>
                         <button class="btn btn-primary" onclick="openTaskModal()">+ Pridat ulohu</button>
                     </div>
                 </div>
@@ -517,7 +517,7 @@
                     <h1>Upozornenia</h1>
                     <div class="header-actions">
                         <button class="btn btn-outline" onclick="printNotifications()">Tlac</button>
-                        <button class="btn btn-outline" onclick="downloadNotificationsCSV()">CSV</button>
+                        <button class="btn btn-outline" onclick="downloadNotificationsCSV()">Export CSV</button>
                         <button class="btn btn-warning" onclick="runNotificationRules()">Obnovit upozornenia</button>
                         <button class="btn btn-primary" onclick="openNotificationModal()">+ Pridat</button>
                     </div>
@@ -925,6 +925,7 @@
             <section id="exports" class="section">
                 <div class="header">
                     <h1>Exporty a tlac</h1>
+                    <button class="btn btn-primary" onclick="downloadExportPack()">📦 Export balík (ZIP)</button>
                 </div>
                 
                 <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:1.5rem">
@@ -960,7 +961,7 @@
                                 <div class="form-group"><label>Do</label><input type="date" class="form-control" id="exportStableTo"></div>
                                 <div class="form-group" style="align-self:flex-end">
                                     <button class="btn btn-primary" onclick="loadExportStableLog()">Nacitat</button>
-                                    <button class="btn btn-outline" onclick="downloadExportCSV('stable-log')">CSV</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('stable-log')">Export CSV</button>
                                     <button class="btn btn-outline" onclick="printExportStableLog()">Tlac</button>
                                 </div>
                             </div>
@@ -982,7 +983,7 @@
                                 <div class="form-group"><label>Do</label><input type="date" class="form-control" id="exportVisitTo"></div>
                                 <div class="form-group" style="align-self:flex-end">
                                     <button class="btn btn-primary" onclick="loadExportVisitLog()">Nacitat</button>
-                                    <button class="btn btn-outline" onclick="downloadExportCSV('visit-log')">CSV</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('visit-log')">Export CSV</button>
                                     <button class="btn btn-outline" onclick="printExportVisitLog()">Tlac</button>
                                 </div>
                             </div>
@@ -1016,7 +1017,7 @@
                                 </div>
                                 <div class="form-group" style="align-self:flex-end">
                                     <button class="btn btn-primary" onclick="loadExportLicenses()">Nacitat</button>
-                                    <button class="btn btn-outline" onclick="downloadExportCSV('horses-licenses')">CSV</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('horses-licenses')">Export CSV</button>
                                     <button class="btn btn-outline" onclick="printExportLicenses()">Tlac</button>
                                 </div>
                             </div>
@@ -1044,7 +1045,7 @@
                                 </div>
                                 <div class="form-group" style="align-self:flex-end">
                                     <button class="btn btn-primary" onclick="loadExportVaccinations()">Nacitat</button>
-                                    <button class="btn btn-outline" onclick="downloadExportCSV('vaccinations')">CSV</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('vaccinations')">Export CSV</button>
                                     <button class="btn btn-outline" onclick="printExportVaccinations()">Tlac</button>
                                 </div>
                             </div>
@@ -1076,7 +1077,7 @@
                                 </div>
                                 <div class="form-group" style="align-self:flex-end">
                                     <button class="btn btn-primary" onclick="loadExportDocuments()">Nacitat</button>
-                                    <button class="btn btn-outline" onclick="downloadExportCSV('documents')">CSV</button>
+                                    <button class="btn btn-outline" onclick="downloadExportCSV('documents')">Export CSV</button>
                                     <button class="btn btn-outline" onclick="printExportDocuments()">Tlac</button>
                                 </div>
                             </div>
@@ -7096,6 +7097,28 @@
                 a.href = blobUrl;
                 a.click();
                 URL.revokeObjectURL(blobUrl);
+            });
+    }
+
+    function downloadExportPack() {
+        showToast('Generujem export balik...', 'info');
+        fetch('/api/exports/export-pack', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            })
+            .then(blob => {
+                const today = new Date().toISOString().split('T')[0];
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `jkzm_export-pack_${today}.zip`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                showToast('Export balik stiahnuty', 'success');
+            })
+            .catch(e => {
+                console.error('Export pack error:', e);
+                showToast('Chyba pri generovani export balika', 'error');
             });
     }
 
