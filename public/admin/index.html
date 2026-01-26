@@ -7310,12 +7310,14 @@
     
     function downloadOfficialExport(id) {
         showToast('Získavam odkaz na stiahnutie...', 'info');
-        fetch(`/api/official-exports/${id}`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
+        fetch(`/api/official-exports/${id}/signed-url`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } })
             .then(res => res.json())
             .then(data => {
                 if (data.download_url) {
                     window.open(data.download_url, '_blank');
                     showToast('Export stiahnutý', 'success');
+                } else if (data.error) {
+                    showToast('Chyba: ' + data.error, 'error');
                 } else {
                     showToast('Download URL nie je dostupná', 'error');
                 }

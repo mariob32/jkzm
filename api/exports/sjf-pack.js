@@ -12,7 +12,7 @@ const { logAudit, getRequestInfo } = require('../utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
-const VERSION = '6.15.0';
+const VERSION = '6.15.1';
 
 function verifyToken(req) {
     const auth = req.headers.authorization;
@@ -215,7 +215,20 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
             return res.status(500).json({ error: 'Failed to upload export: ' + uploadError.message });
         }
 
-        // Save metadata to DB (without zip_bytes)
+        // Generate signed URL for download (1 hour)
+        const ttl = 3600;
+        const { data: urlData, error: urlError } = await supabase.storage
+            .from('exports')
+            .createSignedUrl(storagePath, ttl);
+
+        if (urlError) {
+            console.error('Signed URL error:', urlError.message);
+            return res.status(500).json({ error: 'Failed to generate download URL' });
+        }
+
+        const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
+
+        // Save metadata to DB
         const { error: insertError } = await supabase
             .from('official_exports')
             .insert({
@@ -228,23 +241,17 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
                 filters: { from: from || null, to: to || null },
                 files: files,
                 manifest: manifest,
+                manifest_json: manifest,
                 sha256: checksums,
+                checksums_sha256: fileContents['CHECKSUMS.sha256'],
+                storage_bucket: 'exports',
                 storage_path: storagePath,
-                size_bytes: sizeBytes
+                size_bytes: sizeBytes,
+                signed_url_expires_at: expiresAt
             });
 
         if (insertError) {
             console.error('DB insert error:', insertError.message);
-        }
-
-        // Generate signed URL for download
-        const { data: urlData, error: urlError } = await supabase.storage
-            .from('exports')
-            .createSignedUrl(storagePath, 3600);
-
-        if (urlError) {
-            console.error('Signed URL error:', urlError.message);
-            return res.status(500).json({ error: 'Failed to generate download URL' });
         }
 
         // Audit log
@@ -264,7 +271,9 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
                 generated_at: generatedAt,
                 size_bytes: sizeBytes,
                 export_id: exportId,
-                storage_path: storagePath
+                storage_bucket: 'exports',
+                storage_path: storagePath,
+                signed_url_expires_at: expiresAt
             }
         });
 
@@ -273,7 +282,8 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
             export_id: exportId,
             filename: filename,
             size_bytes: sizeBytes,
-            download_url: urlData.signedUrl
+            download_url: urlData.signedUrl,
+            expires_at: expiresAt
         });
 
     } catch (e) {
