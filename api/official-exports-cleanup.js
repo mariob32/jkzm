@@ -197,13 +197,14 @@ module.exports = async (req, res) => {
         const auditResult = await logAudit(supabase, {
             action: 'cleanup',
             entity_type: 'official-export',
-            entity_id: 'cleanup-batch',
+            entity_id: null,
             actor_id: user.id || null,
             actor_name: user.email || user.name || 'admin',
             ip,
             user_agent,
             before_data: null,
             after_data: {
+                batch: 'cleanup',
                 dry_run: dryRun,
                 older_than_days: olderThanDays,
                 limit,

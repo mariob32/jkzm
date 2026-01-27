@@ -1,15 +1,14 @@
 {
-  "version": "6.17.3",
-  "build": "2026-01-27T06:35:00Z",
+  "version": "6.17.4",
+  "build": "2026-01-27T06:40:00Z",
   "features": [
-    "Audit helper vracia success/error",
-    "Cleanup/backfill zobrazuje audit_failed",
-    "Debug audit errors"
+    "Audit entity_id fix - null pre batch",
+    "Batch info v after_data"
   ],
   "changelog": {
+    "6.17.4": "Audit entity_id UUID fix",
     "6.17.3": "Audit debug - return success/error",
     "6.17.2": "Cleanup backfill + audit fix",
-    "6.17.1": "Cleanup param fix + audit always",
-    "6.17.0": "Retencia + cleanup storage + stavy"
+    "6.17.1": "Cleanup param fix + audit always"
   }
 }
