@@ -194,32 +194,31 @@ module.exports = async (req, res) => {
         }
 
         // Audit log - ALWAYS
-        try {
-            await logAudit(supabase, {
-                action: 'cleanup',
-                entity_type: 'official-export',
-                entity_id: 'cleanup-batch',
-                actor_id: user.id || null,
-                actor_name: user.email || user.name || 'admin',
-                ip,
-                user_agent,
-                before_data: null,
-                after_data: {
-                    dry_run: dryRun,
-                    older_than_days: olderThanDays,
-                    limit,
-                    cutoff_date: cutoffISO,
-                    scanned: (candidates || []).length,
-                    deleted: results.deleted,
-                    not_found: results.not_found,
-                    skipped: results.skipped,
-                    errors: results.errors
-                }
-            });
-        } catch (auditErr) {
-            console.error('Audit log error:', auditErr.message);
+        const auditResult = await logAudit(supabase, {
+            action: 'cleanup',
+            entity_type: 'official-export',
+            entity_id: 'cleanup-batch',
+            actor_id: user.id || null,
+            actor_name: user.email || user.name || 'admin',
+            ip,
+            user_agent,
+            before_data: null,
+            after_data: {
+                dry_run: dryRun,
+                older_than_days: olderThanDays,
+                limit,
+                cutoff_date: cutoffISO,
+                scanned: (candidates || []).length,
+                deleted: results.deleted,
+                not_found: results.not_found,
+                skipped: results.skipped,
+                errors: results.errors
+            }
+        });
+        
+        if (!auditResult.success) {
             auditFailed = true;
-            auditError = auditErr.message;
+            auditError = auditResult.error;
         }
 
         const response = {

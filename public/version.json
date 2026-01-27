@@ -1,16 +1,15 @@
 {
-  "version": "6.17.2",
-  "build": "2026-01-27T06:30:00Z",
+  "version": "6.17.3",
+  "build": "2026-01-27T06:35:00Z",
   "features": [
-    "Cleanup handles missing storage_path",
-    "Backfill endpoint pre storage_path",
-    "Audit fix - vzdy sa zapisuje",
-    "Skipped stavy pre cleanup"
+    "Audit helper vracia success/error",
+    "Cleanup/backfill zobrazuje audit_failed",
+    "Debug audit errors"
   ],
   "changelog": {
+    "6.17.3": "Audit debug - return success/error",
     "6.17.2": "Cleanup backfill + audit fix",
     "6.17.1": "Cleanup param fix + audit always",
-    "6.17.0": "Retencia + cleanup storage + stavy",
-    "6.16.0": "Export integrity verify + protokol"
+    "6.17.0": "Retencia + cleanup storage + stavy"
   }
 }

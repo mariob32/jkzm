@@ -131,31 +131,30 @@ module.exports = async (req, res) => {
         }
 
         // Audit log
-        try {
-            await logAudit(supabase, {
-                action: 'backfill',
-                entity_type: 'official-export',
-                entity_id: 'backfill-batch',
-                actor_id: user.id || null,
-                actor_name: user.email || user.name || 'admin',
-                ip,
-                user_agent,
-                before_data: null,
-                after_data: {
-                    dry_run: dryRun,
-                    limit,
-                    scanned: (candidates || []).length,
-                    found_in_storage: results.found_in_storage,
-                    not_found: results.not_found,
-                    updated: results.updated,
-                    errors: results.errors,
-                    ran_at: ranAt
-                }
-            });
-        } catch (auditErr) {
-            console.error('Audit log error:', auditErr.message);
+        const auditResult = await logAudit(supabase, {
+            action: 'backfill',
+            entity_type: 'official-export',
+            entity_id: 'backfill-batch',
+            actor_id: user.id || null,
+            actor_name: user.email || user.name || 'admin',
+            ip,
+            user_agent,
+            before_data: null,
+            after_data: {
+                dry_run: dryRun,
+                limit,
+                scanned: (candidates || []).length,
+                found_in_storage: results.found_in_storage,
+                not_found: results.not_found,
+                updated: results.updated,
+                errors: results.errors,
+                ran_at: ranAt
+            }
+        });
+        
+        if (!auditResult.success) {
             auditFailed = true;
-            auditError = auditErr.message;
+            auditError = auditResult.error;
         }
 
         const response = {

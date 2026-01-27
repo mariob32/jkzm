@@ -38,10 +38,10 @@ function buildDiff(beforeObj, afterObj) {
 }
 
 /**
- * Log audit entry to database (fail-safe)
+ * Log audit entry to database
  * @param {object} supabase - Supabase client
  * @param {object} params - Audit parameters
- * @returns {Promise<void>}
+ * @returns {Promise<{success: boolean, error?: string}>}
  */
 async function logAudit(supabase, {
     action,
@@ -72,10 +72,12 @@ async function logAudit(supabase, {
         
         if (error) {
             console.error('AUDIT_FAIL:', error.message, { action, entity_type, entity_id });
+            return { success: false, error: error.message };
         }
+        return { success: true };
     } catch (e) {
-        // Fail-safe: audit error should not break main request
         console.error('AUDIT_FAIL:', e.message, { action, entity_type, entity_id });
+        return { success: false, error: e.message };
     }
 }
 
