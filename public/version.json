@@ -1,16 +1,16 @@
 {
-  "version": "6.17.1",
-  "build": "2026-01-27T06:15:00Z",
+  "version": "6.17.2",
+  "build": "2026-01-27T06:30:00Z",
   "features": [
-    "Cleanup param fix - older_than_days=0 funguje",
-    "Audit vzdy pri cleanup (aj scanned=0)",
-    "Limit v response",
-    "Parametre v admin UI cleanup result"
+    "Cleanup handles missing storage_path",
+    "Backfill endpoint pre storage_path",
+    "Audit fix - vzdy sa zapisuje",
+    "Skipped stavy pre cleanup"
   ],
   "changelog": {
+    "6.17.2": "Cleanup backfill + audit fix",
     "6.17.1": "Cleanup param fix + audit always",
     "6.17.0": "Retencia + cleanup storage + stavy",
-    "6.16.0": "Export integrity verify + protokol",
-    "6.15.1": "Storage hardening + URL refresh + cleanup"
+    "6.16.0": "Export integrity verify + protokol"
   }
 }

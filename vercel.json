@@ -102,6 +102,7 @@
     { "src": "/api/audit-logs", "dest": "/api/audit-logs.js" },
     
     { "src": "/api/official-exports/cleanup", "dest": "/api/official-exports-cleanup.js" },
+    { "src": "/api/official-exports/backfill-storage-path", "dest": "/api/official-exports-backfill-storage-path.js" },
     { "src": "/api/official-exports/([^/]+)/verify", "dest": "/api/official-exports-verify.js?id=$1" },
     { "src": "/api/official-exports/([^/]+)/verification-report", "dest": "/api/official-exports-verification-report.js?id=$1" },
     { "src": "/api/official-exports/([^/]+)/signed-url", "dest": "/api/official-exports-signed-url.js?id=$1" },
