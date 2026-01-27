@@ -991,8 +991,8 @@
                                     <th>Typ</th>
                                     <th>Autor</th>
                                     <th>Veľkosť</th>
-                                    <th>Od</th>
-                                    <th>Do</th>
+                                    <th>Expiruje</th>
+                                    <th>Storage</th>
                                     <th>Stav</th>
                                     <th>Akcie</th>
                                 </tr>
@@ -1001,6 +1001,33 @@
                         </table>
                         <div id="officialExportsEmpty" style="text-align:center;padding:2rem;color:var(--gray);display:none">
                             Žiadne exporty v histórii
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cleanup section -->
+                <div class="card" style="margin-bottom:1.5rem">
+                    <div class="card-header">
+                        <h3 class="card-title">Čistenie archívu</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+                            <div class="form-group" style="margin-bottom:0">
+                                <label class="form-label">Staršie ako (dní)</label>
+                                <input type="number" id="cleanupOlderThanDays" class="form-control" value="30" min="0" max="365" style="width:100px">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0">
+                                <label class="form-label">Limit</label>
+                                <input type="number" id="cleanupLimit" class="form-control" value="50" min="1" max="500" style="width:100px">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;display:flex;align-items:center;gap:0.5rem">
+                                <input type="checkbox" id="cleanupDryRun" checked>
+                                <label for="cleanupDryRun">Dry run (len náhľad)</label>
+                            </div>
+                            <button class="btn btn-warning" onclick="runCleanup()">Spustiť cleanup</button>
+                        </div>
+                        <div id="cleanupResult" style="margin-top:1rem;display:none">
+                            <div id="cleanupSummary" style="padding:1rem;background:var(--gray-100);border-radius:8px"></div>
                         </div>
                     </div>
                 </div>
@@ -7295,35 +7322,112 @@
             const date = new Date(e.created_at).toLocaleString('sk');
             const typeLabel = e.type === 'svps' ? 'ŠVPS' : 'SJF';
             const sizeKB = e.size_bytes ? Math.round(e.size_bytes / 1024) + ' KB' : '-';
-            const from = e.filters?.from || '-';
-            const to = e.filters?.to || '-';
+            const expiresAt = e.expires_at ? new Date(e.expires_at).toLocaleDateString('sk') : '-';
             
-            let statusBadge = '';
-            if (e.verified_status === 'ok') {
-                statusBadge = '<span class="badge badge-success">OK</span>';
-            } else if (e.verified_status === 'mismatch') {
-                statusBadge = '<span class="badge badge-error">Nezhoda</span>';
-            } else if (e.verified_status === 'error') {
-                statusBadge = '<span class="badge badge-warning">Chyba</span>';
+            let storageBadge = '';
+            if (e.storage_delete_status === 'deleted') {
+                storageBadge = '<span class="badge badge-ghost">Zmazaný</span>';
+            } else if (e.storage_delete_status === 'not-found') {
+                storageBadge = '<span class="badge badge-warning">Nenájdený</span>';
+            } else if (e.storage_delete_status === 'error') {
+                storageBadge = '<span class="badge badge-error">Chyba</span>';
             } else {
-                statusBadge = '<span class="badge badge-ghost">—</span>';
+                storageBadge = '<span class="badge badge-success">Aktívny</span>';
             }
+            
+            let verifyBadge = '';
+            if (e.verified_status === 'ok') {
+                verifyBadge = '<span class="badge badge-success">OK</span>';
+            } else if (e.verified_status === 'mismatch') {
+                verifyBadge = '<span class="badge badge-error">Nezhoda</span>';
+            } else if (e.verified_status === 'error') {
+                verifyBadge = '<span class="badge badge-warning">Chyba</span>';
+            } else {
+                verifyBadge = '<span class="badge badge-ghost">—</span>';
+            }
+            
+            const isDeleted = e.storage_delete_status === 'deleted' || e.storage_delete_status === 'not-found';
             
             return `<tr>
                 <td>${date}</td>
                 <td><span class="badge badge-${e.type === 'svps' ? 'info' : 'success'}">${typeLabel}</span></td>
                 <td>${e.actor_name || '-'}</td>
                 <td>${sizeKB}</td>
-                <td>${from}</td>
-                <td>${to}</td>
-                <td>${statusBadge}</td>
+                <td>${expiresAt}</td>
+                <td>${storageBadge}</td>
+                <td>${verifyBadge}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline" onclick="downloadOfficialExport('${e.id}')">Stiahnuť</button>
-                    <button class="btn btn-sm btn-outline" onclick="verifyOfficialExport('${e.id}')">Overiť</button>
+                    <button class="btn btn-sm btn-outline" onclick="downloadOfficialExport('${e.id}')" ${isDeleted ? 'disabled' : ''}>Stiahnuť</button>
+                    <button class="btn btn-sm btn-outline" onclick="verifyOfficialExport('${e.id}')" ${isDeleted ? 'disabled' : ''}>Overiť</button>
                     <button class="btn btn-sm btn-outline" onclick="viewVerificationReport('${e.id}')" ${e.verified_status ? '' : 'disabled'}>Protokol</button>
                 </td>
             </tr>`;
         }).join('');
+    }
+    
+    function runCleanup() {
+        const olderThanDays = document.getElementById('cleanupOlderThanDays').value || 30;
+        const limit = document.getElementById('cleanupLimit').value || 50;
+        const dryRun = document.getElementById('cleanupDryRun').checked;
+        
+        showToast(dryRun ? 'Spúšťam dry-run cleanup...' : 'Spúšťam cleanup...', 'info');
+        
+        fetch(`/api/official-exports/cleanup?older_than_days=${olderThanDays}&limit=${limit}&dry_run=${dryRun ? '1' : '0'}`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const resultDiv = document.getElementById('cleanupResult');
+                const summaryDiv = document.getElementById('cleanupSummary');
+                resultDiv.style.display = 'block';
+                
+                if (data.error) {
+                    summaryDiv.innerHTML = '<strong style="color:var(--error)">Chyba:</strong> ' + data.error;
+                    showToast('Cleanup zlyhal', 'error');
+                    return;
+                }
+                
+                let html = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">';
+                html += '<div><strong>Skenovaných:</strong> ' + data.scanned + '</div>';
+                html += '<div><strong>Zmazaných:</strong> ' + data.deleted + '</div>';
+                html += '<div><strong>Nenájdených:</strong> ' + data.not_found + '</div>';
+                html += '<div><strong>Chýb:</strong> ' + data.errors + '</div>';
+                html += '</div>';
+                
+                if (data.dry_run) {
+                    html += '<div style="color:var(--warning);margin-bottom:1rem"><strong>Dry-run mód</strong> - žiadne súbory neboli zmazané</div>';
+                }
+                
+                if (data.items && data.items.length > 0) {
+                    html += '<table class="table" style="font-size:0.875rem"><thead><tr><th>ID</th><th>Typ</th><th>Vytvorený</th><th>Status</th></tr></thead><tbody>';
+                    const itemsToShow = data.items.slice(0, 10);
+                    for (const item of itemsToShow) {
+                        const itemDate = new Date(item.created_at).toLocaleDateString('sk');
+                        html += '<tr><td style="font-family:monospace;font-size:0.75rem">' + item.id.substring(0, 8) + '...</td>';
+                        html += '<td>' + (item.type === 'svps' ? 'ŠVPS' : 'SJF') + '</td>';
+                        html += '<td>' + itemDate + '</td>';
+                        html += '<td>' + item.status + '</td></tr>';
+                    }
+                    html += '</tbody></table>';
+                    if (data.items.length > 10) {
+                        html += '<div style="color:var(--gray);font-size:0.875rem">... a ďalších ' + (data.items.length - 10) + '</div>';
+                    }
+                }
+                
+                summaryDiv.innerHTML = html;
+                
+                if (data.dry_run) {
+                    showToast('Dry-run dokončený: ' + data.scanned + ' kandidátov', 'info');
+                } else {
+                    showToast('Cleanup dokončený: ' + data.deleted + ' zmazaných', 'success');
+                    loadOfficialExports();
+                }
+            })
+            .catch(e => {
+                console.error('Cleanup error:', e);
+                showToast('Chyba pri cleanup', 'error');
+            });
     }
     
     function verifyOfficialExport(id) {

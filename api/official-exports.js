@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
 
         let query = supabase
             .from('official_exports')
-            .select('id, type, created_at, actor_name, filters, size_bytes, files, storage_path, verified_status, verified_at', { count: 'exact' })
+            .select('id, type, created_at, actor_name, filters, size_bytes, files, storage_path, verified_status, verified_at, expires_at, storage_deleted_at, storage_delete_status, retention_days', { count: 'exact' })
             .order('created_at', { ascending: false })
             .range(offsetNum, offsetNum + limitNum - 1);
 

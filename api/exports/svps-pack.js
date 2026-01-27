@@ -12,7 +12,7 @@ const { logAudit, getRequestInfo } = require('../utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
-const VERSION = '6.15.1';
+const VERSION = '6.17.0';
 
 function verifyToken(req) {
     const auth = req.headers.authorization;
@@ -212,7 +212,9 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
             return res.status(500).json({ error: 'Failed to generate download URL' });
         }
 
-        const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
+        const signedUrlExpiresAt = new Date(Date.now() + ttl * 1000).toISOString();
+        const retentionDays = 30;
+        const retentionExpiresAt = new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000).toISOString();
 
         // Save metadata to DB
         const { error: insertError } = await supabase
@@ -233,7 +235,9 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
                 storage_bucket: 'exports',
                 storage_path: storagePath,
                 size_bytes: sizeBytes,
-                signed_url_expires_at: expiresAt
+                signed_url_expires_at: signedUrlExpiresAt,
+                retention_days: retentionDays,
+                expires_at: retentionExpiresAt
             });
 
         if (insertError) {
@@ -259,7 +263,8 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
                 export_id: exportId,
                 storage_bucket: 'exports',
                 storage_path: storagePath,
-                signed_url_expires_at: expiresAt
+                signed_url_expires_at: signedUrlExpiresAt,
+                retention_expires_at: retentionExpiresAt
             }
         });
 
@@ -269,7 +274,9 @@ Systém: JKZM (Jazdecký klub Zelená míľa)
             filename: filename,
             size_bytes: sizeBytes,
             download_url: urlData.signedUrl,
-            expires_at: expiresAt
+            signed_url_expires_at: signedUrlExpiresAt,
+            expires_at: retentionExpiresAt,
+            retention_days: retentionDays
         });
 
     } catch (e) {

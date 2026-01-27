@@ -1,16 +1,16 @@
 {
-  "version": "6.16.0",
-  "build": "2026-01-26T19:00:00Z",
+  "version": "6.17.0",
+  "build": "2026-01-27T06:00:00Z",
   "features": [
-    "Export integrity verify endpoint",
-    "Verification report protokol",
-    "SHA-256 porovnanie ZIP vs DB",
-    "Stav overenia v historii exportov"
+    "Retencia exportov - expires_at, retention_days",
+    "Cleanup endpoint s dry-run a DB statusmi",
+    "Storage status tracking - deleted/not-found/error",
+    "Admin UI cleanup sekcia"
   ],
   "changelog": {
+    "6.17.0": "Retencia + cleanup storage + stavy",
     "6.16.0": "Export integrity verify + protokol",
     "6.15.1": "Storage hardening + URL refresh + cleanup",
-    "6.15.0": "Storage architecture - ZIP v Supabase Storage + signed URL",
-    "6.14.x": "Bytea experimenty (deprecated)"
+    "6.15.0": "Storage architecture - ZIP v Supabase Storage + signed URL"
   }
 }

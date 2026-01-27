@@ -25,95 +25,185 @@ module.exports = async (req, res) => {
     }
 
     const { ip, user_agent } = getRequestInfo(req);
-    const daysParam = parseInt(req.query.days) || 30;
-    const days = Math.max(1, Math.min(365, daysParam));
+    
+    const dryRun = req.query.dry_run === '1' || req.query.dry_run === 'true';
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 500);
+    const olderThanDays = Math.max(parseInt(req.query.older_than_days) || 30, 0);
 
     try {
         const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - days);
+        cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
         const cutoffISO = cutoffDate.toISOString();
 
-        // Find old exports
-        const { data: oldExports, error: selectError } = await supabase
+        // Select candidates for cleanup
+        const { data: candidates, error: selectError } = await supabase
             .from('official_exports')
-            .select('id, storage_bucket, storage_path')
-            .lt('created_at', cutoffISO);
+            .select('id, type, created_at, storage_bucket, storage_path')
+            .lt('created_at', cutoffISO)
+            .is('storage_deleted_at', null)
+            .order('created_at', { ascending: true })
+            .limit(limit);
 
         if (selectError) {
             console.error('Cleanup select error:', selectError.message);
-            return res.status(500).json({ error: 'Failed to query old exports' });
+            return res.status(500).json({ error: 'Failed to query exports' });
         }
 
-        if (!oldExports || oldExports.length === 0) {
+        if (!candidates || candidates.length === 0) {
             return res.status(200).json({
                 success: true,
-                deleted_count: 0,
-                days: days,
-                message: 'No exports older than ' + days + ' days'
+                dry_run: dryRun,
+                older_than_days: olderThanDays,
+                cutoff_date: cutoffISO,
+                scanned: 0,
+                deleted: 0,
+                not_found: 0,
+                errors: 0,
+                items: []
             });
         }
 
-        // Delete from Storage
-        const storageDeletes = [];
-        for (const exp of oldExports) {
-            if (exp.storage_path) {
-                const bucket = exp.storage_bucket || 'exports';
-                storageDeletes.push({ bucket, path: exp.storage_path });
-            }
+        // If dry run, just return candidates
+        if (dryRun) {
+            const items = candidates.map(c => ({
+                id: c.id,
+                type: c.type,
+                created_at: c.created_at,
+                storage_path: c.storage_path,
+                status: 'candidate'
+            }));
+
+            await logAudit(supabase, {
+                action: 'cleanup',
+                entity_type: 'official-export',
+                entity_id: 'batch',
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: {
+                    dry_run: true,
+                    limit,
+                    older_than_days: olderThanDays,
+                    cutoff_date: cutoffISO,
+                    scanned: candidates.length,
+                    deleted: 0,
+                    not_found: 0,
+                    errors: 0
+                }
+            });
+
+            return res.status(200).json({
+                success: true,
+                dry_run: true,
+                older_than_days: olderThanDays,
+                cutoff_date: cutoffISO,
+                scanned: candidates.length,
+                deleted: 0,
+                not_found: 0,
+                errors: 0,
+                items
+            });
         }
 
-        // Group by bucket
-        const byBucket = {};
-        for (const sd of storageDeletes) {
-            if (!byBucket[sd.bucket]) byBucket[sd.bucket] = [];
-            byBucket[sd.bucket].push(sd.path);
-        }
+        // Process each candidate
+        const results = {
+            deleted: 0,
+            not_found: 0,
+            errors: 0
+        };
+        const items = [];
 
-        for (const [bucket, paths] of Object.entries(byBucket)) {
-            const { error: removeError } = await supabase.storage
-                .from(bucket)
-                .remove(paths);
+        for (const exp of candidates) {
+            const bucket = exp.storage_bucket || 'exports';
+            const storagePath = exp.storage_path;
             
-            if (removeError) {
-                console.error('Storage delete error for bucket', bucket, ':', removeError.message);
+            let status = 'error';
+            let details = null;
+
+            if (!storagePath) {
+                status = 'not-found';
+                details = { error: 'No storage path' };
+                results.not_found++;
+            } else {
+                try {
+                    const { error: removeError } = await supabase.storage
+                        .from(bucket)
+                        .remove([storagePath]);
+
+                    if (removeError) {
+                        if (removeError.message && removeError.message.includes('not found')) {
+                            status = 'not-found';
+                            details = { error: removeError.message };
+                            results.not_found++;
+                        } else {
+                            status = 'error';
+                            details = { error: removeError.message };
+                            results.errors++;
+                        }
+                    } else {
+                        status = 'deleted';
+                        results.deleted++;
+                    }
+                } catch (e) {
+                    status = 'error';
+                    details = { error: e.message };
+                    results.errors++;
+                }
             }
-        }
 
-        // Delete from DB
-        const ids = oldExports.map(e => e.id);
-        const { error: deleteError } = await supabase
-            .from('official_exports')
-            .delete()
-            .in('id', ids);
+            // Update DB record
+            await supabase
+                .from('official_exports')
+                .update({
+                    storage_deleted_at: new Date().toISOString(),
+                    storage_delete_status: status,
+                    storage_delete_details: details
+                })
+                .eq('id', exp.id);
 
-        if (deleteError) {
-            console.error('DB delete error:', deleteError.message);
-            return res.status(500).json({ error: 'Failed to delete from database' });
+            items.push({
+                id: exp.id,
+                type: exp.type,
+                created_at: exp.created_at,
+                storage_path: storagePath,
+                status
+            });
         }
 
         // Audit log
         await logAudit(supabase, {
-            action: 'delete',
+            action: 'cleanup',
             entity_type: 'official-export',
-            entity_id: null,
+            entity_id: 'batch',
             actor_id: user.id || null,
             actor_name: user.email || user.name || 'admin',
             ip,
             user_agent,
             before_data: null,
             after_data: {
-                deleted_count: oldExports.length,
-                days: days,
+                dry_run: false,
+                limit,
+                older_than_days: olderThanDays,
                 cutoff_date: cutoffISO,
-                deleted_ids: ids
+                scanned: candidates.length,
+                deleted: results.deleted,
+                not_found: results.not_found,
+                errors: results.errors
             }
         });
 
         return res.status(200).json({
             success: true,
-            deleted_count: oldExports.length,
-            days: days,
-            cutoff_date: cutoffISO
+            dry_run: false,
+            older_than_days: olderThanDays,
+            cutoff_date: cutoffISO,
+            scanned: candidates.length,
+            deleted: results.deleted,
+            not_found: results.not_found,
+            errors: results.errors,
+            items
         });
 
     } catch (e) {
