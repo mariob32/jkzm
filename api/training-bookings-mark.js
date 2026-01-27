@@ -182,7 +182,90 @@ module.exports = async (req, res) => {
 
         if (updateError) throw updateError;
 
-        // 5. Audit booking mark
+        // 5. Create or get billing charge (idempotent)
+        let charge = null;
+        
+        // Check if charge already exists by booking_id or training_id
+        const { data: existingCharge } = await supabase
+            .from('billing_charges')
+            .select('*')
+            .or(`booking_id.eq.${bookingId},training_id.eq.${training.id}`)
+            .limit(1)
+            .single();
+
+        if (existingCharge) {
+            charge = existingCharge;
+        } else {
+            // Determine amount - use training.price if available, otherwise default 2000 (20 EUR)
+            let amountCents = 2000;
+            if (training.price && typeof training.price === 'number') {
+                amountCents = Math.round(training.price * 100);
+            }
+
+            const chargeData = {
+                training_id: training.id,
+                booking_id: bookingId,
+                rider_id: booking.rider_id,
+                horse_id: booking.horse_id,
+                amount_cents: amountCents,
+                currency: 'EUR',
+                status: 'unpaid'
+            };
+
+            const { data: newCharge, error: chargeError } = await supabase
+                .from('billing_charges')
+                .insert([chargeData])
+                .select()
+                .single();
+
+            if (chargeError) {
+                console.error('Charge create error:', chargeError);
+                return res.status(500).json({
+                    error: 'charge_create_failed',
+                    detail: chargeError.message,
+                    booking_id: bookingId
+                });
+            }
+
+            charge = newCharge;
+
+            // Audit charge creation
+            await logAudit(supabase, {
+                action: 'create',
+                entity_type: 'billing-charge',
+                entity_id: charge.id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: charge
+            });
+        }
+
+        // 6. Update training with billing info
+        if (charge) {
+            await supabase
+                .from('trainings')
+                .update({
+                    billing_status: charge.status,
+                    billing_charge_id: charge.id
+                })
+                .eq('id', training.id);
+            
+            // Refresh training data
+            const { data: updatedTraining } = await supabase
+                .from('trainings')
+                .select('*')
+                .eq('id', training.id)
+                .single();
+            
+            if (updatedTraining) {
+                training = updatedTraining;
+            }
+        }
+
+        // 7. Audit booking mark
         await logAudit(supabase, {
             action: 'mark',
             entity_type: 'training-booking',
@@ -197,7 +280,8 @@ module.exports = async (req, res) => {
 
         return res.status(200).json({
             booking: afterData,
-            training: training
+            training: training,
+            charge: charge
         });
 
     } catch (error) {

@@ -1,0 +1,138 @@
+const { createClient } = require('@supabase/supabase-js');
+const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
+
+function verifyToken(req) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return null;
+    try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
+}
+
+module.exports = async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+
+    const user = verifyToken(req);
+    if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        if (req.method === 'GET') {
+            let { 
+                status = 'unpaid', 
+                rider_id, 
+                horse_id, 
+                date_from, 
+                date_to,
+                limit = 100, 
+                offset = 0 
+            } = req.query;
+
+            let query = supabase
+                .from('billing_charges')
+                .select(`
+                    *,
+                    rider:riders(id, first_name, last_name),
+                    horse:horses(id, name),
+                    training:trainings(id, training_date, date, discipline)
+                `, { count: 'exact' })
+                .order('created_at', { ascending: false });
+
+            // Filtre
+            if (status && status !== 'all') {
+                query = query.eq('status', status);
+            }
+            if (rider_id) query = query.eq('rider_id', rider_id);
+            if (horse_id) query = query.eq('horse_id', horse_id);
+
+            // Date filter - filter by created_at or due_date
+            if (date_from) query = query.gte('created_at', date_from);
+            if (date_to) query = query.lte('created_at', date_to + 'T23:59:59');
+
+            query = query.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
+
+            const { data, error, count } = await query;
+            if (error) throw error;
+
+            // Calculate totals
+            const totalUnpaid = data.filter(c => c.status === 'unpaid').reduce((sum, c) => sum + c.amount_cents, 0);
+            const totalPaid = data.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.amount_cents, 0);
+
+            return res.status(200).json({ 
+                data, 
+                total: count,
+                summary: {
+                    unpaid_cents: totalUnpaid,
+                    paid_cents: totalPaid
+                }
+            });
+        }
+
+        if (req.method === 'POST') {
+            const { ip, user_agent } = getRequestInfo(req);
+            
+            const { 
+                training_id, 
+                booking_id, 
+                rider_id, 
+                horse_id, 
+                amount_cents, 
+                currency = 'EUR',
+                status = 'unpaid',
+                due_date,
+                note 
+            } = req.body;
+
+            if (amount_cents === undefined || amount_cents < 0) {
+                return res.status(400).json({ error: 'amount_cents je povinný a musí byť >= 0' });
+            }
+
+            if (!['unpaid', 'paid', 'void'].includes(status)) {
+                return res.status(400).json({ error: 'Neplatný status' });
+            }
+
+            const insertData = {
+                training_id: training_id || null,
+                booking_id: booking_id || null,
+                rider_id: rider_id || null,
+                horse_id: horse_id || null,
+                amount_cents: parseInt(amount_cents),
+                currency,
+                status,
+                due_date: due_date || null,
+                note: note || null
+            };
+
+            const { data, error } = await supabase
+                .from('billing_charges')
+                .insert([insertData])
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            await logAudit(supabase, {
+                action: 'create',
+                entity_type: 'billing-charge',
+                entity_id: data.id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: data
+            });
+
+            return res.status(201).json(data);
+        }
+
+        return res.status(405).json({ error: 'Method not allowed' });
+    } catch (error) {
+        console.error('Billing-charges error:', error);
+        return res.status(500).json({ error: error.message });
+    }
+};

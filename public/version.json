@@ -1,15 +1,16 @@
 {
-  "version": "6.19.1",
-  "build": "2026-01-27T09:30:00Z",
+  "version": "6.20.0",
+  "build": "2026-01-27T10:00:00Z",
   "features": [
-    "Fix: Mark attended vytvorí training",
-    "Linkovanie booking -> training cez training_id",
-    "Idempotentné mark attended (source_booking_id unique)",
-    "Audit trail pre training creation"
+    "Billing MVP - billing_charges tabuľka",
+    "Automatické vytvorenie charge pri mark attended",
+    "Mark paid / void endpointy",
+    "Admin UI sekcia Platby s filtrami",
+    "Export CSV"
   ],
   "changelog": {
+    "6.20.0": "Billing MVP - charges + payment tracking",
     "6.19.1": "Fix mark attended + training link",
-    "6.19.0": "Training Calendar + Reservations MVP",
-    "6.18.1": "Stabilizácia - refactor Admin UI"
+    "6.19.0": "Training Calendar + Reservations MVP"
   }
 }

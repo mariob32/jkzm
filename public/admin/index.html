@@ -108,6 +108,7 @@
     <script src="/admin/stable.js"></script>
     <script src="/admin/posts.js"></script>
     <script src="/admin/calendar.js"></script>
+    <script src="/admin/billing.js"></script>
     <style>
         .ql-container { font-size: 1rem; }
         .ql-editor { min-height: 200px; }
@@ -176,6 +177,7 @@
                     <div class="nav-item" data-section="stable-horses"><span class="icon">🐴</span>Kone (MVP)</div>
                     <div class="nav-item" data-section="stable-trainings"><span class="icon">🏋️</span>Tréningy (MVP)</div>
                     <div class="nav-item" data-section="training-calendar"><span class="icon">📅</span>Kalendár tréningov</div>
+                    <div class="nav-item" data-section="billing"><span class="icon">💰</span>Platby</div>
                     <div class="nav-item" data-section="stable-health"><span class="icon">💊</span>Zdravie (MVP)</div>
                     <div class="nav-item" data-section="stable-feed"><span class="icon">🥕</span>Kŕmenie (MVP)</div>
                 </div>
@@ -1312,6 +1314,53 @@
                 </style>
             </section>
 
+            <!-- BILLING -->
+            <section id="billing" class="section">
+                <div class="header">
+                    <h1>Platby</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-outline" onclick="exportBillingCSV()">Export CSV</button>
+                        <button class="btn btn-primary" onclick="openNewChargeModal()">+ Nová položka</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+                        <div id="billingSummary"></div>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                            <select class="form-control" id="billingStatusFilter" style="width:150px" onchange="loadBillingCharges()">
+                                <option value="unpaid">Neuhradené</option>
+                                <option value="paid">Uhradené</option>
+                                <option value="void">Stornované</option>
+                                <option value="all">Všetky</option>
+                            </select>
+                            <select class="form-control" id="billingRiderFilter" style="width:180px" onchange="loadBillingCharges()">
+                                <option value="">Všetci jazdci</option>
+                            </select>
+                            <select class="form-control" id="billingHorseFilter" style="width:180px" onchange="loadBillingCharges()">
+                                <option value="">Všetky kone</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Dátum</th>
+                                    <th>Jazdec</th>
+                                    <th>Kôň</th>
+                                    <th>Tréning</th>
+                                    <th>Suma</th>
+                                    <th>Status</th>
+                                    <th>Spôsob</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billingChargesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
             <!-- STABLE FEED MVP -->
             <section id="stable-feed" class="section">
                 <div class="header"><h1>🥕 Kŕmenie (MVP)</h1><div class="header-actions"><button class="btn btn-primary" onclick="openFeedLogModal()">+ Pridať záznam</button></div></div>
@@ -1436,6 +1485,39 @@
                 </form>
             </div>
             <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('bookingModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveBooking()">Rezervovať</button></div>
+        </div>
+    </div>
+
+    <!-- Edit Charge Modal -->
+    <div class="modal" id="editChargeModal">
+        <div class="modal-content" style="max-width:400px">
+            <div class="modal-header"><h3>Upraviť položku</h3><button class="modal-close" onclick="closeModal('editChargeModal')">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="editChargeId">
+                <div class="form-group"><label>Suma (EUR)</label><input type="number" class="form-control" id="editChargeAmount" step="0.01" min="0"></div>
+                <div class="form-group"><label>Splatnosť</label><input type="date" class="form-control" id="editChargeDueDate"></div>
+                <div class="form-group"><label>Poznámka</label><textarea class="form-control" id="editChargeNote" rows="2"></textarea></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('editChargeModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveChargeEdit()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- New Charge Modal -->
+    <div class="modal" id="newChargeModal">
+        <div class="modal-content" style="max-width:450px">
+            <div class="modal-header"><h3>Nová položka</h3><button class="modal-close" onclick="closeModal('newChargeModal')">×</button></div>
+            <div class="modal-body">
+                <form id="newChargeForm">
+                    <div class="form-group"><label>Suma (EUR) *</label><input type="number" class="form-control" id="newChargeAmount" step="0.01" min="0" value="20.00" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Jazdec</label><select class="form-control" id="newChargeRider"></select></div>
+                        <div class="form-group"><label>Kôň</label><select class="form-control" id="newChargeHorse"></select></div>
+                    </div>
+                    <div class="form-group"><label>Splatnosť</label><input type="date" class="form-control" id="newChargeDueDate"></div>
+                    <div class="form-group"><label>Poznámka</label><textarea class="form-control" id="newChargeNote" rows="2"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('newChargeModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveNewCharge()">Vytvoriť</button></div>
         </div>
     </div>
 
@@ -2661,6 +2743,7 @@
             if (hash === 'stable-horses') setTimeout(loadStableHorses, 100);
             if (hash === 'stable-trainings') { setTimeout(loadStableHorses, 100); setTimeout(loadStableTrainings, 150); }
             if (hash === 'training-calendar') setTimeout(loadTrainingCalendar, 100);
+            if (hash === 'billing') { setTimeout(loadStableHorses, 100); setTimeout(loadBillingCharges, 150); setTimeout(populateBillingSelects, 200); }
             if (hash === 'stable-health') { setTimeout(loadStableHorses, 100); setTimeout(loadHealthEvents, 150); }
             if (hash === 'stable-feed') { setTimeout(loadStableHorses, 100); setTimeout(loadFeedLogs, 150); }
             if (hash === 'web-posts') setTimeout(loadWebPosts, 100);
