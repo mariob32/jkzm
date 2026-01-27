@@ -127,7 +127,6 @@ module.exports = async (req, res) => {
                 intensity: null,
                 goals: null,
                 start_time: slot?.start_time || null,
-                notes: `From booking ${bookingId}`,
                 source_booking_id: bookingId,
                 status: 'completed'
             };
