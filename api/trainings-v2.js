@@ -22,10 +22,17 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
-            const { 
+            let { 
                 date_from, date_to, horse_id, rider_id, trainer_id,
                 limit = 50, offset = 0 
             } = req.query;
+
+            // Default: last 7 days if no date filter
+            if (!date_from && !date_to) {
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                date_from = sevenDaysAgo.toISOString().split('T')[0];
+            }
 
             let query = supabase
                 .from('trainings_v2')
@@ -66,20 +73,22 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ error: 'training_date je povinný' });
             }
 
+            const insertData = {
+                training_date,
+                start_time: start_time || null,
+                duration_min: duration_min || 60,
+                horse_id: horse_id || null,
+                rider_id: rider_id || null,
+                trainer_id: trainer_id || null,
+                discipline: discipline || null,
+                intensity: intensity || null,
+                goals: goals || null,
+                notes: notes || null
+            };
+
             const { data, error } = await supabase
                 .from('trainings_v2')
-                .insert([{
-                    training_date,
-                    start_time: start_time || null,
-                    duration_min: duration_min || 60,
-                    horse_id: horse_id || null,
-                    rider_id: rider_id || null,
-                    trainer_id: trainer_id || null,
-                    discipline: discipline || null,
-                    intensity: intensity || null,
-                    goals: goals || null,
-                    notes: notes || null
-                }])
+                .insert([insertData])
                 .select()
                 .single();
 

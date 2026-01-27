@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     try {
         if (req.method === 'GET') {
             const { 
-                horse_id, category, upcoming_only,
+                horse_id, category, upcoming_only, upcoming_days = 30,
                 limit = 50, offset = 0 
             } = req.query;
 
@@ -40,8 +40,13 @@ module.exports = async (req, res) => {
             // Upcoming events filter
             if (upcoming_only === 'true' || upcoming_only === '1') {
                 const today = new Date().toISOString().split('T')[0];
-                query = query.gte('next_due_date', today);
-                query = query.order('next_due_date', { ascending: true });
+                const futureDate = new Date();
+                futureDate.setDate(futureDate.getDate() + parseInt(upcoming_days));
+                
+                query = query
+                    .gte('next_due_date', today)
+                    .lte('next_due_date', futureDate.toISOString().split('T')[0])
+                    .order('next_due_date', { ascending: true });
             } else {
                 query = query.order('event_date', { ascending: false });
             }
@@ -75,17 +80,19 @@ module.exports = async (req, res) => {
                 });
             }
 
+            const insertData = {
+                event_date,
+                horse_id,
+                category,
+                title,
+                details: details || null,
+                next_due_date: next_due_date || null,
+                document_url: document_url || null
+            };
+
             const { data, error } = await supabase
                 .from('health_events')
-                .insert([{
-                    event_date,
-                    horse_id,
-                    category,
-                    title,
-                    details: details || null,
-                    next_due_date: next_due_date || null,
-                    document_url: document_url || null
-                }])
+                .insert([insertData])
                 .select()
                 .single();
 

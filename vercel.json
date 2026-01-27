@@ -26,6 +26,7 @@
     { "src": "/api/health-events/([^/]+)", "dest": "/api/health-events-id.js?id=$1" },
     { "src": "/api/health-events", "dest": "/api/health-events.js" },
     { "src": "/api/feed-logs", "dest": "/api/feed-logs.js" },
+    { "src": "/api/public-posts/slug-available", "dest": "/api/public-posts-slug-available.js" },
     { "src": "/api/public-posts/([^/]+)", "dest": "/api/public-posts-id.js?id=$1" },
     { "src": "/api/public-posts", "dest": "/api/public-posts.js" },
     { "src": "/api/public/posts/([^/]+)", "dest": "/api/public/posts-slug.js?slug=$1" },

@@ -13,7 +13,7 @@ function verifyToken(req) {
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, PATCH, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -35,25 +35,26 @@ module.exports = async (req, res) => {
             const { data: before } = await supabase.from('horses').select('*').eq('id', id).single();
             
             const { 
-                name, stable_name, breed, color, sex, birth_date, country_of_birth,
+                name, stable_name, breed, color, sex, birth_date, birth_year, country_of_birth,
                 passport_number, life_number, microchip,
                 fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
                 sjf_license_number, sjf_license_valid_until, sjf_registration_date,
                 owner_name, owner_contact, owner_address,
                 height_cm, weight_kg, level, disciplines,
                 insurance_company, insurance_policy, insurance_valid_until, insurance_value,
-                status, photo_url, notes
+                status, photo_url, notes, is_active
             } = req.body;
+            
             const { data, error } = await supabase.from('horses')
                 .update({ 
-                    name, stable_name, breed, color, sex, birth_date, country_of_birth,
+                    name, stable_name, breed, color, sex, birth_date, birth_year, country_of_birth,
                     passport_number, life_number, microchip,
                     fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
                     sjf_license_number, sjf_license_valid_until, sjf_registration_date,
                     owner_name, owner_contact, owner_address,
                     height_cm, weight_kg, level, disciplines,
                     insurance_company, insurance_policy, insurance_valid_until, insurance_value,
-                    status, photo_url, notes, 
+                    status, photo_url, notes, is_active,
                     updated_at: new Date() 
                 })
                 .eq('id', id).select().single();
@@ -61,7 +62,60 @@ module.exports = async (req, res) => {
             
             await logAudit(supabase, {
                 action: 'update',
-                entity_type: 'horses',
+                entity_type: 'horse',
+                entity_id: id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: before,
+                after_data: data
+            });
+            
+            return res.status(200).json(data);
+        }
+
+        if (req.method === 'PATCH') {
+            // Get before data
+            const { data: before } = await supabase.from('horses').select('*').eq('id', id).single();
+            if (!before) return res.status(404).json({ error: 'Not found' });
+            
+            // Only update provided fields
+            const updates = { updated_at: new Date() };
+            const allowedFields = [
+                'name', 'stable_name', 'breed', 'color', 'sex', 'birth_date', 'birth_year',
+                'country_of_birth', 'passport_number', 'life_number', 'microchip',
+                'fei_id', 'fei_passport_number', 'fei_passport_expiry', 'fei_registered',
+                'sjf_license_number', 'sjf_license_valid_until', 'sjf_registration_date',
+                'owner_name', 'owner_contact', 'owner_address',
+                'height_cm', 'weight_kg', 'level', 'disciplines',
+                'insurance_company', 'insurance_policy', 'insurance_valid_until', 'insurance_value',
+                'status', 'photo_url', 'notes', 'is_active'
+            ];
+            
+            for (const field of allowedFields) {
+                if (req.body[field] !== undefined) {
+                    updates[field] = req.body[field];
+                }
+            }
+            
+            const { data, error } = await supabase.from('horses')
+                .update(updates)
+                .eq('id', id)
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            // Determine action type
+            let action = 'update';
+            if (updates.is_active === false || updates.status === 'inactive') {
+                action = 'deactivate';
+            }
+            
+            await logAudit(supabase, {
+                action,
+                entity_type: 'horse',
                 entity_id: id,
                 actor_id: user.id || null,
                 actor_name: user.email || user.name || 'admin',
@@ -81,7 +135,7 @@ module.exports = async (req, res) => {
             
             await logAudit(supabase, {
                 action: 'delete',
-                entity_type: 'horses',
+                entity_type: 'horse',
                 entity_id: id,
                 actor_id: user.id || null,
                 actor_name: user.email || user.name || 'admin',
@@ -96,6 +150,7 @@ module.exports = async (req, res) => {
 
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
+        console.error('Horse-id error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };

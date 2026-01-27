@@ -19,7 +19,37 @@ function slugify(text) {
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
-        .substring(0, 100);
+        .substring(0, 80);
+}
+
+async function generateUniqueSlug(supabase, baseSlug) {
+    let slug = baseSlug;
+    let counter = 1;
+    
+    while (true) {
+        const { data, error } = await supabase
+            .from('public_posts')
+            .select('id')
+            .eq('slug', slug)
+            .limit(1);
+        
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+            return slug;
+        }
+        
+        counter++;
+        slug = `${baseSlug}-${counter}`;
+        
+        // Safety limit
+        if (counter > 100) {
+            slug = `${baseSlug}-${Date.now().toString(36)}`;
+            break;
+        }
+    }
+    
+    return slug;
 }
 
 module.exports = async (req, res) => {
@@ -69,8 +99,9 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ error: 'title je povinný' });
             }
 
-            // Generate slug if not provided
-            const finalSlug = slug || slugify(title) + '-' + Date.now().toString(36);
+            // Generate unique slug
+            const baseSlug = slug || slugify(title);
+            const finalSlug = await generateUniqueSlug(supabase, baseSlug);
 
             const { data, error } = await supabase
                 .from('public_posts')

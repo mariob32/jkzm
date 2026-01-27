@@ -1,17 +1,17 @@
 {
-  "version": "6.18.0",
-  "build": "2026-01-27T07:15:00Z",
+  "version": "6.18.1",
+  "build": "2026-01-27T08:00:00Z",
   "features": [
-    "Stable Core MVP",
-    "trainings_v2, health_events, feed_logs tabulky",
-    "Public posts pre web feed",
-    "Verejne API endpointy /api/public/posts",
-    "RLS policies pre nove tabulky"
+    "Stabilizácia a refactor",
+    "Admin UI moduly (api.js, stable.js, posts.js, app.js)",
+    "Trainings default 7 dni",
+    "Health events upcoming_days parameter",
+    "Slug deduplication pre public posts",
+    "PATCH metoda pre horses s before/after audit"
   ],
   "changelog": {
+    "6.18.1": "Stabilizácia - refactor Admin UI, performance, audit",
     "6.18.0": "Stable Core MVP + public web feed",
-    "6.17.4": "Audit entity_id UUID fix",
-    "6.17.3": "Audit debug - return success/error",
-    "6.17.2": "Cleanup backfill + audit fix"
+    "6.17.4": "Audit entity_id UUID fix"
   }
 }
