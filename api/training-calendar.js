@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
                 *,
                 trainer:riders!training_slots_trainer_id_fkey(id, first_name, last_name),
                 bookings:training_bookings(
-                    id, status, created_at, cancelled_at, cancel_reason,
+                    id, status, created_at, cancelled_at, cancel_reason, training_id, marked_at,
                     horse:horses(id, name),
                     rider:riders!training_bookings_rider_id_fkey(id, first_name, last_name)
                 )
@@ -68,7 +68,7 @@ module.exports = async (req, res) => {
         let fullyBooked = 0;
 
         const enrichedSlots = slots.map(slot => {
-            const activeBookings = (slot.bookings || []).filter(b => b.status === 'booked');
+            const activeBookings = (slot.bookings || []).filter(b => b.status === 'booked' || b.status === 'attended');
             const bookedCount = activeBookings.length;
             totalBookings += bookedCount;
 

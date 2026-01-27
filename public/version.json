@@ -1,16 +1,15 @@
 {
-  "version": "6.19.0",
+  "version": "6.19.1",
   "build": "2026-01-27T09:30:00Z",
   "features": [
-    "Training Calendar & Reservations",
-    "training_slots a training_bookings tabuľky",
-    "Book/Cancel/Mark attended endpointy",
-    "Kalendár v Admin UI",
-    "Audit trail pre všetky operácie"
+    "Fix: Mark attended vytvorí training",
+    "Linkovanie booking -> training cez training_id",
+    "Idempotentné mark attended (source_booking_id unique)",
+    "Audit trail pre training creation"
   ],
   "changelog": {
+    "6.19.1": "Fix mark attended + training link",
     "6.19.0": "Training Calendar + Reservations MVP",
-    "6.18.1": "Stabilizácia - refactor Admin UI, performance, audit",
-    "6.18.0": "Stable Core MVP + public web feed"
+    "6.18.1": "Stabilizácia - refactor Admin UI"
   }
 }

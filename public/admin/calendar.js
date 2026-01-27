@@ -245,20 +245,26 @@ async function openSlotDetail(slotId) {
             bookingsHtml = activeBookings.map(b => {
                 const horseName = b.horse?.name || '-';
                 const riderName = b.rider ? `${b.rider.first_name || ''} ${b.rider.last_name || ''}`.trim() : '-';
-                const statusBadge = b.status === 'booked' ? 'info' : b.status === 'attended' ? 'success' : 'warning';
-                const statusText = b.status === 'booked' ? 'Rezervované' : b.status === 'attended' ? 'Zúčastnený' : 'Neprišiel';
+                const statusBadge = b.status === 'booked' ? 'info' : 
+                                   b.status === 'attended' ? 'success' : 
+                                   b.status === 'no_show' ? 'warning' : 'gray';
+                const statusText = b.status === 'booked' ? 'Rezervované' : 
+                                  b.status === 'attended' ? 'Zúčastnený' : 
+                                  b.status === 'no_show' ? 'Neprišiel' : 'Zrušené';
+                const linkedBadge = b.training_id ? '<span class="badge badge-success" style="margin-left:0.25rem" title="Tréning vytvorený">✓</span>' : '';
 
                 return `
                     <div class="booking-item" style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem;border-bottom:1px solid var(--gray-light)">
                         <div>
                             <strong>${horseName}</strong> - ${riderName}
                             <span class="badge badge-${statusBadge}" style="margin-left:0.5rem">${statusText}</span>
+                            ${linkedBadge}
                         </div>
                         <div>
                             ${b.status === 'booked' ? `
-                                <button class="btn btn-sm btn-success" onclick="markBooking('${b.id}','attended')">✓</button>
-                                <button class="btn btn-sm btn-warning" onclick="markBooking('${b.id}','no_show')">✗</button>
-                                <button class="btn btn-sm btn-danger" onclick="cancelBooking('${b.id}')">Zrušiť</button>
+                                <button class="btn btn-sm btn-success" onclick="markBooking('${b.id}','attended')" title="Zúčastnil sa">✓</button>
+                                <button class="btn btn-sm btn-warning" onclick="markBooking('${b.id}','no_show')" title="Neprišiel">✗</button>
+                                <button class="btn btn-sm btn-danger" onclick="cancelBooking('${b.id}')" title="Zrušiť">Zrušiť</button>
                             ` : ''}
                         </div>
                     </div>
