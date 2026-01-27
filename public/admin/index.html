@@ -7395,6 +7395,10 @@
                 html += '<div><strong>Chýb:</strong> ' + data.errors + '</div>';
                 html += '</div>';
                 
+                html += '<div style="font-size:0.875rem;color:var(--gray);margin-bottom:1rem">';
+                html += '<strong>Parametre:</strong> older_than_days=' + data.older_than_days + ', limit=' + data.limit + ', cutoff=' + new Date(data.cutoff_date).toLocaleString('sk');
+                html += '</div>';
+                
                 if (data.dry_run) {
                     html += '<div style="color:var(--warning);margin-bottom:1rem"><strong>Dry-run mód</strong> - žiadne súbory neboli zmazané</div>';
                 }

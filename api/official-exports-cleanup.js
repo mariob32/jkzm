@@ -11,6 +11,12 @@ function verifyToken(req) {
     try { return jwt.verify(auth.split(' ')[1], JWT_SECRET); } catch { return null; }
 }
 
+function parseIntParam(v, def) {
+    if (v === undefined || v === null || v === '') return def;
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.trunc(n) : def;
+}
+
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -27,12 +33,11 @@ module.exports = async (req, res) => {
     const { ip, user_agent } = getRequestInfo(req);
     
     const dryRun = req.query.dry_run === '1' || req.query.dry_run === 'true';
-    const limit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 500);
-    const olderThanDays = Math.max(parseInt(req.query.older_than_days) || 30, 0);
+    const olderThanDays = Math.max(parseIntParam(req.query.older_than_days, 30), 0);
+    const limit = Math.min(Math.max(parseIntParam(req.query.limit, 50), 1), 500);
 
     try {
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
+        const cutoffDate = new Date(Date.now() - olderThanDays * 24 * 60 * 60 * 1000);
         const cutoffISO = cutoffDate.toISOString();
 
         // Select candidates for cleanup
@@ -50,10 +55,33 @@ module.exports = async (req, res) => {
         }
 
         if (!candidates || candidates.length === 0) {
+            // Audit even when no candidates
+            await logAudit(supabase, {
+                action: 'cleanup',
+                entity_type: 'official-export',
+                entity_id: 'batch',
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: {
+                    dry_run: dryRun,
+                    older_than_days: olderThanDays,
+                    limit,
+                    cutoff_date: cutoffISO,
+                    scanned: 0,
+                    deleted: 0,
+                    not_found: 0,
+                    errors: 0
+                }
+            });
+
             return res.status(200).json({
                 success: true,
                 dry_run: dryRun,
                 older_than_days: olderThanDays,
+                limit,
                 cutoff_date: cutoffISO,
                 scanned: 0,
                 deleted: 0,
@@ -84,8 +112,8 @@ module.exports = async (req, res) => {
                 before_data: null,
                 after_data: {
                     dry_run: true,
-                    limit,
                     older_than_days: olderThanDays,
+                    limit,
                     cutoff_date: cutoffISO,
                     scanned: candidates.length,
                     deleted: 0,
@@ -98,6 +126,7 @@ module.exports = async (req, res) => {
                 success: true,
                 dry_run: true,
                 older_than_days: olderThanDays,
+                limit,
                 cutoff_date: cutoffISO,
                 scanned: candidates.length,
                 deleted: 0,
@@ -198,6 +227,7 @@ module.exports = async (req, res) => {
             success: true,
             dry_run: false,
             older_than_days: olderThanDays,
+            limit,
             cutoff_date: cutoffISO,
             scanned: candidates.length,
             deleted: results.deleted,

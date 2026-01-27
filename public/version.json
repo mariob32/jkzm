@@ -1,16 +1,16 @@
 {
-  "version": "6.17.0",
-  "build": "2026-01-27T06:00:00Z",
+  "version": "6.17.1",
+  "build": "2026-01-27T06:15:00Z",
   "features": [
-    "Retencia exportov - expires_at, retention_days",
-    "Cleanup endpoint s dry-run a DB statusmi",
-    "Storage status tracking - deleted/not-found/error",
-    "Admin UI cleanup sekcia"
+    "Cleanup param fix - older_than_days=0 funguje",
+    "Audit vzdy pri cleanup (aj scanned=0)",
+    "Limit v response",
+    "Parametre v admin UI cleanup result"
   ],
   "changelog": {
+    "6.17.1": "Cleanup param fix + audit always",
     "6.17.0": "Retencia + cleanup storage + stavy",
     "6.16.0": "Export integrity verify + protokol",
-    "6.15.1": "Storage hardening + URL refresh + cleanup",
-    "6.15.0": "Storage architecture - ZIP v Supabase Storage + signed URL"
+    "6.15.1": "Storage hardening + URL refresh + cleanup"
   }
 }
