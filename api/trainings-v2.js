@@ -39,8 +39,8 @@ module.exports = async (req, res) => {
                 .select(`
                     *,
                     horse:horses(id, name),
-                    rider:riders!trainings_v2_rider_id_fkey(id, full_name),
-                    trainer:riders!trainings_v2_trainer_id_fkey(id, full_name)
+                    rider:riders!trainings_v2_rider_id_fkey(id, first_name, last_name),
+                    trainer:riders!trainings_v2_trainer_id_fkey(id, first_name, last_name)
                 `, { count: 'exact' });
 
             if (date_from) query = query.gte('training_date', date_from);
