@@ -167,7 +167,15 @@
                     <div class="nav-item" data-section="memberships"><span class="icon">🎫</span>Členstvá</div>
                 </div>
                 <div class="nav-section">
+                    <div class="nav-section-title">Stajňa MVP</div>
+                    <div class="nav-item" data-section="stable-horses"><span class="icon">🐴</span>Kone (MVP)</div>
+                    <div class="nav-item" data-section="stable-trainings"><span class="icon">🏋️</span>Tréningy (MVP)</div>
+                    <div class="nav-item" data-section="stable-health"><span class="icon">💊</span>Zdravie (MVP)</div>
+                    <div class="nav-item" data-section="stable-feed"><span class="icon">🥕</span>Kŕmenie (MVP)</div>
+                </div>
+                <div class="nav-section">
                     <div class="nav-section-title">Web</div>
+                    <div class="nav-item" data-section="web-posts"><span class="icon">📝</span>Novinky</div>
                     <div class="nav-item" data-section="messages"><span class="icon">✉️</span>Správy</div>
                 </div>
                 <div class="nav-section">
@@ -1206,6 +1214,87 @@
                     </div>
                 </div>
             </section>
+
+            <!-- STABLE HORSES MVP -->
+            <section id="stable-horses" class="section">
+                <div class="header"><h1>🐴 Kone (MVP)</h1><div class="header-actions"><button class="btn btn-primary" onclick="openStableHorseModal()">+ Pridať koňa</button></div></div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Meno</th><th>Pohlavie</th><th>Plemeno</th><th>Rok nar.</th><th>Majiteľ</th><th>Status</th><th>Akcie</th></tr></thead>
+                            <tbody id="stableHorsesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STABLE TRAININGS MVP -->
+            <section id="stable-trainings" class="section">
+                <div class="header"><h1>🏋️ Tréningy (MVP)</h1><div class="header-actions"><button class="btn btn-primary" onclick="openStableTrainingModal()">+ Nový tréning</button></div></div>
+                <div class="card">
+                    <div class="card-header"><h3>Posledných 30 dní</h3>
+                        <select class="form-control" id="trainingsHorseFilter" style="width:200px" onchange="loadStableTrainings()">
+                            <option value="">Všetky kone</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Dátum</th><th>Čas</th><th>Kôň</th><th>Jazdec</th><th>Tréner</th><th>Disciplína</th><th>Intenzita</th><th>Akcie</th></tr></thead>
+                            <tbody id="stableTrainingsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STABLE HEALTH MVP -->
+            <section id="stable-health" class="section">
+                <div class="header"><h1>💊 Zdravie (MVP)</h1><div class="header-actions"><button class="btn btn-primary" onclick="openHealthEventModal()">+ Pridať udalosť</button></div></div>
+                <div class="alert alert-warning" id="healthUpcomingAlert" style="display:none">⚠️ Blížiace sa termíny - pozri zoznam nižšie</div>
+                <div class="card">
+                    <div class="card-header"><h3>Zdravotné udalosti</h3>
+                        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem">
+                            <input type="checkbox" id="healthUpcomingOnly" onchange="loadHealthEvents()"> Len blížiace sa
+                        </label>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Dátum</th><th>Kôň</th><th>Kategória</th><th>Názov</th><th>Ďalší termín</th><th>Akcie</th></tr></thead>
+                            <tbody id="healthEventsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STABLE FEED MVP -->
+            <section id="stable-feed" class="section">
+                <div class="header"><h1>🥕 Kŕmenie (MVP)</h1><div class="header-actions"><button class="btn btn-primary" onclick="openFeedLogModal()">+ Pridať záznam</button></div></div>
+                <div class="card">
+                    <div class="card-header"><h3>Záznamy kŕmenia</h3>
+                        <select class="form-control" id="feedHorseFilter" style="width:200px" onchange="loadFeedLogs()">
+                            <option value="">Všetky kone</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Dátum</th><th>Kôň</th><th>Typ krmiva</th><th>Množstvo</th><th>Poznámky</th></tr></thead>
+                            <tbody id="feedLogsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WEB POSTS -->
+            <section id="web-posts" class="section">
+                <div class="header"><h1>📝 Novinky</h1><div class="header-actions"><button class="btn btn-primary" onclick="openWebPostModal()">+ Nový príspevok</button></div></div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Dátum</th><th>Názov</th><th>Slug</th><th>Kategória</th><th>Status</th><th>Akcie</th></tr></thead>
+                            <tbody id="webPostsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -2211,6 +2300,176 @@
         </div>
     </div>
 
+    <!-- STABLE HORSE MODAL (MVP) -->
+    <div class="modal" id="stableHorseModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="stableHorseModalTitle">Nový kôň</h3><button class="modal-close" onclick="closeModal('stableHorseModal')">×</button></div>
+            <div class="modal-body">
+                <form id="stableHorseForm">
+                    <input type="hidden" id="stableHorseId">
+                    <div class="form-group"><label>Meno *</label><input type="text" class="form-control" id="stableHorseName" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Pohlavie</label>
+                            <select class="form-control" id="stableHorseSex">
+                                <option value="">--</option>
+                                <option value="mare">Kobyla</option>
+                                <option value="gelding">Valach</option>
+                                <option value="stallion">Žrebec</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Rok narodenia</label><input type="number" class="form-control" id="stableHorseBirthYear" min="1980" max="2030"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Plemeno</label><input type="text" class="form-control" id="stableHorseBreed"></div>
+                        <div class="form-group"><label>Farba</label><input type="text" class="form-control" id="stableHorseColor"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Majiteľ</label><input type="text" class="form-control" id="stableHorseOwner"></div>
+                        <div class="form-group"><label>FEI ID</label><input type="text" class="form-control" id="stableHorseFeiId"></div>
+                    </div>
+                    <div class="form-group"><label>Poznámky</label><textarea class="form-control" id="stableHorseNotes"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('stableHorseModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveStableHorse()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- STABLE TRAINING MODAL (MVP) -->
+    <div class="modal" id="stableTrainingModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Nový tréning</h3><button class="modal-close" onclick="closeModal('stableTrainingModal')">×</button></div>
+            <div class="modal-body">
+                <form id="stableTrainingForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>Dátum *</label><input type="date" class="form-control" id="stTrainingDate" required></div>
+                        <div class="form-group"><label>Čas</label><input type="time" class="form-control" id="stTrainingTime"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Kôň</label><select class="form-control" id="stTrainingHorse"></select></div>
+                        <div class="form-group"><label>Jazdec</label><select class="form-control" id="stTrainingRider"></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Tréner</label><select class="form-control" id="stTrainingTrainer"></select></div>
+                        <div class="form-group"><label>Trvanie (min)</label><input type="number" class="form-control" id="stTrainingDuration" value="60"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Disciplína</label>
+                            <select class="form-control" id="stTrainingDiscipline">
+                                <option value="">--</option>
+                                <option value="jumping">Skoky</option>
+                                <option value="dressage">Drezúra</option>
+                                <option value="hacking">Terén</option>
+                                <option value="groundwork">Práca na zemi</option>
+                                <option value="other">Iné</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Intenzita</label>
+                            <select class="form-control" id="stTrainingIntensity">
+                                <option value="">--</option>
+                                <option value="low">Nízka</option>
+                                <option value="medium">Stredná</option>
+                                <option value="high">Vysoká</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Ciele</label><textarea class="form-control" id="stTrainingGoals" rows="2"></textarea></div>
+                    <div class="form-group"><label>Poznámky</label><textarea class="form-control" id="stTrainingNotes" rows="2"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('stableTrainingModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveStableTraining()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- HEALTH EVENT MODAL (MVP) -->
+    <div class="modal" id="healthEventModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Zdravotná udalosť</h3><button class="modal-close" onclick="closeModal('healthEventModal')">×</button></div>
+            <div class="modal-body">
+                <form id="healthEventForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>Dátum *</label><input type="date" class="form-control" id="healthEventDate" required></div>
+                        <div class="form-group"><label>Kôň *</label><select class="form-control" id="healthEventHorse" required></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Kategória *</label>
+                            <select class="form-control" id="healthEventCategory" required>
+                                <option value="">--</option>
+                                <option value="vaccination">Očkovanie</option>
+                                <option value="deworming">Odčervenie</option>
+                                <option value="dentist">Zuby</option>
+                                <option value="farrier">Podkováč</option>
+                                <option value="vet">Veterinár</option>
+                                <option value="physio">Fyzioterapeut</option>
+                                <option value="other">Iné</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Ďalší termín</label><input type="date" class="form-control" id="healthEventNextDue"></div>
+                    </div>
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="healthEventTitle" required placeholder="Napr. Chrípka 2026"></div>
+                    <div class="form-group"><label>Detaily</label><textarea class="form-control" id="healthEventDetails"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('healthEventModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveHealthEvent()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- FEED LOG MODAL (MVP) -->
+    <div class="modal" id="feedLogModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Záznam kŕmenia</h3><button class="modal-close" onclick="closeModal('feedLogModal')">×</button></div>
+            <div class="modal-body">
+                <form id="feedLogForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>Dátum *</label><input type="date" class="form-control" id="feedLogDate" required></div>
+                        <div class="form-group"><label>Kôň *</label><select class="form-control" id="feedLogHorse" required></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Typ krmiva *</label><input type="text" class="form-control" id="feedLogType" required placeholder="Seno, ovos, müsli..."></div>
+                        <div class="form-group"><label>Množstvo</label><input type="text" class="form-control" id="feedLogAmount" placeholder="2 kg, 1 odmerka..."></div>
+                    </div>
+                    <div class="form-group"><label>Poznámky</label><textarea class="form-control" id="feedLogNotes"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('feedLogModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveFeedLog()">Uložiť</button></div>
+        </div>
+    </div>
+
+    <!-- WEB POST MODAL -->
+    <div class="modal" id="webPostModal">
+        <div class="modal-content" style="max-width:800px">
+            <div class="modal-header"><h3 id="webPostModalTitle">Nový príspevok</h3><button class="modal-close" onclick="closeModal('webPostModal')">×</button></div>
+            <div class="modal-body">
+                <form id="webPostForm">
+                    <input type="hidden" id="webPostId">
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="webPostTitle" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Slug</label><input type="text" class="form-control" id="webPostSlug" placeholder="Automaticky z názvu"></div>
+                        <div class="form-group"><label>Kategória</label>
+                            <select class="form-control" id="webPostCategory">
+                                <option value="news">Novinky</option>
+                                <option value="event">Udalosť</option>
+                                <option value="results">Výsledky</option>
+                                <option value="other">Iné</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Úvod (excerpt)</label><textarea class="form-control" id="webPostExcerpt" rows="2"></textarea></div>
+                    <div class="form-group"><label>Obsah</label><div id="webPostEditor" style="height:250px;background:white"></div></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>URL obrázka</label><input type="text" class="form-control" id="webPostCover"></div>
+                        <div class="form-group"><label>Status</label>
+                            <select class="form-control" id="webPostPublished">
+                                <option value="true">Publikovaný</option>
+                                <option value="false">Koncept</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('webPostModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveWebPost()">Uložiť</button></div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -2276,6 +2535,12 @@
             if (hash === 'partners') setTimeout(loadPartners, 100);
             if (hash === 'services') setTimeout(loadServices, 100);
             if (hash === 'web-settings') setTimeout(loadSettings, 100);
+            // MVP sekcie
+            if (hash === 'stable-horses') setTimeout(loadStableHorses, 100);
+            if (hash === 'stable-trainings') { setTimeout(loadStableHorses, 100); setTimeout(loadStableTrainings, 150); }
+            if (hash === 'stable-health') { setTimeout(loadStableHorses, 100); setTimeout(loadHealthEvents, 150); }
+            if (hash === 'stable-feed') { setTimeout(loadStableHorses, 100); setTimeout(loadFeedLogs, 150); }
+            if (hash === 'web-posts') setTimeout(loadWebPosts, 100);
         }
     }
 
@@ -7580,13 +7845,78 @@
                 <tbody>${bodyRows}</tbody>
             </table>
             <p style="margin-top:2rem;font-size:0.8rem;color:#666;text-align:center">
-                Dokument bol vytvoreny elektronickym evidencnym systemom prevadzky. Datum: ${new Date().toLocaleDateString('sk')}
+                Dokument bol vytvoreny elektronickym evidencnym sistemom prevadzky. Datum: ${new Date().toLocaleDateString('sk')}
             </p>
         `;
         document.getElementById('printContent').innerHTML = html;
         document.getElementById('printModalTitle').textContent = 'Tlac - ' + title;
         showModal('printModal');
     }
+
+    // ===== MVP STABLE HORSES =====
+    async function loadStableHorses() {
+        try {
+            const res = await fetch('/api/horses', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            horses = Array.isArray(data) ? data : [];
+            renderStableHorses();
+            populateHorseSelectsMVP();
+        } catch(e) { console.error('Load stable horses error:', e); }
+    }
+    function renderStableHorses() {
+        const table = document.getElementById('stableHorsesTable'); if (!table) return;
+        if (!horses.length) { table.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Žiadne kone</td></tr>'; return; }
+        const sexMap = { mare: 'Kobyla', gelding: 'Valach', stallion: 'Žrebec' };
+        table.innerHTML = horses.map(h => `<tr><td><strong>${h.name || h.stable_name || '-'}</strong></td><td>${sexMap[h.sex] || h.sex || '-'}</td><td>${h.breed || '-'}</td><td>${h.birth_year || (h.birth_date ? new Date(h.birth_date).getFullYear() : '-')}</td><td>${h.owner_name || '-'}</td><td><span class="badge badge-${h.is_active !== false && h.status !== 'inactive' ? 'success' : 'gray'}">${h.is_active !== false && h.status !== 'inactive' ? 'Aktívny' : 'Neaktívny'}</span></td><td><button class="btn btn-sm btn-outline" onclick="editStableHorse('${h.id}')">✏️</button></td></tr>`).join('');
+    }
+    function populateHorseSelectsMVP() {
+        ['stTrainingHorse','healthEventHorse','feedLogHorse','trainingsHorseFilter','feedHorseFilter'].forEach(id => {
+            const sel = document.getElementById(id); if (!sel) return;
+            const isFilter = id.includes('Filter');
+            sel.innerHTML = isFilter ? '<option value="">Všetky kone</option>' : '<option value="">--</option>';
+            horses.filter(h => h.is_active !== false && h.status !== 'inactive').forEach(h => { sel.innerHTML += `<option value="${h.id}">${h.name || h.stable_name}</option>`; });
+        });
+        ['stTrainingRider','stTrainingTrainer'].forEach(id => {
+            const sel = document.getElementById(id); if (!sel) return;
+            sel.innerHTML = '<option value="">--</option>';
+            riders.forEach(r => { sel.innerHTML += `<option value="${r.id}">${r.full_name || (r.first_name + ' ' + r.last_name)}</option>`; });
+        });
+    }
+    function openStableHorseModal() { document.getElementById('stableHorseForm').reset(); document.getElementById('stableHorseId').value = ''; document.getElementById('stableHorseModalTitle').textContent = 'Nový kôň'; openModal('stableHorseModal'); }
+    function editStableHorse(id) { const h = horses.find(x => x.id === id); if (!h) return; document.getElementById('stableHorseId').value = h.id; document.getElementById('stableHorseName').value = h.name || h.stable_name || ''; document.getElementById('stableHorseSex').value = h.sex || ''; document.getElementById('stableHorseBirthYear').value = h.birth_year || ''; document.getElementById('stableHorseBreed').value = h.breed || ''; document.getElementById('stableHorseColor').value = h.color || ''; document.getElementById('stableHorseOwner').value = h.owner_name || ''; document.getElementById('stableHorseFeiId').value = h.fei_id || ''; document.getElementById('stableHorseNotes').value = h.notes || ''; document.getElementById('stableHorseModalTitle').textContent = 'Upraviť koňa'; openModal('stableHorseModal'); }
+    async function saveStableHorse() { const id = document.getElementById('stableHorseId').value; const data = { name: document.getElementById('stableHorseName').value, sex: document.getElementById('stableHorseSex').value || null, birth_year: parseInt(document.getElementById('stableHorseBirthYear').value) || null, breed: document.getElementById('stableHorseBreed').value || null, color: document.getElementById('stableHorseColor').value || null, owner_name: document.getElementById('stableHorseOwner').value || null, fei_id: document.getElementById('stableHorseFeiId').value || null, notes: document.getElementById('stableHorseNotes').value || null }; if (!data.name) { showToast('Meno je povinné', 'error'); return; } try { await fetch(id ? `/api/horses/${id}` : '/api/horses', { method: id ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) }); closeModal('stableHorseModal'); showToast(id ? 'Kôň upravený' : 'Kôň pridaný', 'success'); loadStableHorses(); } catch(e) { showToast('Chyba', 'error'); } }
+
+    // ===== MVP TRAININGS V2 =====
+    let stableTrainings = [];
+    async function loadStableTrainings() { try { const horseId = document.getElementById('trainingsHorseFilter')?.value || ''; const dateFrom = new Date(); dateFrom.setDate(dateFrom.getDate() - 30); let url = `/api/trainings-v2?date_from=${dateFrom.toISOString().split('T')[0]}&limit=100`; if (horseId) url += `&horse_id=${horseId}`; const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } }); const json = await res.json(); stableTrainings = json.data || []; renderStableTrainings(); } catch(e) { console.error('Load trainings error:', e); } }
+    function renderStableTrainings() { const table = document.getElementById('stableTrainingsTable'); if (!table) return; if (!stableTrainings.length) { table.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray)">Žiadne tréningy</td></tr>'; return; } const discMap = { jumping: 'Skoky', dressage: 'Drezúra', hacking: 'Terén', groundwork: 'Zem', other: 'Iné' }; const intMap = { low: 'Nízka', medium: 'Stredná', high: 'Vysoká' }; table.innerHTML = stableTrainings.map(t => `<tr><td>${new Date(t.training_date).toLocaleDateString('sk')}</td><td>${t.start_time || '-'}</td><td>${t.horse?.name || '-'}</td><td>${t.rider?.full_name || '-'}</td><td>${t.trainer?.full_name || '-'}</td><td>${discMap[t.discipline] || t.discipline || '-'}</td><td><span class="badge badge-${t.intensity === 'high' ? 'danger' : t.intensity === 'medium' ? 'warning' : 'info'}">${intMap[t.intensity] || '-'}</span></td><td><button class="btn btn-sm btn-danger" onclick="deleteStableTraining('${t.id}')">🗑️</button></td></tr>`).join(''); }
+    function openStableTrainingModal() { document.getElementById('stableTrainingForm').reset(); document.getElementById('stTrainingDate').value = new Date().toISOString().split('T')[0]; populateHorseSelectsMVP(); openModal('stableTrainingModal'); }
+    async function saveStableTraining() { const data = { training_date: document.getElementById('stTrainingDate').value, start_time: document.getElementById('stTrainingTime').value || null, horse_id: document.getElementById('stTrainingHorse').value || null, rider_id: document.getElementById('stTrainingRider').value || null, trainer_id: document.getElementById('stTrainingTrainer').value || null, duration_min: parseInt(document.getElementById('stTrainingDuration').value) || 60, discipline: document.getElementById('stTrainingDiscipline').value || null, intensity: document.getElementById('stTrainingIntensity').value || null, goals: document.getElementById('stTrainingGoals').value || null, notes: document.getElementById('stTrainingNotes').value || null }; if (!data.training_date) { showToast('Dátum je povinný', 'error'); return; } try { await fetch('/api/trainings-v2', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) }); closeModal('stableTrainingModal'); showToast('Tréning pridaný', 'success'); loadStableTrainings(); } catch(e) { showToast('Chyba', 'error'); } }
+    async function deleteStableTraining(id) { if (!confirm('Naozaj zmazať?')) return; try { await fetch(`/api/trainings-v2/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } }); showToast('Zmazané', 'success'); loadStableTrainings(); } catch(e) { showToast('Chyba', 'error'); } }
+
+    // ===== MVP HEALTH EVENTS =====
+    let healthEvents = [];
+    async function loadHealthEvents() { try { const upcomingOnly = document.getElementById('healthUpcomingOnly')?.checked; let url = '/api/health-events?limit=100'; if (upcomingOnly) url += '&upcoming_only=1'; const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } }); const json = await res.json(); healthEvents = json.data || []; renderHealthEvents(); } catch(e) { console.error('Load health events error:', e); } }
+    function renderHealthEvents() { const table = document.getElementById('healthEventsTable'); if (!table) return; if (!healthEvents.length) { table.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadne udalosti</td></tr>'; return; } const catMap = { vaccination: 'Očkovanie', deworming: 'Odčervenie', dentist: 'Zuby', farrier: 'Podkováč', vet: 'Veterinár', physio: 'Fyzio', other: 'Iné' }; const now = new Date(); let upcoming = 0; table.innerHTML = healthEvents.map(e => { const isUpcoming = e.next_due_date && new Date(e.next_due_date) <= new Date(now.getTime() + 30*24*60*60*1000); if (isUpcoming) upcoming++; return `<tr><td>${new Date(e.event_date).toLocaleDateString('sk')}</td><td>${e.horse?.name || '-'}</td><td>${catMap[e.category] || e.category}</td><td>${e.title}</td><td>${e.next_due_date ? `<span class="badge badge-${isUpcoming ? 'warning' : 'info'}">${new Date(e.next_due_date).toLocaleDateString('sk')}</span>` : '-'}</td><td><button class="btn btn-sm btn-danger" onclick="deleteHealthEvent('${e.id}')">🗑️</button></td></tr>`; }).join(''); document.getElementById('healthUpcomingAlert').style.display = upcoming > 0 ? 'block' : 'none'; }
+    function openHealthEventModal() { document.getElementById('healthEventForm').reset(); document.getElementById('healthEventDate').value = new Date().toISOString().split('T')[0]; populateHorseSelectsMVP(); openModal('healthEventModal'); }
+    async function saveHealthEvent() { const data = { event_date: document.getElementById('healthEventDate').value, horse_id: document.getElementById('healthEventHorse').value, category: document.getElementById('healthEventCategory').value, title: document.getElementById('healthEventTitle').value, details: document.getElementById('healthEventDetails').value || null, next_due_date: document.getElementById('healthEventNextDue').value || null }; if (!data.event_date || !data.horse_id || !data.category || !data.title) { showToast('Vyplňte povinné polia', 'error'); return; } try { await fetch('/api/health-events', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) }); closeModal('healthEventModal'); showToast('Udalosť pridaná', 'success'); loadHealthEvents(); } catch(e) { showToast('Chyba', 'error'); } }
+    async function deleteHealthEvent(id) { if (!confirm('Naozaj zmazať?')) return; try { await fetch(`/api/health-events/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } }); showToast('Zmazané', 'success'); loadHealthEvents(); } catch(e) { showToast('Chyba', 'error'); } }
+
+    // ===== MVP FEED LOGS =====
+    let feedLogs = [];
+    async function loadFeedLogs() { try { const horseId = document.getElementById('feedHorseFilter')?.value || ''; let url = '/api/feed-logs?limit=100'; if (horseId) url += `&horse_id=${horseId}`; const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } }); const json = await res.json(); feedLogs = json.data || []; renderFeedLogs(); } catch(e) { console.error('Load feed logs error:', e); } }
+    function renderFeedLogs() { const table = document.getElementById('feedLogsTable'); if (!table) return; if (!feedLogs.length) { table.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Žiadne záznamy</td></tr>'; return; } table.innerHTML = feedLogs.map(f => `<tr><td>${new Date(f.log_date).toLocaleDateString('sk')}</td><td>${f.horse?.name || '-'}</td><td>${f.feed_type}</td><td>${f.amount || '-'}</td><td>${f.notes || '-'}</td></tr>`).join(''); }
+    function openFeedLogModal() { document.getElementById('feedLogForm').reset(); document.getElementById('feedLogDate').value = new Date().toISOString().split('T')[0]; populateHorseSelectsMVP(); openModal('feedLogModal'); }
+    async function saveFeedLog() { const data = { log_date: document.getElementById('feedLogDate').value, horse_id: document.getElementById('feedLogHorse').value, feed_type: document.getElementById('feedLogType').value, amount: document.getElementById('feedLogAmount').value || null, notes: document.getElementById('feedLogNotes').value || null }; if (!data.log_date || !data.horse_id || !data.feed_type) { showToast('Vyplňte povinné polia', 'error'); return; } try { await fetch('/api/feed-logs', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) }); closeModal('feedLogModal'); showToast('Záznam pridaný', 'success'); loadFeedLogs(); } catch(e) { showToast('Chyba', 'error'); } }
+
+    // ===== WEB POSTS =====
+    let webPosts = [], webPostEditor = null;
+    async function loadWebPosts() { try { const res = await fetch('/api/public-posts', { headers: { 'Authorization': 'Bearer ' + token } }); const json = await res.json(); webPosts = json.data || []; renderWebPosts(); } catch(e) { console.error('Load web posts error:', e); } }
+    function renderWebPosts() { const table = document.getElementById('webPostsTable'); if (!table) return; if (!webPosts.length) { table.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Žiadne príspevky</td></tr>'; return; } table.innerHTML = webPosts.map(p => `<tr><td>${new Date(p.published_at).toLocaleDateString('sk')}</td><td><strong>${p.title}</strong></td><td><code>${p.slug}</code></td><td>${p.category}</td><td><span class="badge badge-${p.is_published ? 'success' : 'gray'}">${p.is_published ? 'Publikovaný' : 'Koncept'}</span></td><td><button class="btn btn-sm btn-outline" onclick="editWebPost('${p.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteWebPost('${p.id}')">🗑️</button></td></tr>`).join(''); }
+    function openWebPostModal() { document.getElementById('webPostForm').reset(); document.getElementById('webPostId').value = ''; document.getElementById('webPostModalTitle').textContent = 'Nový príspevok'; if (!webPostEditor) { webPostEditor = new Quill('#webPostEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }]] } }); } webPostEditor.root.innerHTML = ''; openModal('webPostModal'); }
+    function editWebPost(id) { const p = webPosts.find(x => x.id === id); if (!p) return; document.getElementById('webPostId').value = p.id; document.getElementById('webPostTitle').value = p.title || ''; document.getElementById('webPostSlug').value = p.slug || ''; document.getElementById('webPostCategory').value = p.category || 'news'; document.getElementById('webPostExcerpt').value = p.excerpt || ''; document.getElementById('webPostCover').value = p.cover_url || ''; document.getElementById('webPostPublished').value = p.is_published ? 'true' : 'false'; if (!webPostEditor) { webPostEditor = new Quill('#webPostEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }]] } }); } webPostEditor.root.innerHTML = p.body || ''; document.getElementById('webPostModalTitle').textContent = 'Upraviť príspevok'; openModal('webPostModal'); }
+    async function saveWebPost() { const id = document.getElementById('webPostId').value; const data = { title: document.getElementById('webPostTitle').value, slug: document.getElementById('webPostSlug').value || null, category: document.getElementById('webPostCategory').value, excerpt: document.getElementById('webPostExcerpt').value || null, body: webPostEditor ? webPostEditor.root.innerHTML : null, cover_url: document.getElementById('webPostCover').value || null, is_published: document.getElementById('webPostPublished').value === 'true' }; if (!data.title) { showToast('Názov je povinný', 'error'); return; } try { await fetch(id ? `/api/public-posts/${id}` : '/api/public-posts', { method: id ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) }); closeModal('webPostModal'); showToast(id ? 'Príspevok upravený' : 'Príspevok vytvorený', 'success'); loadWebPosts(); } catch(e) { showToast('Chyba', 'error'); } }
+    async function deleteWebPost(id) { if (!confirm('Naozaj zmazať?')) return; try { await fetch(`/api/public-posts/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } }); showToast('Zmazané', 'success'); loadWebPosts(); } catch(e) { showToast('Chyba', 'error'); } }
     </script>
 </body>
 </html>

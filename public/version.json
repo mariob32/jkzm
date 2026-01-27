@@ -1,14 +1,17 @@
 {
-  "version": "6.17.4",
-  "build": "2026-01-27T06:40:00Z",
+  "version": "6.18.0",
+  "build": "2026-01-27T07:15:00Z",
   "features": [
-    "Audit entity_id fix - null pre batch",
-    "Batch info v after_data"
+    "Stable Core MVP",
+    "trainings_v2, health_events, feed_logs tabulky",
+    "Public posts pre web feed",
+    "Verejne API endpointy /api/public/posts",
+    "RLS policies pre nove tabulky"
   ],
   "changelog": {
+    "6.18.0": "Stable Core MVP + public web feed",
     "6.17.4": "Audit entity_id UUID fix",
     "6.17.3": "Audit debug - return success/error",
-    "6.17.2": "Cleanup backfill + audit fix",
-    "6.17.1": "Cleanup param fix + audit always"
+    "6.17.2": "Cleanup backfill + audit fix"
   }
 }
