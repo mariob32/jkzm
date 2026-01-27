@@ -1,16 +1,16 @@
 {
-  "version": "6.15.1",
-  "build": "2026-01-26T13:30:00Z",
+  "version": "6.16.0",
+  "build": "2026-01-26T19:00:00Z",
   "features": [
-    "Storage hardening - manifest_json, checksums_sha256 v DB",
-    "Signed URL refresh endpoint s TTL",
-    "Cleanup endpoint pre stare exporty",
-    "expires_at v response"
+    "Export integrity verify endpoint",
+    "Verification report protokol",
+    "SHA-256 porovnanie ZIP vs DB",
+    "Stav overenia v historii exportov"
   ],
   "changelog": {
+    "6.16.0": "Export integrity verify + protokol",
     "6.15.1": "Storage hardening + URL refresh + cleanup",
     "6.15.0": "Storage architecture - ZIP v Supabase Storage + signed URL",
-    "6.14.x": "Bytea experimenty (deprecated)",
-    "6.13.2": "Audit list include after_data + CSV export rozsirenie"
+    "6.14.x": "Bytea experimenty (deprecated)"
   }
 }

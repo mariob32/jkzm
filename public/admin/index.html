@@ -993,7 +993,8 @@
                                     <th>Veľkosť</th>
                                     <th>Od</th>
                                     <th>Do</th>
-                                    <th></th>
+                                    <th>Stav</th>
+                                    <th>Akcie</th>
                                 </tr>
                             </thead>
                             <tbody id="officialExportsTable"></tbody>
@@ -7296,6 +7297,18 @@
             const sizeKB = e.size_bytes ? Math.round(e.size_bytes / 1024) + ' KB' : '-';
             const from = e.filters?.from || '-';
             const to = e.filters?.to || '-';
+            
+            let statusBadge = '';
+            if (e.verified_status === 'ok') {
+                statusBadge = '<span class="badge badge-success">OK</span>';
+            } else if (e.verified_status === 'mismatch') {
+                statusBadge = '<span class="badge badge-error">Nezhoda</span>';
+            } else if (e.verified_status === 'error') {
+                statusBadge = '<span class="badge badge-warning">Chyba</span>';
+            } else {
+                statusBadge = '<span class="badge badge-ghost">—</span>';
+            }
+            
             return `<tr>
                 <td>${date}</td>
                 <td><span class="badge badge-${e.type === 'svps' ? 'info' : 'success'}">${typeLabel}</span></td>
@@ -7303,9 +7316,44 @@
                 <td>${sizeKB}</td>
                 <td>${from}</td>
                 <td>${to}</td>
-                <td><button class="btn btn-sm btn-outline" onclick="downloadOfficialExport('${e.id}')">Stiahnuť</button></td>
+                <td>${statusBadge}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="downloadOfficialExport('${e.id}')">Stiahnuť</button>
+                    <button class="btn btn-sm btn-outline" onclick="verifyOfficialExport('${e.id}')">Overiť</button>
+                    <button class="btn btn-sm btn-outline" onclick="viewVerificationReport('${e.id}')" ${e.verified_status ? '' : 'disabled'}>Protokol</button>
+                </td>
             </tr>`;
         }).join('');
+    }
+    
+    function verifyOfficialExport(id) {
+        showToast('Overujem integritu exportu...', 'info');
+        fetch(`/api/official-exports/${id}/verify`, { 
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jkzm_token') } 
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showToast('Overenie OK - integrita v poriadku', 'success');
+                } else if (data.status === 'mismatch') {
+                    showToast('Nezhoda - pozri protokol', 'error');
+                } else if (data.status === 'error') {
+                    showToast('Chyba overenia: ' + (data.error || ''), 'error');
+                } else if (data.error) {
+                    showToast('Chyba: ' + data.error, 'error');
+                }
+                loadOfficialExports();
+            })
+            .catch(e => {
+                console.error('Verify official export error:', e);
+                showToast('Chyba pri overovaní exportu', 'error');
+            });
+    }
+    
+    function viewVerificationReport(id) {
+        const token = localStorage.getItem('jkzm_token');
+        window.open(`/api/official-exports/${id}/verification-report?token=${token}`, '_blank');
     }
     
     function downloadOfficialExport(id) {
