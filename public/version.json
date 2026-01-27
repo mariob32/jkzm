@@ -1,17 +1,16 @@
 {
-  "version": "6.18.1",
-  "build": "2026-01-27T08:00:00Z",
+  "version": "6.19.0",
+  "build": "2026-01-27T09:30:00Z",
   "features": [
-    "Stabilizácia a refactor",
-    "Admin UI moduly (api.js, stable.js, posts.js, app.js)",
-    "Trainings default 7 dni",
-    "Health events upcoming_days parameter",
-    "Slug deduplication pre public posts",
-    "PATCH metoda pre horses s before/after audit"
+    "Training Calendar & Reservations",
+    "training_slots a training_bookings tabuľky",
+    "Book/Cancel/Mark attended endpointy",
+    "Kalendár v Admin UI",
+    "Audit trail pre všetky operácie"
   ],
   "changelog": {
+    "6.19.0": "Training Calendar + Reservations MVP",
     "6.18.1": "Stabilizácia - refactor Admin UI, performance, audit",
-    "6.18.0": "Stable Core MVP + public web feed",
-    "6.17.4": "Audit entity_id UUID fix"
+    "6.18.0": "Stable Core MVP + public web feed"
   }
 }
