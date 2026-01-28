@@ -111,6 +111,26 @@
         .nav-search input::placeholder{color:rgba(255,255,255,0.5)}
         .nav-search input:focus{outline:none;background:rgba(255,255,255,0.15)}
         .nav-search::before{content:'🔍';position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);font-size:0.8rem;opacity:0.7}
+        
+        /* Accordion Navigation */
+        .nav-section-accordion .nav-section-title{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.5rem;border-radius:6px;transition:background 0.2s}
+        .nav-section-accordion .nav-section-title:hover{background:rgba(255,255,255,0.1)}
+        .nav-section-arrow{font-size:0.7rem;opacity:0.7;transition:transform 0.2s}
+        .nav-section-accordion.open .nav-section-arrow{transform:rotate(0deg)}
+        .nav-section-items{overflow:hidden;transition:all 0.2s}
+        
+        /* Favorites Section */
+        .nav-section-favorites{background:rgba(34,139,34,0.15);border-radius:8px;padding:0.5rem;margin-bottom:1rem}
+        .nav-section-favorites .nav-section-title{color:var(--primary-light);font-weight:600}
+        .nav-section-favorites .nav-item{background:rgba(255,255,255,0.05)}
+        
+        /* Nav Item with Star */
+        .nav-item{position:relative;padding-right:2rem !important}
+        .nav-item-label{flex:1}
+        .nav-favorite-star{position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);cursor:pointer;opacity:0.3;font-size:0.9rem;transition:all 0.2s}
+        .nav-item:hover .nav-favorite-star{opacity:0.7}
+        .nav-favorite-star.active{opacity:1;color:gold}
+        .nav-favorite-star:hover{opacity:1;transform:translateY(-50%) scale(1.2)}
         .horse-card{display:grid;grid-template-columns:100px 1fr;gap:1rem;padding:1rem;border:1px solid var(--gray-light);border-radius:var(--radius);margin-bottom:1rem}
         .horse-card img{width:100px;height:100px;object-fit:cover;border-radius:var(--radius)}
         .horse-card-info h4{margin-bottom:0.25rem}.horse-card-info p{font-size:0.85rem;color:var(--gray)}

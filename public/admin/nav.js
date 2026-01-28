@@ -1,16 +1,17 @@
-// ===== JKZM Admin Navigation v6.21.3 =====
-// nav.js - centrálna definícia menu štruktúry (bez duplicít)
+// ===== JKZM Admin Navigation v6.21.5 =====
+// nav.js - accordion menu + favorites
 
+// ===== MENU DEFINITION =====
 const ADMIN_NAV = [
-    // ===== KLUB MÓD =====
+    // ===== KLUB MOD =====
     {
         id: 'overview',
-        title: 'Prehľad',
+        title: 'Prehlad',
         mode: 'club',
         items: [
-            { section: 'dashboard', icon: '📊', label: 'Dashboard', badge: 'alertBadge' },
-            { section: 'tasks', icon: '✓', label: 'Úlohy', badge: 'tasksBadge' },
-            { section: 'notifications', icon: '🔔', label: 'Upozornenia' }
+            { id: 'dashboard', icon: '📊', label: 'Prehlad', badge: 'alertBadge' },
+            { id: 'tasks', icon: '✓', label: 'Ulohy', badge: 'tasksBadge' },
+            { id: 'notifications', icon: '🔔', label: 'Upozornenia' }
         ]
     },
     {
@@ -18,33 +19,32 @@ const ADMIN_NAV = [
         title: 'Evidencia',
         mode: 'club',
         items: [
-            { section: 'horses', icon: '🐴', label: 'Kone' },
-            { section: 'riders', icon: '🏇', label: 'Jazdci' },
-            { section: 'trainers', icon: '👨‍🏫', label: 'Tréneri' },
-            { section: 'employees', icon: '👷', label: 'Zamestnanci' },
-            { section: 'docs-central', icon: '📁', label: 'Dokumenty' }
+            { id: 'horses', icon: '🐴', label: 'Kone' },
+            { id: 'riders', icon: '🏇', label: 'Jazdci' },
+            { id: 'trainers', icon: '👨‍🏫', label: 'Treneri' },
+            { id: 'employees', icon: '👷', label: 'Zamestnanci' }
         ]
     },
     {
         id: 'trainings',
-        title: 'Tréningy',
+        title: 'Treningy',
         mode: 'club',
         items: [
-            { section: 'training-calendar', icon: '📅', label: 'Kalendár' },
-            { section: 'bookings', icon: '🎯', label: 'Rezervácie' },
-            { section: 'trainings', icon: '📝', label: 'Záznamy tréningov' },
-            { section: 'arenas', icon: '🏟️', label: 'Arény a časy' }
+            { id: 'training-calendar', icon: '📅', label: 'Kalendar' },
+            { id: 'bookings', icon: '🎯', label: 'Rezervacie' },
+            { id: 'trainings', icon: '📝', label: 'Zaznamy treningov' },
+            { id: 'arenas', icon: '🏟️', label: 'Areny a casy' }
         ]
     },
     {
         id: 'stable',
-        title: 'Stajňa',
+        title: 'Stajna',
         mode: 'club',
         items: [
-            { section: 'stable-log', icon: '📖', label: 'Maštaľná kniha' },
-            { section: 'visit-log', icon: '📋', label: 'Návštevná kniha' },
-            { section: 'vet', icon: '🏥', label: 'Veterinárne záznamy' },
-            { section: 'feeding', icon: '🌾', label: 'Kŕmenie' }
+            { id: 'feeding', icon: '🌾', label: 'Krmenie' },
+            { id: 'vet', icon: '🏥', label: 'Zdravie / Veterina' },
+            { id: 'stable-log', icon: '📖', label: 'Mastalna kniha' },
+            { id: 'visit-log', icon: '📋', label: 'Navstevna kniha' }
         ]
     },
     {
@@ -52,67 +52,61 @@ const ADMIN_NAV = [
         title: 'Financie',
         mode: 'club',
         items: [
-            { section: 'billing', icon: '💰', label: 'Účtovanie' },
-            { section: 'pricing-rules', icon: '📋', label: 'Cenník' },
-            { section: 'billing-reports', icon: '📊', label: 'Finančné reporty' },
-            { section: 'payments', icon: '💳', label: 'Platby členov' },
-            { section: 'memberships', icon: '🎫', label: 'Členstvá' }
+            { id: 'billing', icon: '💰', label: 'Platby' },
+            { id: 'pricing-rules', icon: '📋', label: 'Cennik' },
+            { id: 'billing-reports', icon: '📊', label: 'Reporty' }
         ]
     },
     {
         id: 'sport',
-        title: 'Šport',
+        title: 'Sport',
         mode: 'club',
         items: [
-            { section: 'competitions', icon: '🏆', label: 'Preteky' },
-            { section: 'licenses', icon: '📋', label: 'Licencie SJF / FEI' },
-            { section: 'sjf-register', icon: '🏛️', label: 'SJF Register' }
+            { id: 'competitions', icon: '🏆', label: 'Preteky' },
+            { id: 'licenses', icon: '📋', label: 'Licencie SJF / FEI' },
+            { id: 'sjf-register', icon: '🏛️', label: 'SJF Register' }
         ]
     },
 
-    // ===== WEB MÓD =====
+    // ===== WEB MOD =====
     {
-        id: 'web-manage',
+        id: 'web',
         title: 'Web',
         mode: 'web',
         items: [
-            { section: 'web-posts', icon: '📝', label: 'Novinky' },
-            { section: 'messages', icon: '✉️', label: 'Správy' }
-        ]
-    },
-    {
-        id: 'web-content',
-        title: 'Obsah webu',
-        mode: 'web',
-        items: [
-            { section: 'articles', icon: '📰', label: 'Články' },
-            { section: 'gallery', icon: '🖼️', label: 'Galéria' },
-            { section: 'pages', icon: '📄', label: 'Stránky' },
-            { section: 'documents', icon: '📎', label: 'Dokumenty webu' },
-            { section: 'partners', icon: '🤝', label: 'Partneri' },
-            { section: 'services', icon: '🛠️', label: 'Služby' },
-            { section: 'web-settings', icon: '⚙️', label: 'Nastavenia' }
+            { id: 'web-posts', icon: '📝', label: 'Novinky' },
+            { id: 'messages', icon: '✉️', label: 'Spravy' },
+            { id: 'articles', icon: '📰', label: 'Clanky' },
+            { id: 'gallery', icon: '🖼️', label: 'Galeria' },
+            { id: 'pages', icon: '📄', label: 'Stranky' },
+            { id: 'documents', icon: '📎', label: 'Dokumenty webu' },
+            { id: 'partners', icon: '🤝', label: 'Partneri' }
         ]
     },
 
-    // ===== SYSTÉM (OBA MÓDY) =====
+    // ===== SYSTEM (OBA MODY) =====
     {
         id: 'system',
-        title: 'Systém',
+        title: 'System',
         mode: 'both',
         items: [
-            { section: 'compliance', icon: '🛡️', label: 'Compliance' },
-            { section: 'audit-trail', icon: '📋', label: 'Audit trail' },
-            { section: 'exports', icon: '📄', label: 'Exporty' },
-            { section: 'admin-users', icon: '👤', label: 'Admin používatelia' }
+            { id: 'compliance', icon: '🛡️', label: 'Compliance' },
+            { id: 'audit-trail', icon: '📋', label: 'Audit trail' },
+            { id: 'exports', icon: '📄', label: 'Exporty' },
+            { id: 'admin-users', icon: '👤', label: 'Admin pouzivatelia' },
+            { id: 'web-settings', icon: '⚙️', label: 'Nastavenia' }
         ]
     }
 ];
 
-// Mode management
+// ===== STORAGE KEYS =====
 const ADMIN_MODE_KEY = 'jkzm_admin_mode';
+const ADMIN_FAVORITES_KEY = 'jkzm_admin_favorites';
+const ADMIN_OPEN_SECTION_KEY = 'jkzm_admin_open_section';
 const DEFAULT_MODE = 'club';
+const DEFAULT_FAVORITES = ['training-calendar', 'billing', 'pricing-rules', 'feeding'];
 
+// ===== MODE MANAGEMENT =====
 function getAdminMode() {
     return localStorage.getItem(ADMIN_MODE_KEY) || DEFAULT_MODE;
 }
@@ -121,6 +115,92 @@ function setAdminMode(mode) {
     localStorage.setItem(ADMIN_MODE_KEY, mode);
     renderNav();
     updateModeButtons();
+}
+
+function updateModeButtons() {
+    const mode = getAdminMode();
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+}
+
+// ===== FAVORITES MANAGEMENT =====
+function getFavorites() {
+    const stored = localStorage.getItem(ADMIN_FAVORITES_KEY);
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            return DEFAULT_FAVORITES;
+        }
+    }
+    // Set default favorites on first load
+    localStorage.setItem(ADMIN_FAVORITES_KEY, JSON.stringify(DEFAULT_FAVORITES));
+    return DEFAULT_FAVORITES;
+}
+
+function setFavorites(favorites) {
+    localStorage.setItem(ADMIN_FAVORITES_KEY, JSON.stringify(favorites));
+}
+
+function toggleFavorite(itemId) {
+    const favorites = getFavorites();
+    const index = favorites.indexOf(itemId);
+    if (index > -1) {
+        favorites.splice(index, 1);
+    } else {
+        if (favorites.length < 5) {
+            favorites.push(itemId);
+        } else {
+            showToast('Maximum 5 oblubenych poloziek', 'warning');
+            return;
+        }
+    }
+    setFavorites(favorites);
+    renderNav(document.getElementById('navSearch')?.value || '');
+}
+
+function isFavorite(itemId) {
+    return getFavorites().includes(itemId);
+}
+
+// ===== ACCORDION MANAGEMENT =====
+function getOpenSection() {
+    return localStorage.getItem(ADMIN_OPEN_SECTION_KEY) || 'overview';
+}
+
+function setOpenSection(sectionId) {
+    localStorage.setItem(ADMIN_OPEN_SECTION_KEY, sectionId);
+}
+
+function toggleSection(sectionId) {
+    const current = getOpenSection();
+    if (current === sectionId) {
+        // Already open - keep it open (no collapse all)
+        return;
+    }
+    setOpenSection(sectionId);
+    renderNav(document.getElementById('navSearch')?.value || '');
+}
+
+// ===== HELPERS =====
+function getCurrentSection() {
+    const hash = window.location.hash.slice(1);
+    return hash || 'dashboard';
+}
+
+function getAllItems() {
+    const items = [];
+    ADMIN_NAV.forEach(group => {
+        group.items.forEach(item => {
+            items.push({ ...item, groupId: group.id, mode: group.mode });
+        });
+    });
+    return items;
+}
+
+function getItemById(itemId) {
+    return getAllItems().find(item => item.id === itemId);
 }
 
 function getFilteredNav(mode, searchTerm = '') {
@@ -141,53 +221,111 @@ function getFilteredNav(mode, searchTerm = '') {
     })).filter(group => group.items.length > 0);
 }
 
+// ===== RENDER =====
 function renderNav(searchTerm = '') {
     const navContainer = document.getElementById('dynamicNav');
     if (!navContainer) return;
 
     const mode = getAdminMode();
-    const filteredNav = getFilteredNav(mode, searchTerm);
+    const favorites = getFavorites();
+    const openSectionId = getOpenSection();
     const currentSection = getCurrentSection();
+    const isSearching = searchTerm.trim().length > 0;
 
     let html = '';
+
+    // ===== FAVORITES SECTION =====
+    const favoriteItems = favorites
+        .map(id => getItemById(id))
+        .filter(item => item && (item.mode === mode || item.mode === 'both'))
+        .filter(item => !searchTerm || item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    if (favoriteItems.length > 0) {
+        html += `<div class="nav-section nav-section-favorites">`;
+        html += `<div class="nav-section-title">
+            <span>Oblubene</span>
+        </div>`;
+        html += `<div class="nav-section-items">`;
+        
+        favoriteItems.forEach(item => {
+            const isActive = item.id === currentSection ? ' active' : '';
+            const badge = item.badge ? `<span class="badge" id="${item.badge}">0</span>` : '';
+            html += `
+                <div class="nav-item${isActive}" data-section="${item.id}">
+                    <span class="icon">${item.icon}</span>
+                    <span class="nav-item-label">${item.label}</span>
+                    ${badge}
+                    <span class="nav-favorite-star active" data-item="${item.id}" title="Odstranit z oblubenych">★</span>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+
+    // ===== REGULAR SECTIONS (ACCORDION) =====
+    const filteredNav = getFilteredNav(mode, searchTerm);
+    
     filteredNav.forEach(group => {
         if (group.items.length === 0) return;
 
-        html += `<div class="nav-section" data-group="${group.id}">`;
-        html += `<div class="nav-section-title">${group.title}</div>`;
+        const isOpen = isSearching || group.id === openSectionId;
+        const openClass = isOpen ? ' open' : '';
+
+        html += `<div class="nav-section nav-section-accordion${openClass}" data-group="${group.id}">`;
+        html += `<div class="nav-section-title" onclick="toggleSection('${group.id}')">
+            <span>${group.title}</span>
+            <span class="nav-section-arrow">${isOpen ? '▼' : '▶'}</span>
+        </div>`;
+        html += `<div class="nav-section-items"${isOpen ? '' : ' style="display:none"'}>`;
         
         group.items.forEach(item => {
-            const isActive = item.section === currentSection ? ' active' : '';
+            const isActive = item.id === currentSection ? ' active' : '';
+            const isFav = isFavorite(item.id);
+            const starClass = isFav ? ' active' : '';
             const badge = item.badge ? `<span class="badge" id="${item.badge}">0</span>` : '';
-            html += `<div class="nav-item${isActive}" data-section="${item.section}">`;
-            html += `<span class="icon">${item.icon}</span>${item.label}${badge}`;
-            html += `</div>`;
+            
+            html += `
+                <div class="nav-item${isActive}" data-section="${item.id}">
+                    <span class="icon">${item.icon}</span>
+                    <span class="nav-item-label">${item.label}</span>
+                    ${badge}
+                    <span class="nav-favorite-star${starClass}" data-item="${item.id}" title="${isFav ? 'Odstranit z oblubenych' : 'Pridat do oblubenych'}">${isFav ? '★' : '☆'}</span>
+                </div>
+            `;
         });
         
-        html += `</div>`;
+        html += `</div></div>`;
     });
 
     navContainer.innerHTML = html;
     attachNavClickHandlers();
 }
 
-function updateModeButtons() {
-    const mode = getAdminMode();
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-    });
-}
-
-function getCurrentSection() {
-    const hash = window.location.hash.slice(1);
-    return hash || 'dashboard';
-}
-
+// ===== EVENT HANDLERS =====
 function attachNavClickHandlers() {
+    // Navigation clicks
     document.querySelectorAll('#dynamicNav .nav-item[data-section]').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (e) => {
+            // Check if clicked on star
+            if (e.target.classList.contains('nav-favorite-star')) {
+                e.stopPropagation();
+                const itemId = e.target.dataset.item;
+                toggleFavorite(itemId);
+                return;
+            }
+            
             const section = item.dataset.section;
             navigateTo(section);
+        });
+    });
+
+    // Star clicks (backup handler)
+    document.querySelectorAll('#dynamicNav .nav-favorite-star').forEach(star => {
+        star.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const itemId = star.dataset.item;
+            toggleFavorite(itemId);
         });
     });
 }
@@ -197,7 +335,7 @@ function handleNavSearch(e) {
     renderNav(term);
 }
 
-// Initialize on load
+// ===== INITIALIZATION =====
 function initAdminNav() {
     renderNav();
     updateModeButtons();
@@ -216,11 +354,15 @@ function initAdminNav() {
     }
 }
 
-// Export for global access
+// ===== EXPORTS =====
 if (typeof window !== 'undefined') {
     window.ADMIN_NAV = ADMIN_NAV;
     window.getAdminMode = getAdminMode;
     window.setAdminMode = setAdminMode;
+    window.getFavorites = getFavorites;
+    window.setFavorites = setFavorites;
+    window.toggleFavorite = toggleFavorite;
+    window.toggleSection = toggleSection;
     window.renderNav = renderNav;
     window.initAdminNav = initAdminNav;
 }

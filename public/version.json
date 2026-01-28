@@ -1,16 +1,16 @@
 {
-  "version": "6.21.4",
-  "build": "2026-01-28T08:50:00Z",
+  "version": "6.21.5",
+  "build": "2026-01-28T09:20:00Z",
   "features": [
-    "Oprava kalendara treningov - error handling",
-    "Hardening UI - ziadne nekonecne loading",
-    "Retry tlacidlo pri chybe",
-    "Token validacia pred API volanim"
+    "Admin Navigation Cleanup",
+    "Accordion menu - len 1 sekcia otvorena",
+    "Favorites - oblubene polozky hore",
+    "Perzistencia: mod, favorites, otvorena sekcia"
   ],
   "changelog": {
+    "6.21.5": "Admin Nav Accordion + Favorites",
     "6.21.4": "Kalendar treningov fix + UI hardening",
     "6.21.3": "Admin sidebar cleanup - bez duplicit",
-    "6.21.2": "Admin mode switcher Klub/Web + dynamicka navigacia",
-    "6.21.1": "Billing hardening + UX improvements"
+    "6.21.2": "Admin mode switcher Klub/Web"
   }
 }
