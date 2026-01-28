@@ -109,6 +109,7 @@
     <script src="/admin/posts.js"></script>
     <script src="/admin/calendar.js"></script>
     <script src="/admin/billing.js"></script>
+    <script src="/admin/pricing.js"></script>
     <style>
         .ql-container { font-size: 1rem; }
         .ql-editor { min-height: 200px; }
@@ -178,6 +179,8 @@
                     <div class="nav-item" data-section="stable-trainings"><span class="icon">🏋️</span>Tréningy (MVP)</div>
                     <div class="nav-item" data-section="training-calendar"><span class="icon">📅</span>Kalendár tréningov</div>
                     <div class="nav-item" data-section="billing"><span class="icon">💰</span>Platby</div>
+                    <div class="nav-item" data-section="pricing-rules"><span class="icon">📋</span>Cenník</div>
+                    <div class="nav-item" data-section="billing-reports"><span class="icon">📊</span>Reporty</div>
                     <div class="nav-item" data-section="stable-health"><span class="icon">💊</span>Zdravie (MVP)</div>
                     <div class="nav-item" data-section="stable-feed"><span class="icon">🥕</span>Kŕmenie (MVP)</div>
                 </div>
@@ -1361,6 +1364,68 @@
                 </div>
             </section>
 
+            <!-- PRICING RULES -->
+            <section id="pricing-rules" class="section">
+                <div class="header">
+                    <h1>Cenník</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openNewPricingRuleModal()">+ Nové pravidlo</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>Cenové pravidlá</h3><small>Nižšia priorita = vyššia dôležitosť</small></div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Názov</th>
+                                    <th>Priorita</th>
+                                    <th>Disciplína</th>
+                                    <th>Trvanie</th>
+                                    <th>Základná cena</th>
+                                    <th>Za minútu</th>
+                                    <th>Status</th>
+                                    <th>Akcie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pricingRulesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BILLING REPORTS -->
+            <section id="billing-reports" class="section">
+                <div class="header">
+                    <h1>Reporty platieb</h1>
+                </div>
+                <div class="card">
+                    <div class="card-header" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+                        <div class="form-group" style="margin:0">
+                            <label>Od</label>
+                            <input type="date" class="form-control" id="reportFrom">
+                        </div>
+                        <div class="form-group" style="margin:0">
+                            <label>Do</label>
+                            <input type="date" class="form-control" id="reportTo">
+                        </div>
+                        <div class="form-group" style="margin:0">
+                            <label>Status</label>
+                            <select class="form-control" id="reportStatus">
+                                <option value="all">Všetky</option>
+                                <option value="unpaid">Neuhradené</option>
+                                <option value="paid">Uhradené</option>
+                                <option value="void">Stornované</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadBillingReport()" style="margin-top:1.5rem">Generovať report</button>
+                    </div>
+                    <div class="card-body" id="billingReportResult">
+                        <p style="color:var(--gray);text-align:center">Vyberte obdobie a kliknite na "Generovať report"</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- STABLE FEED MVP -->
             <section id="stable-feed" class="section">
                 <div class="header"><h1>🥕 Kŕmenie (MVP)</h1><div class="header-actions"><button class="btn btn-primary" onclick="openFeedLogModal()">+ Pridať záznam</button></div></div>
@@ -1518,6 +1583,46 @@
                 </form>
             </div>
             <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('newChargeModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveNewCharge()">Vytvoriť</button></div>
+        </div>
+    </div>
+
+    <!-- Pricing Rule Modal -->
+    <div class="modal" id="pricingRuleModal">
+        <div class="modal-content" style="max-width:550px">
+            <div class="modal-header"><h3 id="pricingRuleModalTitle">Nové cenové pravidlo</h3><button class="modal-close" onclick="closeModal('pricingRuleModal')">×</button></div>
+            <div class="modal-body">
+                <form id="pricingRuleForm">
+                    <input type="hidden" id="pricingRuleId">
+                    <div class="form-group"><label>Názov *</label><input type="text" class="form-control" id="pricingRuleName" required placeholder="Napr. Jumping štandard"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Priorita</label><input type="number" class="form-control" id="pricingRulePriority" value="100" min="1"><small>Nižšie = vyššia priorita</small></div>
+                        <div class="form-group"><label>Aktívne</label><div style="padding-top:0.5rem"><input type="checkbox" id="pricingRuleIsActive" checked> Áno</div></div>
+                    </div>
+                    <div class="form-group"><label>Disciplína</label>
+                        <select class="form-control" id="pricingRuleDiscipline">
+                            <option value="">-- Všetky --</option>
+                            <option value="jumping">Skokový</option>
+                            <option value="dressage">Drezúra</option>
+                            <option value="cross">Cross</option>
+                            <option value="longe">Lonžovanie</option>
+                            <option value="other">Iné</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Min. trvanie (min)</label><input type="number" class="form-control" id="pricingRuleMinDuration" min="0"></div>
+                        <div class="form-group"><label>Max. trvanie (min)</label><input type="number" class="form-control" id="pricingRuleMaxDuration" min="0"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Len pre jazdca</label><select class="form-control" id="pricingRuleRider"></select></div>
+                        <div class="form-group"><label>Len pre koňa</label><select class="form-control" id="pricingRuleHorse"></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Základná cena (EUR) *</label><input type="number" class="form-control" id="pricingRuleBaseAmount" step="0.01" min="0" value="20.00" required></div>
+                        <div class="form-group"><label>Za minútu (EUR)</label><input type="number" class="form-control" id="pricingRulePerMinute" step="0.01" min="0" value="0"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('pricingRuleModal')">Zrušiť</button><button class="btn btn-primary" onclick="savePricingRule()">Uložiť</button></div>
         </div>
     </div>
 
@@ -2744,6 +2849,8 @@
             if (hash === 'stable-trainings') { setTimeout(loadStableHorses, 100); setTimeout(loadStableTrainings, 150); }
             if (hash === 'training-calendar') setTimeout(loadTrainingCalendar, 100);
             if (hash === 'billing') { setTimeout(loadStableHorses, 100); setTimeout(loadBillingCharges, 150); setTimeout(populateBillingSelects, 200); }
+            if (hash === 'pricing-rules') { setTimeout(loadStableHorses, 100); setTimeout(loadPricingRules, 150); }
+            if (hash === 'billing-reports') { /* no preload needed */ }
             if (hash === 'stable-health') { setTimeout(loadStableHorses, 100); setTimeout(loadHealthEvents, 150); }
             if (hash === 'stable-feed') { setTimeout(loadStableHorses, 100); setTimeout(loadFeedLogs, 150); }
             if (hash === 'web-posts') setTimeout(loadWebPosts, 100);

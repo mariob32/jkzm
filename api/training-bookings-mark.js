@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 const { logAudit, getRequestInfo } = require('./utils/audit');
+const { computeCharge } = require('./utils/pricing');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -196,20 +197,28 @@ module.exports = async (req, res) => {
         if (existingCharge) {
             charge = existingCharge;
         } else {
-            // Determine amount - use training.price if available, otherwise default 2000 (20 EUR)
-            let amountCents = 2000;
-            if (training.price && typeof training.price === 'number') {
-                amountCents = Math.round(training.price * 100);
-            }
+            // Compute charge using pricing rules
+            const discipline = training.discipline || slot?.discipline || null;
+            const durationMin = training.duration_min || training.duration_minutes || slot?.duration_min || 60;
+            
+            const computed = await computeCharge(supabase, {
+                discipline,
+                duration_min: durationMin,
+                rider_id: booking.rider_id,
+                horse_id: booking.horse_id,
+                currency: 'EUR'
+            });
 
             const chargeData = {
                 training_id: training.id,
                 booking_id: bookingId,
                 rider_id: booking.rider_id,
                 horse_id: booking.horse_id,
-                amount_cents: amountCents,
+                amount_cents: computed.amount_cents,
                 currency: 'EUR',
-                status: 'unpaid'
+                status: 'unpaid',
+                pricing_rule_id: computed.pricing_rule_id,
+                computed_details: computed.computed_details
             };
 
             const { data: newCharge, error: chargeError } = await supabase

@@ -36,6 +36,10 @@
     { "src": "/api/billing-charges/([^/]+)", "dest": "/api/billing-charges-id.js?id=$1" },
     { "src": "/api/billing-charges", "dest": "/api/billing-charges.js" },
     
+    { "src": "/api/pricing-rules/([^/]+)", "dest": "/api/pricing-rules-id.js?id=$1" },
+    { "src": "/api/pricing-rules", "dest": "/api/pricing-rules.js" },
+    { "src": "/api/billing-reports", "dest": "/api/billing-reports.js" },
+    
     { "src": "/api/health-events/([^/]+)", "dest": "/api/health-events-id.js?id=$1" },
     { "src": "/api/health-events", "dest": "/api/health-events.js" },
     { "src": "/api/feed-logs", "dest": "/api/feed-logs.js" },

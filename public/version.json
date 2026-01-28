@@ -1,14 +1,14 @@
 {
-  "version": "6.20.0",
-  "build": "2026-01-27T10:00:00Z",
+  "version": "6.21.0",
+  "build": "2026-01-28T07:00:00Z",
   "features": [
-    "Billing MVP - billing_charges tabuľka",
-    "Automatické vytvorenie charge pri mark attended",
-    "Mark paid / void endpointy",
-    "Admin UI sekcia Platby s filtrami",
-    "Export CSV"
+    "Pricing Rules - dynamický cenník",
+    "computeCharge() helper pre výpočet ceny",
+    "Billing Reports - súhrny a štatistiky",
+    "Admin UI - Cenník a Reporty sekcie"
   ],
   "changelog": {
+    "6.21.0": "Pricing Rules + Reports MVP",
     "6.20.0": "Billing MVP - charges + payment tracking",
     "6.19.1": "Fix mark attended + training link",
     "6.19.0": "Training Calendar + Reservations MVP"
