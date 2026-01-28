@@ -8,6 +8,28 @@ let selectedSlot = null;
 
 // ===== LOAD CALENDAR =====
 async function loadTrainingCalendar() {
+    const container = document.getElementById('calendarGrid');
+    if (!container) {
+        console.error('calendarGrid element not found');
+        return;
+    }
+
+    // Check token first
+    const token = localStorage.getItem('jkzm_token');
+    if (!token) {
+        container.innerHTML = `
+            <div class="alert alert-warning" style="text-align:center">
+                <p><strong>Nie ste prihlaseny.</strong></p>
+                <p>Prihlaste sa alebo obnovte stranku.</p>
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top:1rem">Obnovit stranku</button>
+            </div>
+        `;
+        return;
+    }
+
+    // Show loading
+    container.innerHTML = '<p style="text-align:center;color:var(--gray)">Nacitavam kalendar...</p>';
+
     try {
         // Get week range
         const weekOffset = parseInt(document.getElementById('calendarWeekOffset')?.value || '0');
@@ -20,16 +42,48 @@ async function loadTrainingCalendar() {
         calendarTo = sunday.toISOString().split('T')[0];
 
         // Update week display
-        document.getElementById('calendarWeekDisplay').textContent = 
-            `${formatDate(monday)} - ${formatDate(sunday)}`;
+        const weekDisplay = document.getElementById('calendarWeekDisplay');
+        if (weekDisplay) {
+            weekDisplay.textContent = `${formatDate(monday)} - ${formatDate(sunday)}`;
+        }
 
         const json = await apiGet(`training-calendar?from=${calendarFrom}&to=${calendarTo}`);
-        calendarSlots = json.slots || [];
         
+        // Handle empty or invalid response
+        if (!json) {
+            throw new Error('Prazdna odpoved zo servera');
+        }
+
+        calendarSlots = json.slots || [];
         renderTrainingCalendar(json.by_date || {}, json.summary || {});
+        
     } catch(e) {
         console.error('Load training calendar error:', e);
-        showToast('Chyba pri načítaní kalendára', 'error');
+        
+        // Determine error type
+        let errorMessage = 'Chyba pri nacitani kalendara';
+        let errorDetail = e.message || 'Neznama chyba';
+        
+        if (e.message === 'Unauthorized' || e.message?.includes('401')) {
+            errorMessage = 'Neplatne prihlasenie (token)';
+            errorDetail = 'Prihlaste sa znova.';
+        } else if (e.message?.includes('403')) {
+            errorMessage = 'Pristup zamietnuty';
+            errorDetail = 'Nemate opravnenie na zobrazenie kalendara.';
+        } else if (e.message?.includes('NetworkError') || e.message?.includes('fetch')) {
+            errorMessage = 'Chyba siete';
+            errorDetail = 'Skontrolujte internetove pripojenie.';
+        }
+
+        container.innerHTML = `
+            <div class="alert alert-danger" style="text-align:center">
+                <p><strong>${errorMessage}</strong></p>
+                <p style="font-size:0.9rem;color:var(--gray)">${errorDetail}</p>
+                <button class="btn btn-outline" onclick="loadTrainingCalendar()" style="margin-top:1rem">Skusit znova</button>
+            </div>
+        `;
+        
+        showToast(errorMessage, 'error');
     }
 }
 
@@ -56,16 +110,19 @@ function renderTrainingCalendar(byDate, summary) {
 
     // Update summary
     const summaryEl = document.getElementById('calendarSummary');
-    if (summaryEl && summary) {
+    if (summaryEl) {
         summaryEl.innerHTML = `
-            <span>Slotov: <strong>${summary.total_slots || 0}</strong></span>
-            <span>Rezervácií: <strong>${summary.total_bookings || 0}</strong></span>
-            <span>Plných: <strong>${summary.fully_booked || 0}</strong></span>
+            <span>Slotov: <strong>${summary?.total_slots || 0}</strong></span>
+            <span>Rezervacii: <strong>${summary?.total_bookings || 0}</strong></span>
+            <span>Plnych: <strong>${summary?.fully_booked || 0}</strong></span>
         `;
     }
 
     // Generate days
     const days = [];
+    if (!calendarFrom) {
+        calendarFrom = new Date().toISOString().split('T')[0];
+    }
     const monday = new Date(calendarFrom);
     for (let i = 0; i < 7; i++) {
         const day = new Date(monday);
@@ -73,16 +130,19 @@ function renderTrainingCalendar(byDate, summary) {
         days.push(day.toISOString().split('T')[0]);
     }
 
-    const dayNames = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
-    const discMap = { jumping: 'Skoky', dressage: 'Drezúra', hacking: 'Terén', groundwork: 'Zem' };
-    const statusColors = { open: 'success', closed: 'gray', cancelled: 'danger' };
+    const dayNames = ['Po', 'Ut', 'St', 'Stv', 'Pi', 'So', 'Ne'];
+    const discMap = { jumping: 'Skoky', dressage: 'Drezura', hacking: 'Teren', groundwork: 'Zem' };
 
     let html = '<div class="calendar-week">';
     
     days.forEach((dateStr, idx) => {
-        const daySlots = byDate[dateStr] || [];
+        const daySlots = (byDate && byDate[dateStr]) ? byDate[dateStr] : [];
         const dayDate = new Date(dateStr);
-        const isToday = dateStr === new Date().toISOString().split('T')[0];
+        const todayStr = new Date().toISOString().split('T')[0];
+        const isToday = dateStr === todayStr;
+        
+        // Sort slots by start_time
+        daySlots.sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
         
         html += `
             <div class="calendar-day ${isToday ? 'today' : ''}">
@@ -94,23 +154,24 @@ function renderTrainingCalendar(byDate, summary) {
         `;
 
         if (daySlots.length === 0) {
-            html += `<div class="calendar-empty">Žiadne sloty</div>`;
+            html += `<div class="calendar-empty">Ziadne sloty</div>`;
         } else {
             daySlots.forEach(slot => {
-                const activeBookings = (slot.bookings || []).filter(b => b.status === 'booked');
+                const activeBookings = (slot.bookings || []).filter(b => b.status === 'booked' || b.status === 'attended');
                 const trainerName = slot.trainer ? 
                     `${slot.trainer.first_name || ''} ${slot.trainer.last_name || ''}`.trim() : '';
                 
                 html += `
-                    <div class="calendar-slot status-${slot.status}" onclick="openSlotDetail('${slot.id}')">
+                    <div class="calendar-slot status-${slot.status || 'open'}" onclick="openSlotDetail('${slot.id}')">
                         <div class="slot-time">${formatTime(slot.start_time)}</div>
                         <div class="slot-info">
-                            ${discMap[slot.discipline] || slot.discipline || 'Tréning'}
+                            ${discMap[slot.discipline] || slot.discipline || 'Trening'}
+                            ${slot.duration_min ? `<small>${slot.duration_min} min</small>` : ''}
                             ${trainerName ? `<small>(${trainerName})</small>` : ''}
                         </div>
                         <div class="slot-capacity">
-                            <span class="badge badge-${activeBookings.length >= slot.capacity ? 'danger' : 'info'}">
-                                ${activeBookings.length}/${slot.capacity}
+                            <span class="badge badge-${activeBookings.length >= (slot.capacity || 1) ? 'danger' : 'info'}">
+                                ${activeBookings.length}/${slot.capacity || 1}
                             </span>
                         </div>
                     </div>

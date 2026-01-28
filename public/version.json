@@ -1,16 +1,16 @@
 {
-  "version": "6.21.3",
-  "build": "2026-01-28T08:25:00Z",
+  "version": "6.21.4",
+  "build": "2026-01-28T08:50:00Z",
   "features": [
-    "Upratané admin menu bez duplicít",
-    "Jasné sekcie: Prehľad, Evidencia, Tréningy, Stajňa, Financie, Šport",
-    "Dedupe ochrana v renderNav()",
-    "Premenované položky pre jasnosť"
+    "Oprava kalendara treningov - error handling",
+    "Hardening UI - ziadne nekonecne loading",
+    "Retry tlacidlo pri chybe",
+    "Token validacia pred API volanim"
   ],
   "changelog": {
-    "6.21.3": "Admin sidebar cleanup - bez duplicít",
-    "6.21.2": "Admin mode switcher Klub/Web + dynamická navigácia",
-    "6.21.1": "Billing hardening + UX improvements",
-    "6.21.0": "Pricing Rules + Reports MVP"
+    "6.21.4": "Kalendar treningov fix + UI hardening",
+    "6.21.3": "Admin sidebar cleanup - bez duplicit",
+    "6.21.2": "Admin mode switcher Klub/Web + dynamicka navigacia",
+    "6.21.1": "Billing hardening + UX improvements"
   }
 }
