@@ -1,16 +1,16 @@
 {
-  "version": "6.21.2",
-  "build": "2026-01-28T07:30:00Z",
+  "version": "6.21.3",
+  "build": "2026-01-28T08:25:00Z",
   "features": [
-    "Admin mode switcher (Klub / Web)",
-    "Dynamická sidebar navigácia z ADMIN_NAV",
-    "Vyhľadávanie v menu",
-    "Systém sekcia viditeľná v oboch módoch"
+    "Upratané admin menu bez duplicít",
+    "Jasné sekcie: Prehľad, Evidencia, Tréningy, Stajňa, Financie, Šport",
+    "Dedupe ochrana v renderNav()",
+    "Premenované položky pre jasnosť"
   ],
   "changelog": {
+    "6.21.3": "Admin sidebar cleanup - bez duplicít",
     "6.21.2": "Admin mode switcher Klub/Web + dynamická navigácia",
     "6.21.1": "Billing hardening + UX improvements",
-    "6.21.0": "Pricing Rules + Reports MVP",
-    "6.20.0": "Billing MVP - charges + payment tracking"
+    "6.21.0": "Pricing Rules + Reports MVP"
   }
 }

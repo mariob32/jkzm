@@ -1,13 +1,14 @@
-// ===== JKZM Admin Navigation Definition =====
-// nav.js - centrálna definícia menu štruktúry
+// ===== JKZM Admin Navigation v6.21.3 =====
+// nav.js - centrálna definícia menu štruktúry (bez duplicít)
 
 const ADMIN_NAV = [
+    // ===== KLUB MÓD =====
     {
         id: 'overview',
         title: 'Prehľad',
         mode: 'club',
         items: [
-            { section: 'dashboard', icon: '📊', label: 'Prehľad', badge: 'alertBadge' },
+            { section: 'dashboard', icon: '📊', label: 'Dashboard', badge: 'alertBadge' },
             { section: 'tasks', icon: '✓', label: 'Úlohy', badge: 'tasksBadge' },
             { section: 'notifications', icon: '🔔', label: 'Upozornenia' }
         ]
@@ -25,17 +26,37 @@ const ADMIN_NAV = [
         ]
     },
     {
-        id: 'operations',
-        title: 'Prevádzka',
+        id: 'trainings',
+        title: 'Tréningy',
         mode: 'club',
         items: [
-            { section: 'arenas', icon: '🏟️', label: 'Arény a časy' },
-            { section: 'bookings', icon: '🏇', label: 'Tréningy' },
-            { section: 'trainings', icon: '📝', label: 'Interné záznamy' },
-            { section: 'vet', icon: '🏥', label: 'Veterinárne záznamy' },
-            { section: 'feeding', icon: '🌾', label: 'Kŕmenie' },
+            { section: 'training-calendar', icon: '📅', label: 'Kalendár' },
+            { section: 'bookings', icon: '🎯', label: 'Rezervácie' },
+            { section: 'trainings', icon: '📝', label: 'Záznamy tréningov' },
+            { section: 'arenas', icon: '🏟️', label: 'Arény a časy' }
+        ]
+    },
+    {
+        id: 'stable',
+        title: 'Stajňa',
+        mode: 'club',
+        items: [
             { section: 'stable-log', icon: '📖', label: 'Maštaľná kniha' },
-            { section: 'visit-log', icon: '📋', label: 'Návštevná kniha' }
+            { section: 'visit-log', icon: '📋', label: 'Návštevná kniha' },
+            { section: 'vet', icon: '🏥', label: 'Veterinárne záznamy' },
+            { section: 'feeding', icon: '🌾', label: 'Kŕmenie' }
+        ]
+    },
+    {
+        id: 'finance',
+        title: 'Financie',
+        mode: 'club',
+        items: [
+            { section: 'billing', icon: '💰', label: 'Účtovanie' },
+            { section: 'pricing-rules', icon: '📋', label: 'Cenník' },
+            { section: 'billing-reports', icon: '📊', label: 'Finančné reporty' },
+            { section: 'payments', icon: '💳', label: 'Platby členov' },
+            { section: 'memberships', icon: '🎫', label: 'Členstvá' }
         ]
     },
     {
@@ -48,30 +69,8 @@ const ADMIN_NAV = [
             { section: 'sjf-register', icon: '🏛️', label: 'SJF Register' }
         ]
     },
-    {
-        id: 'finance',
-        title: 'Financie',
-        mode: 'club',
-        items: [
-            { section: 'payments', icon: '💳', label: 'Platby' },
-            { section: 'memberships', icon: '🎫', label: 'Členstvá' }
-        ]
-    },
-    {
-        id: 'stable-mvp',
-        title: 'Stajňa MVP',
-        mode: 'club',
-        items: [
-            { section: 'stable-horses', icon: '🐴', label: 'Kone (MVP)' },
-            { section: 'stable-trainings', icon: '🏋️', label: 'Tréningy (MVP)' },
-            { section: 'training-calendar', icon: '📅', label: 'Kalendár tréningov' },
-            { section: 'billing', icon: '💰', label: 'Platby' },
-            { section: 'pricing-rules', icon: '📋', label: 'Cenník' },
-            { section: 'billing-reports', icon: '📊', label: 'Reporty' },
-            { section: 'stable-health', icon: '💊', label: 'Zdravie (MVP)' },
-            { section: 'stable-feed', icon: '🥕', label: 'Kŕmenie (MVP)' }
-        ]
-    },
+
+    // ===== WEB MÓD =====
     {
         id: 'web-manage',
         title: 'Web',
@@ -95,6 +94,8 @@ const ADMIN_NAV = [
             { section: 'web-settings', icon: '⚙️', label: 'Nastavenia' }
         ]
     },
+
+    // ===== SYSTÉM (OBA MÓDY) =====
     {
         id: 'system',
         title: 'Systém',
@@ -150,6 +151,8 @@ function renderNav(searchTerm = '') {
 
     let html = '';
     filteredNav.forEach(group => {
+        if (group.items.length === 0) return;
+
         html += `<div class="nav-section" data-group="${group.id}">`;
         html += `<div class="nav-section-title">${group.title}</div>`;
         
