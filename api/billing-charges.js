@@ -34,12 +34,7 @@ module.exports = async (req, res) => {
 
             let query = supabase
                 .from('billing_charges')
-                .select(`
-                    *,
-                    rider:riders(id, first_name, last_name),
-                    horse:horses(id, name),
-                    training:trainings(id, training_date, date, discipline)
-                `, { count: 'exact' })
+                .select('*', { count: 'exact' })
                 .order('created_at', { ascending: false });
 
             // Filtre
@@ -58,12 +53,40 @@ module.exports = async (req, res) => {
             const { data, error, count } = await query;
             if (error) throw error;
 
+            // Fetch related data manually
+            const riderIds = [...new Set(data.filter(c => c.rider_id).map(c => c.rider_id))];
+            const horseIds = [...new Set(data.filter(c => c.horse_id).map(c => c.horse_id))];
+            const trainingIds = [...new Set(data.filter(c => c.training_id).map(c => c.training_id))];
+
+            let ridersMap = {}, horsesMap = {}, trainingsMap = {};
+
+            if (riderIds.length > 0) {
+                const { data: riders } = await supabase.from('riders').select('id, first_name, last_name').in('id', riderIds);
+                if (riders) riders.forEach(r => ridersMap[r.id] = r);
+            }
+            if (horseIds.length > 0) {
+                const { data: horses } = await supabase.from('horses').select('id, name').in('id', horseIds);
+                if (horses) horses.forEach(h => horsesMap[h.id] = h);
+            }
+            if (trainingIds.length > 0) {
+                const { data: trainings } = await supabase.from('trainings').select('id, training_date, date, discipline').in('id', trainingIds);
+                if (trainings) trainings.forEach(t => trainingsMap[t.id] = t);
+            }
+
+            // Enrich data
+            const enrichedData = data.map(c => ({
+                ...c,
+                rider: ridersMap[c.rider_id] || null,
+                horse: horsesMap[c.horse_id] || null,
+                training: trainingsMap[c.training_id] || null
+            }));
+
             // Calculate totals
-            const totalUnpaid = data.filter(c => c.status === 'unpaid').reduce((sum, c) => sum + c.amount_cents, 0);
-            const totalPaid = data.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.amount_cents, 0);
+            const totalUnpaid = enrichedData.filter(c => c.status === 'unpaid').reduce((sum, c) => sum + c.amount_cents, 0);
+            const totalPaid = enrichedData.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.amount_cents, 0);
 
             return res.status(200).json({ 
-                data, 
+                data: enrichedData, 
                 total: count,
                 summary: {
                     unpaid_cents: totalUnpaid,

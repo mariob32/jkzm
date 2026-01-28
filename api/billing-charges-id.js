@@ -29,20 +29,30 @@ module.exports = async (req, res) => {
         if (req.method === 'GET') {
             const { data, error } = await supabase
                 .from('billing_charges')
-                .select(`
-                    *,
-                    rider:riders(id, first_name, last_name),
-                    horse:horses(id, name),
-                    training:trainings(id, training_date, date, discipline),
-                    booking:training_bookings(id, slot_id, status)
-                `)
+                .select('*')
                 .eq('id', id)
                 .single();
 
             if (error) throw error;
             if (!data) return res.status(404).json({ error: 'Charge not found' });
 
-            return res.status(200).json(data);
+            // Manually fetch related data
+            let rider = null, horse = null, training = null;
+            
+            if (data.rider_id) {
+                const { data: r } = await supabase.from('riders').select('id, first_name, last_name').eq('id', data.rider_id).single();
+                rider = r;
+            }
+            if (data.horse_id) {
+                const { data: h } = await supabase.from('horses').select('id, name').eq('id', data.horse_id).single();
+                horse = h;
+            }
+            if (data.training_id) {
+                const { data: t } = await supabase.from('trainings').select('id, training_date, date, discipline').eq('id', data.training_id).single();
+                training = t;
+            }
+
+            return res.status(200).json({ ...data, rider, horse, training });
         }
 
         if (req.method === 'PATCH') {
