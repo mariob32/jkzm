@@ -24,6 +24,9 @@
         .btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}.btn-outline:hover{background:var(--primary);color:var(--white)}
         .btn-danger{background:var(--danger);color:var(--white)}.btn-warning{background:var(--warning);color:var(--dark)}
         .btn-sm{padding:0.4rem 0.75rem;font-size:0.8rem}
+        .quick-filter-btn{background:var(--bg-light);border:1px solid var(--border);color:var(--text)}
+        .quick-filter-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+        .quick-filter-btn:hover:not(.active){background:var(--border)}
         .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem}
         .stat-card{background:var(--white);padding:1.5rem;border-radius:var(--radius);box-shadow:var(--shadow)}
         .stat-card .icon{width:50px;height:50px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
@@ -1329,19 +1332,27 @@
                 <div class="card">
                     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
                         <div id="billingSummary"></div>
-                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-                            <select class="form-control" id="billingStatusFilter" style="width:150px" onchange="loadBillingCharges()">
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+                            <div style="display:flex;gap:0.25rem">
+                                <button class="btn btn-sm quick-filter-btn active" data-status="unpaid" onclick="setQuickFilter('unpaid')">Neuhradené</button>
+                                <button class="btn btn-sm quick-filter-btn" data-status="paid" onclick="setQuickFilter('paid')">Uhradené</button>
+                                <button class="btn btn-sm quick-filter-btn" data-status="void" onclick="setQuickFilter('void')">Stornované</button>
+                                <button class="btn btn-sm quick-filter-btn" data-status="all" onclick="setQuickFilter('all')">Všetky</button>
+                            </div>
+                            <select class="form-control" id="billingStatusFilter" style="width:1px;height:1px;opacity:0;position:absolute" onchange="loadBillingCharges()">
                                 <option value="unpaid">Neuhradené</option>
                                 <option value="paid">Uhradené</option>
                                 <option value="void">Stornované</option>
                                 <option value="all">Všetky</option>
                             </select>
-                            <select class="form-control" id="billingRiderFilter" style="width:180px" onchange="loadBillingCharges()">
+                            <select class="form-control" id="billingRiderFilter" style="width:150px" onchange="loadBillingCharges()">
                                 <option value="">Všetci jazdci</option>
                             </select>
-                            <select class="form-control" id="billingHorseFilter" style="width:180px" onchange="loadBillingCharges()">
+                            <select class="form-control" id="billingHorseFilter" style="width:150px" onchange="loadBillingCharges()">
                                 <option value="">Všetky kone</option>
                             </select>
+                            <input type="text" class="form-control" id="billingSearchQuery" style="width:150px" placeholder="Hľadať..." onkeypress="handleBillingSearch(event)">
+                            <button class="btn btn-sm btn-outline" onclick="loadBillingCharges()">Hľadať</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -1356,6 +1367,7 @@
                                     <th>Status</th>
                                     <th>Spôsob</th>
                                     <th>Akcie</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="billingChargesTable"></tbody>
@@ -1560,6 +1572,7 @@
             <div class="modal-body">
                 <input type="hidden" id="editChargeId">
                 <div class="form-group"><label>Suma (EUR)</label><input type="number" class="form-control" id="editChargeAmount" step="0.01" min="0"></div>
+                <div class="form-group"><label>Referencia</label><input type="text" class="form-control" id="editChargeRefCode" placeholder="Variabilný symbol"></div>
                 <div class="form-group"><label>Splatnosť</label><input type="date" class="form-control" id="editChargeDueDate"></div>
                 <div class="form-group"><label>Poznámka</label><textarea class="form-control" id="editChargeNote" rows="2"></textarea></div>
             </div>
@@ -1583,6 +1596,47 @@
                 </form>
             </div>
             <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('newChargeModal')">Zrušiť</button><button class="btn btn-primary" onclick="saveNewCharge()">Vytvoriť</button></div>
+        </div>
+    </div>
+
+    <!-- Mark Paid Modal -->
+    <div class="modal" id="markPaidModal">
+        <div class="modal-content" style="max-width:400px">
+            <div class="modal-header"><h3>Zaznamenať platbu</h3><button class="modal-close" onclick="closeModal('markPaidModal')">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="markPaidChargeId">
+                <div id="markPaidChargeInfo" style="margin-bottom:1rem;padding:1rem;background:var(--bg-light);border-radius:4px"></div>
+                <div class="form-group">
+                    <label>Spôsob platby *</label>
+                    <select class="form-control" id="markPaidMethod" required>
+                        <option value="cash">Hotovosť</option>
+                        <option value="card">Karta</option>
+                        <option value="bank">Bankový prevod</option>
+                        <option value="other">Iné</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Číslo dokladu / Referencia</label>
+                    <input type="text" class="form-control" id="markPaidReference" placeholder="Voliteľné">
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('markPaidModal')">Zrušiť</button><button class="btn btn-success" onclick="confirmMarkPaid()">Potvrdiť platbu</button></div>
+        </div>
+    </div>
+
+    <!-- Void Modal -->
+    <div class="modal" id="voidModal">
+        <div class="modal-content" style="max-width:400px">
+            <div class="modal-header"><h3>Stornovať položku</h3><button class="modal-close" onclick="closeModal('voidModal')">×</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="voidChargeId">
+                <div id="voidChargeInfo" style="margin-bottom:1rem;padding:1rem;background:var(--bg-light);border-radius:4px"></div>
+                <div class="form-group">
+                    <label>Dôvod storna *</label>
+                    <textarea class="form-control" id="voidReason" rows="3" required placeholder="Zadajte dôvod storna..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('voidModal')">Zrušiť</button><button class="btn btn-warning" onclick="confirmVoid()">Stornovať</button></div>
         </div>
     </div>
 

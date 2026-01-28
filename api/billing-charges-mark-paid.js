@@ -5,6 +5,8 @@ const { logAudit, getRequestInfo } = require('./utils/audit');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
 
+const VALID_PAID_METHODS = ['cash', 'card', 'bank', 'other'];
+
 function verifyToken(req) {
     const auth = req.headers.authorization;
     if (!auth || !auth.startsWith('Bearer ')) return null;
@@ -27,43 +29,56 @@ module.exports = async (req, res) => {
     const chargeId = req.query.id;
     if (!chargeId) return res.status(400).json({ error: 'Charge ID is required' });
 
-    const { paid_method, paid_at } = req.body;
-    const validMethods = ['cash', 'card', 'transfer', 'other'];
-    
-    if (paid_method && !validMethods.includes(paid_method)) {
-        return res.status(400).json({ error: 'paid_method musí byť: cash, card, transfer, alebo other' });
+    const { paid_method, paid_reference } = req.body;
+
+    // Validate paid_method
+    if (!paid_method) {
+        return res.status(400).json({ error: 'paid_method je povinný', valid_methods: VALID_PAID_METHODS });
+    }
+    if (!VALID_PAID_METHODS.includes(paid_method)) {
+        return res.status(400).json({ error: 'Neplatný paid_method', valid_methods: VALID_PAID_METHODS });
     }
 
     const { ip, user_agent } = getRequestInfo(req);
 
     try {
         // Get charge
-        const { data: before, error: fetchError } = await supabase
+        const { data: charge, error: fetchError } = await supabase
             .from('billing_charges')
             .select('*')
             .eq('id', chargeId)
             .single();
 
-        if (fetchError || !before) {
+        if (fetchError || !charge) {
             return res.status(404).json({ error: 'Charge nenájdený' });
         }
 
-        if (before.status === 'paid') {
-            return res.status(400).json({ error: 'Charge je už uhradený' });
+        // IDEMPOTENT: Already paid - return existing without changes
+        if (charge.status === 'paid') {
+            let training = null;
+            if (charge.training_id) {
+                const { data: t } = await supabase.from('trainings').select('*').eq('id', charge.training_id).single();
+                training = t;
+            }
+            return res.status(200).json({ charge, training, idempotent: true });
         }
 
-        if (before.status === 'void') {
-            return res.status(400).json({ error: 'Void charge nie je možné uhradiť' });
+        // Cannot pay void charge
+        if (charge.status === 'void') {
+            return res.status(409).json({ error: 'cannot_pay_void', message: 'Stornovaný charge nie je možné uhradiť' });
         }
 
-        // Update charge
-        const paidAtTime = paid_at || new Date().toISOString();
+        // Process payment (unpaid -> paid)
+        const before = { ...charge };
+        const paidAtTime = new Date().toISOString();
+
         const { data: after, error: updateError } = await supabase
             .from('billing_charges')
             .update({
                 status: 'paid',
                 paid_at: paidAtTime,
-                paid_method: paid_method || 'other'
+                paid_method,
+                paid_reference: paid_reference || null
             })
             .eq('id', chargeId)
             .select()
@@ -90,7 +105,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Audit
+        // Audit with detailed diff
         await logAudit(supabase, {
             action: 'mark-paid',
             entity_type: 'billing-charge',
@@ -100,7 +115,12 @@ module.exports = async (req, res) => {
             ip,
             user_agent,
             before_data: before,
-            after_data: after
+            after_data: after,
+            diff: {
+                status: { from: before.status, to: 'paid' },
+                paid_method: { from: null, to: paid_method },
+                paid_reference: paid_reference ? { from: null, to: paid_reference } : undefined
+            }
         });
 
         return res.status(200).json({ charge: after, training });

@@ -28,34 +28,49 @@ module.exports = async (req, res) => {
     if (!chargeId) return res.status(400).json({ error: 'Charge ID is required' });
 
     const { reason } = req.body;
+
+    // Require reason
+    if (!reason || !reason.trim()) {
+        return res.status(400).json({ error: 'reason_required', message: 'Dôvod storna je povinný' });
+    }
+
     const { ip, user_agent } = getRequestInfo(req);
 
     try {
         // Get charge
-        const { data: before, error: fetchError } = await supabase
+        const { data: charge, error: fetchError } = await supabase
             .from('billing_charges')
             .select('*')
             .eq('id', chargeId)
             .single();
 
-        if (fetchError || !before) {
+        if (fetchError || !charge) {
             return res.status(404).json({ error: 'Charge nenájdený' });
         }
 
-        if (before.status === 'void') {
-            return res.status(400).json({ error: 'Charge je už void' });
+        // Cannot void paid charge
+        if (charge.status === 'paid') {
+            return res.status(409).json({ error: 'cannot_void_paid', message: 'Uhradený charge nie je možné stornovať. Použite refund.' });
         }
 
-        // Update charge
-        const noteUpdate = reason 
-            ? (before.note ? `${before.note}\nVoid: ${reason}` : `Void: ${reason}`)
-            : before.note;
+        // IDEMPOTENT: Already void - return existing without changes
+        if (charge.status === 'void') {
+            let training = null;
+            if (charge.training_id) {
+                const { data: t } = await supabase.from('trainings').select('*').eq('id', charge.training_id).single();
+                training = t;
+            }
+            return res.status(200).json({ charge, training, idempotent: true });
+        }
+
+        // Process void (unpaid -> void)
+        const before = { ...charge };
 
         const { data: after, error: updateError } = await supabase
             .from('billing_charges')
             .update({
                 status: 'void',
-                note: noteUpdate
+                void_reason: reason.trim()
             })
             .eq('id', chargeId)
             .select()
@@ -80,7 +95,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        // Audit
+        // Audit with detailed diff
         await logAudit(supabase, {
             action: 'void',
             entity_type: 'billing-charge',
@@ -90,7 +105,11 @@ module.exports = async (req, res) => {
             ip,
             user_agent,
             before_data: before,
-            after_data: after
+            after_data: after,
+            diff: {
+                status: { from: before.status, to: 'void' },
+                void_reason: { from: null, to: reason.trim() }
+            }
         });
 
         return res.status(200).json({ charge: after, training });

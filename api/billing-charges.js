@@ -26,27 +26,29 @@ module.exports = async (req, res) => {
                 status = 'unpaid', 
                 rider_id, 
                 horse_id, 
-                date_from, 
-                date_to,
+                from,
+                to,
+                q,
                 limit = 100, 
                 offset = 0 
             } = req.query;
 
+            // First get all charges for filtering
             let query = supabase
                 .from('billing_charges')
                 .select('*', { count: 'exact' })
                 .order('created_at', { ascending: false });
 
-            // Filtre
+            // Status filter
             if (status && status !== 'all') {
                 query = query.eq('status', status);
             }
             if (rider_id) query = query.eq('rider_id', rider_id);
             if (horse_id) query = query.eq('horse_id', horse_id);
 
-            // Date filter - filter by created_at or due_date
-            if (date_from) query = query.gte('created_at', date_from);
-            if (date_to) query = query.lte('created_at', date_to + 'T23:59:59');
+            // Date filter
+            if (from) query = query.gte('created_at', from);
+            if (to) query = query.lte('created_at', to + 'T23:59:59');
 
             query = query.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
 
@@ -74,23 +76,45 @@ module.exports = async (req, res) => {
             }
 
             // Enrich data
-            const enrichedData = data.map(c => ({
+            let enrichedData = data.map(c => ({
                 ...c,
                 rider: ridersMap[c.rider_id] || null,
                 horse: horsesMap[c.horse_id] || null,
                 training: trainingsMap[c.training_id] || null
             }));
 
-            // Calculate totals
-            const totalUnpaid = enrichedData.filter(c => c.status === 'unpaid').reduce((sum, c) => sum + c.amount_cents, 0);
-            const totalPaid = enrichedData.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.amount_cents, 0);
+            // Search filter (q) - filter by rider name, horse name, note, reference_code
+            if (q && q.trim()) {
+                const searchTerm = q.trim().toLowerCase();
+                enrichedData = enrichedData.filter(c => {
+                    const riderName = c.rider ? `${c.rider.first_name || ''} ${c.rider.last_name || ''}`.toLowerCase() : '';
+                    const horseName = c.horse?.name?.toLowerCase() || '';
+                    const note = c.note?.toLowerCase() || '';
+                    const refCode = c.reference_code?.toLowerCase() || '';
+                    const paidRef = c.paid_reference?.toLowerCase() || '';
+                    return riderName.includes(searchTerm) || 
+                           horseName.includes(searchTerm) || 
+                           note.includes(searchTerm) ||
+                           refCode.includes(searchTerm) ||
+                           paidRef.includes(searchTerm);
+                });
+            }
+
+            // Calculate counts and totals
+            const unpaidItems = enrichedData.filter(c => c.status === 'unpaid');
+            const paidItems = enrichedData.filter(c => c.status === 'paid');
+            const voidItems = enrichedData.filter(c => c.status === 'void');
 
             return res.status(200).json({ 
                 data: enrichedData, 
-                total: count,
+                total: q ? enrichedData.length : count,
                 summary: {
-                    unpaid_cents: totalUnpaid,
-                    paid_cents: totalPaid
+                    unpaid_count: unpaidItems.length,
+                    unpaid_cents: unpaidItems.reduce((sum, c) => sum + c.amount_cents, 0),
+                    paid_count: paidItems.length,
+                    paid_cents: paidItems.reduce((sum, c) => sum + c.amount_cents, 0),
+                    void_count: voidItems.length,
+                    void_cents: voidItems.reduce((sum, c) => sum + c.amount_cents, 0)
                 }
             });
         }
@@ -107,7 +131,8 @@ module.exports = async (req, res) => {
                 currency = 'EUR',
                 status = 'unpaid',
                 due_date,
-                note 
+                note,
+                reference_code
             } = req.body;
 
             if (amount_cents === undefined || amount_cents < 0) {
@@ -127,7 +152,8 @@ module.exports = async (req, res) => {
                 currency,
                 status,
                 due_date: due_date || null,
-                note: note || null
+                note: note || null,
+                reference_code: reference_code || null
             };
 
             const { data, error } = await supabase

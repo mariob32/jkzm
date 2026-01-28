@@ -1,13 +1,15 @@
 {
-  "version": "6.21.0",
-  "build": "2026-01-28T07:00:00Z",
+  "version": "6.21.1",
+  "build": "2026-01-28T07:10:00Z",
   "features": [
-    "Pricing Rules - dynamický cenník",
-    "computeCharge() helper pre výpočet ceny",
-    "Billing Reports - súhrny a štatistiky",
-    "Admin UI - Cenník a Reporty sekcie"
+    "Billing hardening - idempotent mark-paid/void",
+    "Povinný void_reason pri storne",
+    "Vylepšené Admin UI - quick filters, modaly",
+    "Search v billing list (q parameter)",
+    "paid_reference a reference_code stĺpce"
   ],
   "changelog": {
+    "6.21.1": "Billing hardening + UX improvements",
     "6.21.0": "Pricing Rules + Reports MVP",
     "6.20.0": "Billing MVP - charges + payment tracking",
     "6.19.1": "Fix mark attended + training link",

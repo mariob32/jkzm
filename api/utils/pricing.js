@@ -1,8 +1,9 @@
 // ===== JKZM Pricing Helper =====
 // api/utils/pricing.js
 
-async function computeCharge(supabase, { discipline, duration_min, rider_id, horse_id, currency = 'EUR' }) {
-    const durationMinutes = duration_min || 60;
+async function computeCharge(supabase, { discipline, duration_min, duration_minutes, rider_id, horse_id, currency = 'EUR' }) {
+    // Duration fallback: duration_min > duration_minutes > 60
+    const durationMinutes = duration_min || duration_minutes || 60;
 
     // Build query for matching rules
     let query = supabase
