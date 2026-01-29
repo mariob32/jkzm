@@ -52,6 +52,7 @@ module.exports = async (req, res) => {
                 for (const booking of data.bookings) {
                     let charge = null;
                     
+                    // Try to find charge by training_id first, then by booking_id
                     if (booking.training_id) {
                         const { data: chargeData } = await supabase
                             .from('billing_charges')
@@ -61,6 +62,18 @@ module.exports = async (req, res) => {
                             .maybeSingle();
                         
                         charge = chargeData;
+                    }
+                    
+                    // If not found by training_id, try booking_id
+                    if (!charge) {
+                        const { data: chargeByBooking } = await supabase
+                            .from('billing_charges')
+                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                            .eq('booking_id', booking.id)
+                            .limit(1)
+                            .maybeSingle();
+                        
+                        charge = chargeByBooking;
                     }
                     
                     enrichedBookings.push({
