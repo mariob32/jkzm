@@ -1260,41 +1260,108 @@
             <!-- TRAINING CALENDAR -->
             <section id="training-calendar" class="section">
                 <div class="header">
-                    <h1>📅 Kalendár tréningov</h1>
+                    <h1>Kalendar treningov</h1>
                     <div class="header-actions">
-                        <button class="btn btn-outline" onclick="calendarPrevWeek()">← Predošlý</button>
+                        <button class="btn btn-outline" onclick="calendarPrevWeek()">← Predosly</button>
                         <button class="btn btn-outline" onclick="calendarThisWeek()">Dnes</button>
-                        <button class="btn btn-outline" onclick="calendarNextWeek()">Ďalší →</button>
-                        <button class="btn btn-primary" onclick="openSlotModal()">+ Nový slot</button>
+                        <button class="btn btn-outline" onclick="calendarNextWeek()">Dalsi →</button>
+                        <button class="btn btn-primary" onclick="openSlotModal()">+ Novy slot</button>
                     </div>
                 </div>
-                <input type="hidden" id="calendarWeekOffset" value="0">
+                
+                <!-- Filters toolbar -->
+                <div class="calendar-toolbar">
+                    <div class="calendar-filters">
+                        <select class="form-control" id="calendarFilterDiscipline">
+                            <option value="all">Vsetky discipliny</option>
+                            <option value="jumping">Skoky</option>
+                            <option value="dressage">Drezura</option>
+                            <option value="hacking">Teren</option>
+                            <option value="groundwork">Zem</option>
+                            <option value="longing">Lonz</option>
+                        </select>
+                        <select class="form-control" id="calendarFilterStatus">
+                            <option value="all">Vsetky statusy</option>
+                            <option value="open">Aktivne</option>
+                            <option value="cancelled">Zrusene</option>
+                        </select>
+                        <select class="form-control" id="calendarFilterTrainer">
+                            <option value="all">Vsetci treneri</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline" onclick="resetCalendarFilters()">Reset</button>
+                    </div>
+                    <div id="calendarSummary" class="calendar-summary"></div>
+                </div>
+                
                 <div class="card">
-                    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
-                        <h3 id="calendarWeekDisplay">Týždeň</h3>
-                        <div id="calendarSummary" style="display:flex;gap:1.5rem;font-size:0.9rem"></div>
+                    <div class="card-header">
+                        <h3 id="calendarWeekDisplay">Tyzden</h3>
                     </div>
                     <div class="card-body" id="calendarGrid">
-                        <p style="text-align:center;color:var(--gray)">Načítavam kalendár...</p>
+                        <div class="calendar-loading"><p>Nacitavam kalendar...</p></div>
                     </div>
                 </div>
+                
                 <style>
-                    .calendar-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
-                    .calendar-day { background: var(--gray-light); border-radius: 8px; padding: 0.5rem; min-height: 200px; }
-                    .calendar-day.today { background: #e8f5e9; }
-                    .calendar-day-header { text-align: center; padding: 0.5rem; border-bottom: 1px solid var(--gray); margin-bottom: 0.5rem; }
-                    .calendar-day-slots { display: flex; flex-direction: column; gap: 0.5rem; }
-                    .calendar-empty { color: var(--gray); font-size: 0.85rem; text-align: center; padding: 1rem; }
-                    .calendar-slot { background: white; border-radius: 6px; padding: 0.5rem; cursor: pointer; border-left: 3px solid var(--primary); }
-                    .calendar-slot:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-                    .calendar-slot.status-closed { border-left-color: var(--gray); opacity: 0.7; }
-                    .calendar-slot.status-cancelled { border-left-color: var(--danger); opacity: 0.5; text-decoration: line-through; }
-                    .slot-time { font-weight: bold; font-size: 0.9rem; }
-                    .slot-info { font-size: 0.8rem; color: var(--gray); }
-                    .slot-info small { display: block; }
-                    .slot-capacity { margin-top: 0.25rem; }
-                    @media (max-width: 1200px) { .calendar-week { grid-template-columns: repeat(4, 1fr); } }
-                    @media (max-width: 768px) { .calendar-week { grid-template-columns: repeat(2, 1fr); } }
+                    /* Calendar Toolbar */
+                    .calendar-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem}
+                    .calendar-filters{display:flex;gap:0.5rem;flex-wrap:wrap}
+                    .calendar-filters select{width:auto;min-width:150px}
+                    .calendar-summary{display:flex;gap:1.5rem;font-size:0.9rem}
+                    .summary-item{color:var(--gray)}
+                    .summary-item strong{color:var(--dark)}
+                    
+                    /* Calendar Grid */
+                    .calendar-week{display:grid;grid-template-columns:repeat(7,1fr);gap:0.5rem}
+                    .calendar-day{background:var(--gray-light);border-radius:8px;padding:0.5rem;min-height:200px;position:relative;display:flex;flex-direction:column}
+                    .calendar-day.today{background:#e8f5e9;border:2px solid var(--primary)}
+                    .calendar-day.past{opacity:0.7}
+                    .calendar-day-header{text-align:center;padding:0.5rem;border-bottom:1px solid var(--gray);margin-bottom:0.5rem;cursor:pointer;border-radius:4px;transition:background 0.2s}
+                    .calendar-day-header:hover{background:rgba(0,0,0,0.05)}
+                    .calendar-day-slots{display:flex;flex-direction:column;gap:0.5rem;flex:1;overflow-y:auto;max-height:300px}
+                    .calendar-empty{color:var(--gray);font-size:0.85rem;text-align:center;padding:1rem}
+                    .btn-add-slot{position:absolute;bottom:0.5rem;right:0.5rem;width:28px;height:28px;border-radius:50%;border:none;background:var(--primary);color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0.7;transition:all 0.2s}
+                    .btn-add-slot:hover{opacity:1;transform:scale(1.1)}
+                    
+                    /* Slot Card */
+                    .calendar-slot{background:white;border-radius:6px;padding:0.5rem;cursor:pointer;border-left:3px solid var(--primary);transition:all 0.2s}
+                    .calendar-slot:hover{box-shadow:0 2px 8px rgba(0,0,0,0.15);transform:translateY(-1px)}
+                    .calendar-slot.cancelled{border-left-color:var(--danger);opacity:0.5;text-decoration:line-through}
+                    .calendar-slot.full{border-left-color:var(--warning)}
+                    .slot-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem}
+                    .slot-time{font-weight:bold;font-size:0.9rem}
+                    .slot-capacity{font-size:0.75rem;background:var(--gray-light);padding:0.1rem 0.4rem;border-radius:10px}
+                    .slot-capacity.full{background:var(--danger);color:white}
+                    .slot-discipline{font-size:0.8rem;color:var(--dark)}
+                    .slot-duration,.slot-trainer{font-size:0.75rem;color:var(--gray)}
+                    
+                    /* Empty Week State */
+                    .calendar-empty-week{text-align:center;padding:2rem;color:var(--gray)}
+                    .calendar-empty-week p{margin-bottom:1rem}
+                    
+                    /* Loading & Error States */
+                    .calendar-loading{text-align:center;padding:3rem;color:var(--gray)}
+                    .calendar-loading .spinner{width:40px;height:40px;border:3px solid var(--gray-light);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+                    @keyframes spin{to{transform:rotate(360deg)}}
+                    .calendar-error{text-align:center;padding:2rem;background:#fff3f3;border-radius:8px;color:var(--danger)}
+                    .calendar-error button{margin-top:1rem}
+                    
+                    /* Slot Detail Modal */
+                    .detail-row{display:flex;padding:0.5rem 0;border-bottom:1px solid var(--gray-light)}
+                    .detail-label{width:100px;color:var(--gray);font-size:0.9rem}
+                    .detail-value{flex:1;font-weight:500}
+                    .text-danger{color:var(--danger)}
+                    .text-gray{color:var(--gray)}
+                    
+                    /* Bookings List */
+                    .bookings-list{margin-top:1rem}
+                    .booking-item{display:flex;justify-content:space-between;align-items:center;padding:0.5rem;border-bottom:1px solid var(--gray-light)}
+                    .booking-info{flex:1}
+                    .booking-actions{display:flex;gap:0.25rem}
+                    
+                    /* Responsive */
+                    @media(max-width:1200px){.calendar-week{grid-template-columns:repeat(4,1fr)}}
+                    @media(max-width:768px){.calendar-week{grid-template-columns:repeat(2,1fr)}.calendar-toolbar{flex-direction:column;align-items:stretch}}
                 </style>
             </section>
 
@@ -1514,22 +1581,34 @@
         <div class="modal-content" style="max-width:600px">
             <div class="modal-header"><h3>Detail slotu</h3><button class="modal-close" onclick="closeModal('slotDetailModal')">×</button></div>
             <div class="modal-body">
-                <input type="hidden" id="slotDetailId">
                 <div id="slotDetailInfo" style="margin-bottom:1rem"></div>
-                <h4 style="margin-bottom:0.5rem">Rezervácie</h4>
+                <h4 style="margin-bottom:0.5rem">Rezervacie</h4>
                 <div id="slotDetailBookings"></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('slotDetailModal')">Zavrieť</button>
-                <button class="btn btn-primary" id="slotDetailBookBtn" onclick="openBookingModal()">+ Rezervovať</button>
-                <button class="btn btn-outline" onclick="editSlotFromDetail()">✏️ Upraviť</button>
-                <button class="btn btn-warning" onclick="cancelSlotFromDetail()">Zrušiť slot</button>
-                <button class="btn btn-danger" onclick="deleteSlotFromDetail()">🗑️ Zmazať</button>
+            <div class="modal-footer" style="flex-wrap:wrap;gap:0.5rem">
+                <button class="btn btn-outline" onclick="closeModal('slotDetailModal')">Zavriet</button>
+                <button class="btn btn-primary" id="slotDetailAddBookingBtn" onclick="openAddBookingModal()">+ Pridat rezervaciu</button>
+                <button class="btn btn-outline" onclick="editSlotFromDetail()">Upravit</button>
+                <button class="btn btn-warning" id="slotDetailCancelBtn" onclick="cancelSlotFromDetail()">Zrusit slot</button>
+                <button class="btn btn-danger" onclick="deleteSlotFromDetail()">Zmazat</button>
             </div>
         </div>
     </div>
 
-    <!-- Booking Modal -->
+    <!-- Quick Booking Modal -->
+    <div class="modal" id="quickBookingModal">
+        <div class="modal-content" style="max-width:400px">
+            <div class="modal-header"><h3>Nova rezervacia</h3><button class="modal-close" onclick="closeModal('quickBookingModal')">×</button></div>
+            <div class="modal-body">
+                <p style="margin-bottom:1rem;color:var(--gray)">Slot: <strong id="quickBookingSlotInfo"></strong></p>
+                <div class="form-group"><label>Kon *</label><select class="form-control" id="quickBookingHorse" required></select></div>
+                <div class="form-group"><label>Jazdec *</label><select class="form-control" id="quickBookingRider" required></select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('quickBookingModal')">Zrusit</button><button class="btn btn-primary" onclick="saveQuickBooking()">Rezervovat</button></div>
+        </div>
+    </div>
+
+    <!-- Booking Modal (legacy) -->
     <div class="modal" id="bookingModal">
         <div class="modal-content" style="max-width:400px">
             <div class="modal-header"><h3>Nová rezervácia</h3><button class="modal-close" onclick="closeModal('bookingModal')">×</button></div>
@@ -2881,7 +2960,7 @@
             // MVP sekcie
             if (hash === 'stable-horses') setTimeout(loadStableHorses, 100);
             if (hash === 'stable-trainings') { setTimeout(loadStableHorses, 100); setTimeout(loadStableTrainings, 150); }
-            if (hash === 'training-calendar') setTimeout(loadTrainingCalendar, 100);
+            if (hash === 'training-calendar') { setTimeout(initTrainingCalendar, 50); setTimeout(loadTrainingCalendar, 100); }
             if (hash === 'billing') { setTimeout(loadStableHorses, 100); setTimeout(loadBillingCharges, 150); setTimeout(populateBillingSelects, 200); }
             if (hash === 'pricing-rules') { setTimeout(loadStableHorses, 100); setTimeout(loadPricingRules, 150); }
             if (hash === 'billing-reports') { /* no preload needed */ }

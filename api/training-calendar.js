@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
-        let { from, to } = req.query;
+        let { from, to, discipline, status, trainer_id } = req.query;
 
         // Default: this week (Monday to Sunday)
         if (!from) {
@@ -42,8 +42,8 @@ module.exports = async (req, res) => {
             to = sunday.toISOString().split('T')[0];
         }
 
-        // Get slots with bookings
-        const { data: slots, error } = await supabase
+        // Build query with filters
+        let query = supabase
             .from('training_slots')
             .select(`
                 *,
@@ -55,9 +55,24 @@ module.exports = async (req, res) => {
                 )
             `)
             .gte('slot_date', from)
-            .lte('slot_date', to)
+            .lte('slot_date', to);
+
+        // Apply filters
+        if (discipline && discipline !== 'all') {
+            query = query.eq('discipline', discipline);
+        }
+        if (status && status !== 'all') {
+            query = query.eq('status', status);
+        }
+        if (trainer_id && trainer_id !== 'all') {
+            query = query.eq('trainer_id', trainer_id);
+        }
+
+        query = query
             .order('slot_date', { ascending: true })
             .order('start_time', { ascending: true });
+
+        const { data: slots, error } = await query;
 
         if (error) throw error;
 
@@ -106,7 +121,8 @@ module.exports = async (req, res) => {
                 total_bookings: totalBookings,
                 open_slots: openSlots,
                 fully_booked: fullyBooked
-            }
+            },
+            filters: { discipline, status, trainer_id }
         });
     } catch (error) {
         console.error('Training-calendar error:', error);

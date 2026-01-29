@@ -1,16 +1,17 @@
 {
-  "version": "6.21.5",
-  "build": "2026-01-28T09:20:00Z",
+  "version": "6.21.6",
+  "build": "2026-01-28T12:45:00Z",
   "features": [
-    "Admin Navigation Cleanup",
-    "Accordion menu - len 1 sekcia otvorena",
-    "Favorites - oblubene polozky hore",
-    "Perzistencia: mod, favorites, otvorena sekcia"
+    "Training Calendar UX + Filters",
+    "Week navigation s perzistenciou",
+    "Filtre: disciplina, status, trener",
+    "Quick actions: add slot, slot detail, quick booking",
+    "Obsadenost slotov: booked_count/capacity"
   ],
   "changelog": {
+    "6.21.6": "Training Calendar UX + Filters + Quick Actions",
     "6.21.5": "Admin Nav Accordion + Favorites",
     "6.21.4": "Kalendar treningov fix + UI hardening",
-    "6.21.3": "Admin sidebar cleanup - bez duplicit",
-    "6.21.2": "Admin mode switcher Klub/Web"
+    "6.21.3": "Admin sidebar cleanup - bez duplicit"
   }
 }
