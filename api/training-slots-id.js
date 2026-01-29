@@ -52,28 +52,36 @@ module.exports = async (req, res) => {
                 for (const booking of data.bookings) {
                     let charge = null;
                     
-                    // Try to find charge by training_id first, then by booking_id
+                    // Try to find charge by training_id first
                     if (booking.training_id) {
-                        const { data: chargeData } = await supabase
-                            .from('billing_charges')
-                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
-                            .eq('training_id', booking.training_id)
-                            .limit(1)
-                            .maybeSingle();
-                        
-                        charge = chargeData;
+                        try {
+                            const { data: chargeData, error: chargeErr } = await supabase
+                                .from('billing_charges')
+                                .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                                .eq('training_id', booking.training_id);
+                            
+                            if (chargeData && chargeData.length > 0) {
+                                charge = chargeData[0];
+                            }
+                        } catch (e) {
+                            console.error('Charge query error:', e);
+                        }
                     }
                     
                     // If not found by training_id, try booking_id
-                    if (!charge) {
-                        const { data: chargeByBooking } = await supabase
-                            .from('billing_charges')
-                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
-                            .eq('booking_id', booking.id)
-                            .limit(1)
-                            .maybeSingle();
-                        
-                        charge = chargeByBooking;
+                    if (!charge && booking.id) {
+                        try {
+                            const { data: chargeByBooking } = await supabase
+                                .from('billing_charges')
+                                .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                                .eq('booking_id', booking.id);
+                            
+                            if (chargeByBooking && chargeByBooking.length > 0) {
+                                charge = chargeByBooking[0];
+                            }
+                        } catch (e) {
+                            console.error('Charge query by booking error:', e);
+                        }
                     }
                     
                     enrichedBookings.push({
