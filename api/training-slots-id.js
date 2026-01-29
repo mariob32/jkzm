@@ -50,28 +50,32 @@ module.exports = async (req, res) => {
                 const bookingIds = data.bookings.map(b => b.id);
                 const trainingIds = data.bookings.filter(b => b.training_id).map(b => b.training_id);
 
-                // Get charges by booking_id or training_id
+                // Get charges - simpler approach with two queries
                 let charges = [];
-                if (bookingIds.length > 0 || trainingIds.length > 0) {
-                    let chargeQuery = supabase
+                
+                // Query by booking_id
+                if (bookingIds.length > 0) {
+                    const { data: chargesByBooking } = await supabase
                         .from('billing_charges')
-                        .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at');
-
-                    // Build OR condition
-                    const orConditions = [];
-                    if (bookingIds.length > 0) {
-                        orConditions.push(`booking_id.in.(${bookingIds.join(',')})`);
-                    }
-                    if (trainingIds.length > 0) {
-                        orConditions.push(`training_id.in.(${trainingIds.join(',')})`);
-                    }
-
-                    if (orConditions.length > 0) {
-                        const { data: chargeData } = await supabase
-                            .from('billing_charges')
-                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
-                            .or(orConditions.join(','));
-                        charges = chargeData || [];
+                        .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                        .in('booking_id', bookingIds);
+                    if (chargesByBooking) charges = charges.concat(chargesByBooking);
+                }
+                
+                // Query by training_id (if not already found)
+                if (trainingIds.length > 0) {
+                    const existingChargeIds = charges.map(c => c.id);
+                    const { data: chargesByTraining } = await supabase
+                        .from('billing_charges')
+                        .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                        .in('training_id', trainingIds);
+                    if (chargesByTraining) {
+                        // Add only charges not already in list
+                        chargesByTraining.forEach(c => {
+                            if (!existingChargeIds.includes(c.id)) {
+                                charges.push(c);
+                            }
+                        });
                     }
                 }
 
