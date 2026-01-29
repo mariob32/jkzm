@@ -394,6 +394,8 @@ async function openSlotDetail(slotId) {
         openModal('slotDetailModal');
 
         const slot = await apiGet(`training-slots/${slotId}`);
+        console.log('DEBUG openSlotDetail: slot=', JSON.stringify(slot, null, 2));
+        
         if (!slot) {
             showToast('Slot nebol najdeny', 'error');
             closeModal('slotDetailModal');
