@@ -1272,7 +1272,7 @@
                 <!-- Filters toolbar -->
                 <div class="calendar-toolbar">
                     <div class="calendar-filters">
-                        <select class="form-control" id="calendarFilterDiscipline">
+                        <select class="form-control" id="calendarFilterDiscipline" onchange="applyCalendarFilters()">
                             <option value="all">Vsetky discipliny</option>
                             <option value="jumping">Skoky</option>
                             <option value="dressage">Drezura</option>
@@ -1280,12 +1280,12 @@
                             <option value="groundwork">Zem</option>
                             <option value="longing">Lonz</option>
                         </select>
-                        <select class="form-control" id="calendarFilterStatus">
+                        <select class="form-control" id="calendarFilterStatus" onchange="applyCalendarFilters()">
                             <option value="all">Vsetky statusy</option>
                             <option value="open">Aktivne</option>
                             <option value="cancelled">Zrusene</option>
                         </select>
-                        <select class="form-control" id="calendarFilterTrainer">
+                        <select class="form-control" id="calendarFilterTrainer" onchange="applyCalendarFilters()">
                             <option value="all">Vsetci treneri</option>
                         </select>
                         <button class="btn btn-sm btn-outline" onclick="resetCalendarFilters()">Reset</button>
