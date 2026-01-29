@@ -45,34 +45,31 @@ module.exports = async (req, res) => {
             if (error) throw error;
             if (!data) return res.status(404).json({ error: 'Slot not found' });
 
-            // Enrich bookings with charge info from training
+            // Enrich bookings with charge info - query for each booking individually
             if (data.bookings && data.bookings.length > 0) {
-                // Get all training_ids
-                const trainingIds = data.bookings.filter(b => b.training_id).map(b => b.training_id);
+                const enrichedBookings = [];
                 
-                // Get charges by training_id
-                let chargesMap = {};
-                if (trainingIds.length > 0) {
-                    const { data: chargesData } = await supabase
-                        .from('billing_charges')
-                        .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
-                        .in('training_id', trainingIds);
+                for (const booking of data.bookings) {
+                    let charge = null;
                     
-                    if (chargesData) {
-                        chargesData.forEach(c => {
-                            if (c.training_id) chargesMap[c.training_id] = c;
-                        });
+                    if (booking.training_id) {
+                        const { data: chargeData } = await supabase
+                            .from('billing_charges')
+                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                            .eq('training_id', booking.training_id)
+                            .limit(1)
+                            .maybeSingle();
+                        
+                        charge = chargeData;
                     }
-                }
-
-                // Map charges to bookings by training_id
-                data.bookings = data.bookings.map(booking => {
-                    const charge = booking.training_id ? chargesMap[booking.training_id] : null;
-                    return {
+                    
+                    enrichedBookings.push({
                         ...booking,
-                        charge: charge || null
-                    };
-                });
+                        charge: charge
+                    });
+                }
+                
+                data.bookings = enrichedBookings;
             }
 
             return res.status(200).json(data);
