@@ -45,46 +45,29 @@ module.exports = async (req, res) => {
             if (error) throw error;
             if (!data) return res.status(404).json({ error: 'Slot not found' });
 
-            // Enrich bookings with charge info
+            // Enrich bookings with charge info from training
             if (data.bookings && data.bookings.length > 0) {
-                const bookingIds = data.bookings.map(b => b.id);
+                // Get all training_ids
                 const trainingIds = data.bookings.filter(b => b.training_id).map(b => b.training_id);
-
-                // Get charges - simpler approach with two queries
-                let charges = [];
                 
-                // Query by booking_id
-                if (bookingIds.length > 0) {
-                    const { data: chargesByBooking } = await supabase
-                        .from('billing_charges')
-                        .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
-                        .in('booking_id', bookingIds);
-                    if (chargesByBooking) charges = charges.concat(chargesByBooking);
-                }
-                
-                // Query by training_id (if not already found)
+                // Get charges by training_id
+                let chargesMap = {};
                 if (trainingIds.length > 0) {
-                    const existingChargeIds = charges.map(c => c.id);
-                    const { data: chargesByTraining } = await supabase
+                    const { data: chargesData } = await supabase
                         .from('billing_charges')
                         .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
                         .in('training_id', trainingIds);
-                    if (chargesByTraining) {
-                        // Add only charges not already in list
-                        chargesByTraining.forEach(c => {
-                            if (!existingChargeIds.includes(c.id)) {
-                                charges.push(c);
-                            }
+                    
+                    if (chargesData) {
+                        chargesData.forEach(c => {
+                            if (c.training_id) chargesMap[c.training_id] = c;
                         });
                     }
                 }
 
-                // Map charges to bookings
+                // Map charges to bookings by training_id
                 data.bookings = data.bookings.map(booking => {
-                    const charge = charges.find(c => 
-                        c.booking_id === booking.id || 
-                        (booking.training_id && c.training_id === booking.training_id)
-                    );
+                    const charge = booking.training_id ? chargesMap[booking.training_id] : null;
                     return {
                         ...booking,
                         charge: charge || null
