@@ -27,13 +27,14 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
+            // Get slot with bookings
             const { data, error } = await supabase
                 .from('training_slots')
                 .select(`
                     *,
                     trainer:riders!training_slots_trainer_id_fkey(id, first_name, last_name),
                     bookings:training_bookings(
-                        id, status, created_at, cancelled_at, cancel_reason,
+                        id, status, created_at, cancelled_at, cancel_reason, training_id, marked_at,
                         horse:horses(id, name),
                         rider:riders!training_bookings_rider_id_fkey(id, first_name, last_name)
                     )
@@ -43,6 +44,49 @@ module.exports = async (req, res) => {
 
             if (error) throw error;
             if (!data) return res.status(404).json({ error: 'Slot not found' });
+
+            // Enrich bookings with charge info
+            if (data.bookings && data.bookings.length > 0) {
+                const bookingIds = data.bookings.map(b => b.id);
+                const trainingIds = data.bookings.filter(b => b.training_id).map(b => b.training_id);
+
+                // Get charges by booking_id or training_id
+                let charges = [];
+                if (bookingIds.length > 0 || trainingIds.length > 0) {
+                    let chargeQuery = supabase
+                        .from('billing_charges')
+                        .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at');
+
+                    // Build OR condition
+                    const orConditions = [];
+                    if (bookingIds.length > 0) {
+                        orConditions.push(`booking_id.in.(${bookingIds.join(',')})`);
+                    }
+                    if (trainingIds.length > 0) {
+                        orConditions.push(`training_id.in.(${trainingIds.join(',')})`);
+                    }
+
+                    if (orConditions.length > 0) {
+                        const { data: chargeData } = await supabase
+                            .from('billing_charges')
+                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, voided_at')
+                            .or(orConditions.join(','));
+                        charges = chargeData || [];
+                    }
+                }
+
+                // Map charges to bookings
+                data.bookings = data.bookings.map(booking => {
+                    const charge = charges.find(c => 
+                        c.booking_id === booking.id || 
+                        (booking.training_id && c.training_id === booking.training_id)
+                    );
+                    return {
+                        ...booking,
+                        charge: charge || null
+                    };
+                });
+            }
 
             return res.status(200).json(data);
         }

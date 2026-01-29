@@ -388,9 +388,15 @@ async function saveSlot() {
 // ===== SLOT DETAIL MODAL =====
 async function openSlotDetail(slotId) {
     try {
+        // Show loading in modal
+        document.getElementById('slotDetailInfo').innerHTML = '<p class="text-gray">Nacitavam...</p>';
+        document.getElementById('slotDetailBookings').innerHTML = '';
+        openModal('slotDetailModal');
+
         const slot = await apiGet(`training-slots/${slotId}`);
         if (!slot) {
             showToast('Slot nebol najdeny', 'error');
+            closeModal('slotDetailModal');
             return;
         }
 
@@ -400,7 +406,8 @@ async function openSlotDetail(slotId) {
         const trainerName = slot.trainer ? 
             `${slot.trainer.first_name || ''} ${slot.trainer.last_name || ''}`.trim() : 'Nezadany';
         
-        const activeBookings = (slot.bookings || []).filter(b => b.status === 'booked' || b.status === 'attended');
+        const allBookings = slot.bookings || [];
+        const activeBookings = allBookings.filter(b => b.status === 'booked' || b.status === 'attended');
         const bookedCount = activeBookings.length;
         const isFull = bookedCount >= (slot.capacity || 1);
         const isCancelled = slot.status === 'cancelled';
@@ -434,36 +441,8 @@ async function openSlotDetail(slotId) {
             ${slot.notes ? `<div class="detail-row"><span class="detail-label">Poznamka:</span><span class="detail-value">${slot.notes}</span></div>` : ''}
         `;
 
-        // Bookings list
-        let bookingsHtml = '';
-        if (activeBookings.length === 0) {
-            bookingsHtml = '<p class="text-gray">Ziadne aktivne rezervacie</p>';
-        } else {
-            bookingsHtml = '<div class="bookings-list">';
-            activeBookings.forEach(b => {
-                const horseName = b.horse?.name || '-';
-                const riderName = b.rider ? `${b.rider.first_name || ''} ${b.rider.last_name || ''}`.trim() : '-';
-                const statusBadge = b.status === 'attended' ? 'success' : 'info';
-                const statusText = b.status === 'attended' ? 'Zucastneny' : 'Rezervovany';
-                
-                bookingsHtml += `
-                    <div class="booking-item">
-                        <div class="booking-info">
-                            <strong>${horseName}</strong> - ${riderName}
-                            <span class="badge badge-${statusBadge}">${statusText}</span>
-                        </div>
-                        <div class="booking-actions">
-                            ${b.status === 'booked' ? `
-                                <button class="btn btn-sm btn-success" onclick="markBooking('${b.id}','attended')" title="Zucastnil sa">OK</button>
-                                <button class="btn btn-sm btn-danger" onclick="cancelBooking('${b.id}')" title="Zrusit">X</button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            bookingsHtml += '</div>';
-        }
-        document.getElementById('slotDetailBookings').innerHTML = bookingsHtml;
+        // Bookings list - full workflow table
+        renderBookingsWorkflow(allBookings, isCancelled);
 
         // Actions visibility
         const addBookingBtn = document.getElementById('slotDetailAddBookingBtn');
@@ -475,11 +454,266 @@ async function openSlotDetail(slotId) {
         if (cancelSlotBtn) {
             cancelSlotBtn.style.display = isCancelled ? 'none' : 'inline-block';
         }
-
-        openModal('slotDetailModal');
     } catch (e) {
+        document.getElementById('slotDetailInfo').innerHTML = `<p class="text-danger">Chyba: ${e.message}</p>`;
         showToast('Chyba: ' + e.message, 'error');
     }
+}
+
+function renderBookingsWorkflow(bookings, slotCancelled) {
+    const container = document.getElementById('slotDetailBookings');
+    
+    if (!bookings || bookings.length === 0) {
+        container.innerHTML = '<p class="text-gray">Ziadne rezervacie</p>';
+        return;
+    }
+
+    // Sort: booked first, then attended, then others
+    const sortOrder = { booked: 0, attended: 1, no_show: 2, cancelled: 3 };
+    bookings.sort((a, b) => (sortOrder[a.status] || 99) - (sortOrder[b.status] || 99));
+
+    let html = '<div class="bookings-workflow">';
+    
+    bookings.forEach(b => {
+        const horseName = b.horse?.name || '-';
+        const riderName = b.rider ? `${b.rider.first_name || ''} ${b.rider.last_name || ''}`.trim() : '-';
+        const isCancelled = b.status === 'cancelled';
+        const isAttended = b.status === 'attended';
+        const isNoShow = b.status === 'no_show';
+        const isBooked = b.status === 'booked';
+        
+        // Status badge
+        let statusBadgeClass = 'info';
+        let statusText = 'Rezervovany';
+        if (isAttended) { statusBadgeClass = 'success'; statusText = 'Zucastneny'; }
+        else if (isNoShow) { statusBadgeClass = 'warning'; statusText = 'Neprisiel'; }
+        else if (isCancelled) { statusBadgeClass = 'gray'; statusText = 'Zruseny'; }
+
+        // Charge info
+        const charge = b.charge;
+        let chargeHtml = '';
+        if (charge) {
+            const amountEur = (charge.amount_cents / 100).toFixed(2);
+            let chargeBadgeClass = 'warning';
+            let chargeStatusText = 'Neuhradene';
+            if (charge.status === 'paid') { chargeBadgeClass = 'success'; chargeStatusText = 'Uhradene'; }
+            else if (charge.status === 'void') { chargeBadgeClass = 'gray'; chargeStatusText = 'Storno'; }
+
+            chargeHtml = `
+                <div class="booking-charge">
+                    <span class="charge-amount">${amountEur} €</span>
+                    <span class="badge badge-${chargeBadgeClass}">${chargeStatusText}</span>
+                    ${charge.paid_method ? `<small>(${charge.paid_method})</small>` : ''}
+                </div>
+            `;
+        }
+
+        // Training link
+        const trainingHtml = b.training_id ? 
+            `<span class="badge badge-success" title="Trening vytvoreny">T</span>` : '';
+
+        // Actions based on status
+        let actionsHtml = '';
+        
+        if (isBooked && !slotCancelled) {
+            actionsHtml = `
+                <div class="booking-actions">
+                    <button class="btn btn-sm btn-success" onclick="onMarkAttended('${b.id}')" title="Zucastnil sa">✓ OK</button>
+                    <button class="btn btn-sm btn-warning" onclick="onMarkNoShow('${b.id}')" title="Neprisiel">✗</button>
+                    <button class="btn btn-sm btn-outline" onclick="onCancelBooking('${b.id}')" title="Zrusit rezervaciu">Zrusit</button>
+                </div>
+            `;
+        } else if (isAttended && charge) {
+            if (charge.status === 'unpaid') {
+                actionsHtml = `
+                    <div class="booking-actions">
+                        <div class="inline-pay-form" id="payForm_${charge.id}">
+                            <select class="form-control form-control-sm" id="payMethod_${charge.id}" style="width:80px">
+                                <option value="cash">Hotovost</option>
+                                <option value="card">Karta</option>
+                                <option value="bank">Prevod</option>
+                                <option value="other">Ine</option>
+                            </select>
+                            <input type="text" class="form-control form-control-sm" id="payRef_${charge.id}" placeholder="Ref." style="width:60px">
+                            <button class="btn btn-sm btn-success" onclick="onMarkPaid('${charge.id}')">Uhradit</button>
+                            <button class="btn btn-sm btn-outline" onclick="onVoidCharge('${charge.id}')">Storno</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Already paid or voided - no actions
+                actionsHtml = '';
+            }
+        } else if (isNoShow) {
+            actionsHtml = '<span class="text-gray text-sm">Neprisiel</span>';
+        } else if (isCancelled) {
+            actionsHtml = `<span class="text-gray text-sm">${b.cancel_reason || 'Zrusene'}</span>`;
+        }
+
+        html += `
+            <div class="booking-workflow-item ${isCancelled ? 'cancelled' : ''}">
+                <div class="booking-main">
+                    <div class="booking-identity">
+                        <strong>${horseName}</strong> - ${riderName}
+                        ${trainingHtml}
+                    </div>
+                    <span class="badge badge-${statusBadgeClass}">${statusText}</span>
+                </div>
+                ${chargeHtml}
+                ${actionsHtml}
+                <div class="booking-error" id="bookingError_${b.id}" style="display:none"></div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// ===== BOOKING WORKFLOW ACTIONS =====
+async function onMarkAttended(bookingId) {
+    const errorEl = document.getElementById(`bookingError_${bookingId}`);
+    if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+
+    try {
+        disableBookingActions(bookingId);
+        const result = await apiPost(`training-bookings/${bookingId}/mark`, { status: 'attended' });
+        
+        showToast('Oznacene ako zucastneny' + (result.charge ? ' + charge vytvoreny' : ''), 'success');
+        
+        // Refresh slot detail
+        if (selectedSlot) {
+            await openSlotDetail(selectedSlot.id);
+        }
+        loadTrainingCalendar();
+    } catch (e) {
+        if (errorEl) {
+            errorEl.textContent = e.message;
+            errorEl.style.display = 'block';
+        }
+        showToast('Chyba: ' + e.message, 'error');
+        enableBookingActions(bookingId);
+    }
+}
+
+async function onMarkNoShow(bookingId) {
+    if (!confirm('Oznacit ako neprisiel?')) return;
+    
+    const errorEl = document.getElementById(`bookingError_${bookingId}`);
+    if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+
+    try {
+        disableBookingActions(bookingId);
+        await apiPost(`training-bookings/${bookingId}/mark`, { status: 'no_show' });
+        
+        showToast('Oznacene ako neprisiel', 'success');
+        
+        if (selectedSlot) {
+            await openSlotDetail(selectedSlot.id);
+        }
+        loadTrainingCalendar();
+    } catch (e) {
+        if (errorEl) {
+            errorEl.textContent = e.message;
+            errorEl.style.display = 'block';
+        }
+        showToast('Chyba: ' + e.message, 'error');
+        enableBookingActions(bookingId);
+    }
+}
+
+async function onCancelBooking(bookingId) {
+    const reason = prompt('Dovod zrusenia (volitelne):');
+    if (reason === null) return; // User clicked cancel
+    
+    const errorEl = document.getElementById(`bookingError_${bookingId}`);
+    if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+
+    try {
+        disableBookingActions(bookingId);
+        await apiPost(`training-bookings/${bookingId}/cancel`, { reason: reason || null });
+        
+        showToast('Rezervacia zrusena', 'success');
+        
+        if (selectedSlot) {
+            await openSlotDetail(selectedSlot.id);
+        }
+        loadTrainingCalendar();
+    } catch (e) {
+        if (errorEl) {
+            errorEl.textContent = e.message;
+            errorEl.style.display = 'block';
+        }
+        showToast('Chyba: ' + e.message, 'error');
+        enableBookingActions(bookingId);
+    }
+}
+
+async function onMarkPaid(chargeId) {
+    const methodEl = document.getElementById(`payMethod_${chargeId}`);
+    const refEl = document.getElementById(`payRef_${chargeId}`);
+    const formEl = document.getElementById(`payForm_${chargeId}`);
+    
+    const paid_method = methodEl?.value || 'cash';
+    const paid_reference = refEl?.value || null;
+
+    try {
+        if (formEl) formEl.querySelectorAll('button').forEach(b => b.disabled = true);
+        
+        const result = await apiPost(`billing-charges/${chargeId}/mark-paid`, { paid_method, paid_reference });
+        
+        if (result.idempotent) {
+            showToast('Uz bolo uhradene', 'info');
+        } else {
+            showToast('Uhradene', 'success');
+        }
+        
+        if (selectedSlot) {
+            await openSlotDetail(selectedSlot.id);
+        }
+        loadTrainingCalendar();
+    } catch (e) {
+        showToast('Chyba: ' + e.message, 'error');
+        if (formEl) formEl.querySelectorAll('button').forEach(b => b.disabled = false);
+    }
+}
+
+async function onVoidCharge(chargeId) {
+    const reason = prompt('Dovod stornovania:');
+    if (!reason) {
+        showToast('Dovod je povinny', 'warning');
+        return;
+    }
+
+    const formEl = document.getElementById(`payForm_${chargeId}`);
+
+    try {
+        if (formEl) formEl.querySelectorAll('button').forEach(b => b.disabled = true);
+        
+        const result = await apiPost(`billing-charges/${chargeId}/void`, { reason });
+        
+        if (result.idempotent) {
+            showToast('Uz bolo stornovane', 'info');
+        } else {
+            showToast('Stornovane', 'success');
+        }
+        
+        if (selectedSlot) {
+            await openSlotDetail(selectedSlot.id);
+        }
+        loadTrainingCalendar();
+    } catch (e) {
+        showToast('Chyba: ' + e.message, 'error');
+        if (formEl) formEl.querySelectorAll('button').forEach(b => b.disabled = false);
+    }
+}
+
+function disableBookingActions(bookingId) {
+    document.querySelectorAll(`[onclick*="${bookingId}"]`).forEach(btn => btn.disabled = true);
+}
+
+function enableBookingActions(bookingId) {
+    document.querySelectorAll(`[onclick*="${bookingId}"]`).forEach(btn => btn.disabled = false);
 }
 
 function goToSlotBookings() {
@@ -610,43 +844,6 @@ async function saveQuickBooking() {
     }
 }
 
-// ===== BOOKING ACTIONS =====
-async function markBooking(bookingId, status) {
-    const confirmText = status === 'attended' ? 
-        'Oznacit ako zucastneneho? (vytvori sa zaznam treningu)' : 
-        'Oznacit ako neprisiel?';
-    
-    if (!confirm(confirmText)) return;
-
-    try {
-        const result = await apiPost(`training-bookings/${bookingId}/mark`, { status });
-        if (status === 'attended' && result.training) {
-            showToast('Oznacene + vytvoreny trening', 'success');
-        } else {
-            showToast('Oznacene', 'success');
-        }
-        if (selectedSlot) openSlotDetail(selectedSlot.id);
-        loadTrainingCalendar();
-    } catch (e) {
-        showToast('Chyba: ' + e.message, 'error');
-    }
-}
-
-async function cancelBooking(bookingId) {
-    if (!confirm('Naozaj zrusit rezervaciu?')) return;
-
-    const reason = prompt('Dovod zrusenia (volitelne):');
-
-    try {
-        await apiPost(`training-bookings/${bookingId}/cancel`, { reason });
-        showToast('Rezervacia zrusena', 'success');
-        if (selectedSlot) openSlotDetail(selectedSlot.id);
-        loadTrainingCalendar();
-    } catch (e) {
-        showToast('Chyba: ' + e.message, 'error');
-    }
-}
-
 // ===== INIT =====
 function initTrainingCalendar() {
     loadCalendarTrainers();
@@ -678,6 +875,10 @@ if (typeof window !== 'undefined') {
     window.deleteSlotFromDetail = deleteSlotFromDetail;
     window.openAddBookingModal = openAddBookingModal;
     window.saveQuickBooking = saveQuickBooking;
-    window.markBooking = markBooking;
-    window.cancelBooking = cancelBooking;
+    // Workflow actions
+    window.onMarkAttended = onMarkAttended;
+    window.onMarkNoShow = onMarkNoShow;
+    window.onCancelBooking = onCancelBooking;
+    window.onMarkPaid = onMarkPaid;
+    window.onVoidCharge = onVoidCharge;
 }

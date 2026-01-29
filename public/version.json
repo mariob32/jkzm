@@ -1,17 +1,17 @@
 {
-  "version": "6.21.6",
-  "build": "2026-01-28T12:45:00Z",
+  "version": "6.21.7",
+  "build": "2026-01-29T07:15:00Z",
   "features": [
-    "Training Calendar UX + Filters",
-    "Week navigation s perzistenciou",
-    "Filtre: disciplina, status, trener",
-    "Quick actions: add slot, slot detail, quick booking",
-    "Obsadenost slotov: booked_count/capacity"
+    "Calendar Attendance + Billing Workflow",
+    "Slot detail s pracovnym zoznamom rezervacii",
+    "Mark attended/no-show/cancel priamo v modale",
+    "Mark paid / Void charge inline",
+    "Charge info pre kazdu rezervaciu"
   ],
   "changelog": {
+    "6.21.7": "Calendar Attendance + Billing Workflow MVP",
     "6.21.6": "Training Calendar UX + Filters + Quick Actions",
     "6.21.5": "Admin Nav Accordion + Favorites",
-    "6.21.4": "Kalendar treningov fix + UI hardening",
-    "6.21.3": "Admin sidebar cleanup - bez duplicit"
+    "6.21.4": "Kalendar treningov fix + UI hardening"
   }
 }
