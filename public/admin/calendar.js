@@ -544,6 +544,14 @@ function renderBookingsWorkflow(bookings, slotCancelled) {
                 // Already paid or voided - no actions
                 actionsHtml = '';
             }
+        } else if (isAttended && !charge) {
+            // Attended but no charge - offer to create one
+            actionsHtml = `
+                <div class="booking-actions">
+                    <span class="text-warning text-sm">Bez uctu</span>
+                    <button class="btn btn-sm btn-primary" onclick="onCreateCharge('${b.id}')" title="Vytvorit ucet">+ Vytvorit ucet</button>
+                </div>
+            `;
         } else if (isNoShow) {
             actionsHtml = '<span class="text-gray text-sm">Neprisiel</span>';
         } else if (isCancelled) {
@@ -844,6 +852,27 @@ async function saveQuickBooking() {
     }
 }
 
+// ===== CREATE CHARGE FOR ATTENDED BOOKING =====
+async function onCreateCharge(bookingId) {
+    try {
+        // Re-call mark attended - this will create charge if missing (idempotent)
+        const result = await apiPost(`training-bookings/${bookingId}/mark`, { status: 'attended' });
+        
+        if (result.charge) {
+            showToast('Ucet vytvoreny: ' + (result.charge.amount_cents / 100).toFixed(2) + ' €', 'success');
+        } else {
+            showToast('Ucet nebol vytvoreny - skontrolujte cennik', 'warning');
+        }
+        
+        if (selectedSlot) {
+            await openSlotDetail(selectedSlot.id);
+        }
+        loadTrainingCalendar();
+    } catch (e) {
+        showToast('Chyba: ' + e.message, 'error');
+    }
+}
+
 // ===== INIT =====
 function initTrainingCalendar() {
     loadCalendarTrainers();
@@ -881,4 +910,5 @@ if (typeof window !== 'undefined') {
     window.onCancelBooking = onCancelBooking;
     window.onMarkPaid = onMarkPaid;
     window.onVoidCharge = onVoidCharge;
+    window.onCreateCharge = onCreateCharge;
 }
