@@ -312,3 +312,21 @@ Odkaz "O klube" je pridaný do hlavnej navigácie aj do pätičky.
 - Vet sekcia ma teraz taby (Vet zaznamy / Ockovania)
 - Feeding tabulka ma tlacidlo Detail pre nested CRUD
 - Compliance dashboard zobrazuje expirujuce licencie a ockovania
+
+---
+
+## 📋 Verzia 6.21.7 (2026-01-29)
+
+### Calendar Attendance + Billing Workflow
+- **Slot detail modal** - zobrazuje rezervácie s charge info
+- **Mark attended** - vytvorí tréning + automaticky vygeneruje charge podľa cenníka
+- **Inline payment** - priamo v modali: [Hotovosť/Karta/Prevod] [Ref] [Uhradiť]
+- **Storno charge** - s povinným dôvodom
+- **No-cache headers** - slot detail endpoint vždy vracia čerstvé dáta
+
+### ⚠️ Supabase RLS Poznámka
+Tabuľka `billing_charges` má RLS (Row Level Security) zapnuté. Pre správne fungovanie charge lookup v kalendári je potrebné:
+- **Možnosť 1**: `ALTER TABLE billing_charges DISABLE ROW LEVEL SECURITY;`
+- **Možnosť 2**: Pridať policy: `CREATE POLICY "Allow all for service" ON billing_charges FOR ALL USING (true) WITH CHECK (true);`
+
+Bez tohto nastavenia calendar charge lookup nebude fungovať (queries vrátia prázdne výsledky).

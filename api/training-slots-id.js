@@ -27,6 +27,10 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
+            // Disable caching for slot detail (always fetch fresh data)
+            res.setHeader('Cache-Control', 'no-store, max-age=0');
+            res.setHeader('Pragma', 'no-cache');
+            
             // Get slot with bookings
             const { data, error } = await supabase
                 .from('training_slots')
@@ -56,7 +60,7 @@ module.exports = async (req, res) => {
                     if (booking.training_id) {
                         const chargeResult = await supabase
                             .from('billing_charges')
-                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason')
+                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, reference_code')
                             .eq('training_id', booking.training_id);
                         
                         if (chargeResult.data && chargeResult.data.length > 0) {
@@ -68,7 +72,7 @@ module.exports = async (req, res) => {
                     if (!charge && booking.id) {
                         const chargeResult2 = await supabase
                             .from('billing_charges')
-                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason')
+                            .select('id, booking_id, training_id, amount_cents, currency, status, paid_method, paid_reference, paid_at, void_reason, reference_code')
                             .eq('booking_id', booking.id);
                         
                         if (chargeResult2.data && chargeResult2.data.length > 0) {
