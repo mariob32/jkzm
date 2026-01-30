@@ -53,6 +53,7 @@ const ADMIN_NAV = [
         mode: 'club',
         items: [
             { id: 'billing', icon: '💰', label: 'Platby' },
+            { id: 'cashdesk', icon: '🧾', label: 'Pokladňa' },
             { id: 'pricing-rules', icon: '📋', label: 'Cennik' },
             { id: 'billing-reports', icon: '📊', label: 'Reporty' }
         ]

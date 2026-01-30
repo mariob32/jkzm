@@ -122,6 +122,9 @@ function loadSectionData(hash) {
     
     // Web Posts
     if (hash === 'web-posts') setTimeout(loadWebPosts, 100);
+    
+    // Cashdesk / Pokladňa
+    if (hash === 'cashdesk') setTimeout(initCashdesk, 100);
 }
 
 // ===== LOAD ALL DATA =====

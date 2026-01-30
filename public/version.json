@@ -1,14 +1,15 @@
 {
-  "version": "6.21.7",
-  "build": "2026-01-29T07:15:00Z",
+  "version": "6.21.8",
+  "build": "2026-01-29T19:30:00Z",
   "features": [
-    "Calendar Attendance + Billing Workflow",
-    "Slot detail s pracovnym zoznamom rezervacii",
-    "Mark attended/no-show/cancel priamo v modale",
-    "Mark paid / Void charge inline",
-    "Charge info pre kazdu rezervaciu"
+    "Cashdesk / Pokladňa - denný prehľad platieb",
+    "Sumy podľa platobnej metódy (hotovosť, karta, prevod)",
+    "Quick filter: Dnes / Včera / Týždeň / Mesiac",
+    "Export CSV s automatickým sumárom",
+    "Vyhľadávanie podľa jazdca/koňa/referencie"
   ],
   "changelog": {
+    "6.21.8": "Cashdesk / Pokladňa - denný prehľad platieb",
     "6.21.7": "Calendar Attendance + Billing Workflow MVP",
     "6.21.6": "Training Calendar UX + Filters + Quick Actions",
     "6.21.5": "Admin Nav Accordion + Favorites",

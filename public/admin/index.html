@@ -147,6 +147,7 @@
     <script src="/admin/calendar.js"></script>
     <script src="/admin/billing.js"></script>
     <script src="/admin/pricing.js"></script>
+    <script src="/admin/cashdesk.js"></script>
     <style>
         .ql-container { font-size: 1rem; }
         .ql-editor { min-height: 200px; }
@@ -1425,6 +1426,52 @@
                                 </tr>
                             </thead>
                             <tbody id="billingChargesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CASHDESK / POKLADNA -->
+            <section id="cashdesk" class="section">
+                <div class="header">
+                    <h1>Pokladňa</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-outline" onclick="exportCashdeskCSV()">Export CSV</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+                            <div style="display:flex;gap:0.25rem">
+                                <button class="btn btn-sm btn-primary" onclick="setCashdeskDateRange('today')">Dnes</button>
+                                <button class="btn btn-sm btn-outline" onclick="setCashdeskDateRange('yesterday')">Včera</button>
+                                <button class="btn btn-sm btn-outline" onclick="setCashdeskDateRange('week')">Tento týždeň</button>
+                                <button class="btn btn-sm btn-outline" onclick="setCashdeskDateRange('month')">Tento mesiac</button>
+                            </div>
+                            <div style="display:flex;gap:0.5rem;align-items:center">
+                                <label>Od:</label>
+                                <input type="date" class="form-control" id="cashdeskFrom" style="width:150px" onchange="loadCashdeskData()">
+                                <label>Do:</label>
+                                <input type="date" class="form-control" id="cashdeskTo" style="width:150px" onchange="loadCashdeskData()">
+                            </div>
+                            <input type="text" class="form-control" id="cashdeskSearch" placeholder="Hľadať jazdca/koňa/ref..." style="width:200px" oninput="renderCashdeskTable()">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="cashdeskSummaryCards" class="stats-grid" style="margin-bottom:1.5rem"></div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Čas platby</th>
+                                    <th>Jazdec</th>
+                                    <th>Kôň</th>
+                                    <th>Suma</th>
+                                    <th>Spôsob</th>
+                                    <th>Referencia</th>
+                                    <th>Poznámka</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashdeskTableBody"></tbody>
                         </table>
                     </div>
                 </div>

@@ -40,6 +40,9 @@
     { "src": "/api/pricing-rules", "dest": "/api/pricing-rules.js" },
     { "src": "/api/billing-reports", "dest": "/api/billing-reports.js" },
     
+    { "src": "/api/cashdesk-summary", "dest": "/api/cashdesk-summary.js" },
+    { "src": "/api/cashdesk-charges", "dest": "/api/cashdesk-charges.js" },
+    
     { "src": "/api/health-events/([^/]+)", "dest": "/api/health-events-id.js?id=$1" },
     { "src": "/api/health-events", "dest": "/api/health-events.js" },
     { "src": "/api/feed-logs", "dest": "/api/feed-logs.js" },
