@@ -34,24 +34,10 @@ module.exports = async (req, res) => {
         const fromDate = from || today;
         const toDate = to || today;
 
-        // Get all paid charges in date range with rider and horse info
+        // Get all paid charges in date range
         const { data: charges, error } = await supabase
             .from('billing_charges')
-            .select(`
-                id,
-                created_at,
-                paid_at,
-                amount_cents,
-                currency,
-                paid_method,
-                paid_reference,
-                reference_code,
-                note,
-                training_id,
-                booking_id,
-                rider:riders(id, first_name, last_name),
-                horse:horses(id, name)
-            `)
+            .select('id, created_at, paid_at, amount_cents, currency, paid_method, paid_reference, reference_code, note, training_id, booking_id, rider_id, horse_id')
             .eq('status', 'paid')
             .gte('paid_at', `${fromDate}T00:00:00`)
             .lte('paid_at', `${toDate}T23:59:59`)
@@ -59,30 +45,65 @@ module.exports = async (req, res) => {
 
         if (error) throw error;
 
+        // Get unique rider and horse IDs
+        const riderIds = [...new Set((charges || []).map(c => c.rider_id).filter(Boolean))];
+        const horseIds = [...new Set((charges || []).map(c => c.horse_id).filter(Boolean))];
+
+        // Fetch riders and horses separately
+        let ridersMap = {};
+        let horsesMap = {};
+
+        if (riderIds.length > 0) {
+            const { data: riders } = await supabase
+                .from('riders')
+                .select('id, first_name, last_name')
+                .in('id', riderIds);
+            
+            for (const r of riders || []) {
+                ridersMap[r.id] = r;
+            }
+        }
+
+        if (horseIds.length > 0) {
+            const { data: horses } = await supabase
+                .from('horses')
+                .select('id, name')
+                .in('id', horseIds);
+            
+            for (const h of horses || []) {
+                horsesMap[h.id] = h;
+            }
+        }
+
         // Format response
-        const formattedCharges = (charges || []).map(c => ({
-            id: c.id,
-            created_at: c.created_at,
-            paid_at: c.paid_at,
-            amount_cents: c.amount_cents,
-            currency: c.currency || 'EUR',
-            paid_method: c.paid_method,
-            paid_reference: c.paid_reference,
-            reference_code: c.reference_code,
-            note: c.note,
-            training_id: c.training_id,
-            booking_id: c.booking_id,
-            rider: c.rider ? {
-                id: c.rider.id,
-                first_name: c.rider.first_name,
-                last_name: c.rider.last_name,
-                full_name: `${c.rider.first_name || ''} ${c.rider.last_name || ''}`.trim()
-            } : null,
-            horse: c.horse ? {
-                id: c.horse.id,
-                name: c.horse.name
-            } : null
-        }));
+        const formattedCharges = (charges || []).map(c => {
+            const rider = ridersMap[c.rider_id];
+            const horse = horsesMap[c.horse_id];
+            
+            return {
+                id: c.id,
+                created_at: c.created_at,
+                paid_at: c.paid_at,
+                amount_cents: c.amount_cents,
+                currency: c.currency || 'EUR',
+                paid_method: c.paid_method,
+                paid_reference: c.paid_reference,
+                reference_code: c.reference_code,
+                note: c.note,
+                training_id: c.training_id,
+                booking_id: c.booking_id,
+                rider: rider ? {
+                    id: rider.id,
+                    first_name: rider.first_name,
+                    last_name: rider.last_name,
+                    full_name: `${rider.first_name || ''} ${rider.last_name || ''}`.trim()
+                } : null,
+                horse: horse ? {
+                    id: horse.id,
+                    name: horse.name
+                } : null
+            };
+        });
 
         return res.status(200).json({
             from: fromDate,
