@@ -1,18 +1,19 @@
 {
-  "version": "6.21.8",
-  "build": "2026-01-29T19:30:00Z",
+  "version": "6.21.9",
+  "build": "2026-01-30T07:00:00Z",
   "features": [
-    "Cashdesk / Pokladňa - denný prehľad platieb",
-    "Sumy podľa platobnej metódy (hotovosť, karta, prevod)",
-    "Quick filter: Dnes / Včera / Týždeň / Mesiac",
-    "Export CSV s automatickým sumárom",
-    "Vyhľadávanie podľa jazdca/koňa/referencie"
+    "Cookie/GDPR Consent System (ePrivacy)",
+    "Consent banner s kategoriami: necessary, preferences, analytics, marketing",
+    "Settings modal pre spravu preferencii",
+    "Stranka /privacy - Zasady ochrany osobnych udajov",
+    "Stranka /cookies - Zasady pouzivania cookies s tabulkou ulozisk",
+    "Pripravena infrastruktura pre GA/Meta Pixel (neaktivne)"
   ],
   "changelog": {
+    "6.21.9": "Cookie/GDPR Consent System + Privacy/Cookies stranky",
     "6.21.8": "Cashdesk / Pokladňa - denný prehľad platieb",
     "6.21.7": "Calendar Attendance + Billing Workflow MVP",
     "6.21.6": "Training Calendar UX + Filters + Quick Actions",
-    "6.21.5": "Admin Nav Accordion + Favorites",
-    "6.21.4": "Kalendar treningov fix + UI hardening"
+    "6.21.5": "Admin Nav Accordion + Favorites"
   }
 }

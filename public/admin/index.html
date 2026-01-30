@@ -193,6 +193,11 @@
             <div style="margin-top:auto;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1)">
                 <div class="nav-item" onclick="window.open('/','_blank')"><span class="icon">🌐</span>Zobraziť web</div>
                 <div class="nav-item" onclick="logout()"><span class="icon">🚪</span>Odhlásiť</div>
+                <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05);font-size:0.75rem;opacity:0.6">
+                    <a href="/privacy" target="_blank" style="color:inherit;display:block;padding:0.25rem 0">Ochrana údajov</a>
+                    <a href="/cookies" target="_blank" style="color:inherit;display:block;padding:0.25rem 0">Cookies</a>
+                    <a href="javascript:void(0)" onclick="window.JKZMConsent && window.JKZMConsent.openSettings()" style="color:inherit;display:block;padding:0.25rem 0">Nastavenia cookies</a>
+                </div>
             </div>
         </aside>
 
@@ -8337,5 +8342,6 @@
 
     // MVP funkcie su v externych suboroch: stable.js, posts.js
     </script>
+    <script src="/consent.js"></script>
 </body>
 </html>

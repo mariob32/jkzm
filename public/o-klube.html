@@ -772,13 +772,15 @@
             localStorage.setItem('cookiesAccepted', 'all');
             document.getElementById('cookieBanner').style.display = 'none';
         }
-        function rejectCookies() {
-            localStorage.setItem('cookiesAccepted', 'essential');
-            document.getElementById('cookieBanner').style.display = 'none';
-        }
+        // Legacy GDPR modal (deprecated, use new consent system)
         function showGdpr() {
-            document.getElementById('gdprModal').style.display = 'flex';
+            if (window.JKZMConsent) {
+                window.JKZMConsent.openSettings();
+            } else {
+                document.getElementById('gdprModal').style.display = 'flex';
+            }
         }
     </script>
+    <script src="/consent.js"></script>
 </body>
 </html>

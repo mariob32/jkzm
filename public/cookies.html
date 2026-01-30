@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zasady pouzivania cookies | JK Zelena mila</title>
+    <link rel="icon" href="/favicon.ico">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        header {
+            background: #1a1a2e;
+            padding: 1rem;
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+        }
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        header nav a {
+            margin-left: 1.5rem;
+            opacity: 0.8;
+        }
+        header nav a:hover {
+            opacity: 1;
+        }
+        main {
+            background: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        .last-updated {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin: 2rem 0 1rem 0;
+            color: #111827;
+        }
+        h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.5rem 0;
+            color: #374151;
+        }
+        p {
+            margin-bottom: 1rem;
+            color: #4b5563;
+        }
+        ul, ol {
+            margin: 0 0 1rem 1.5rem;
+            color: #4b5563;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        td code {
+            background: #f3f4f6;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+        a {
+            color: #10b981;
+        }
+        .highlight-box {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .cat-necessary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .cat-preferences {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .cat-analytics {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+        .cat-marketing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .btn-settings {
+            display: inline-block;
+            background: #10b981;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .btn-settings:hover {
+            background: #059669;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #6b7280;
+            margin: 0 0.5rem;
+        }
+        @media (max-width: 700px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">JK Zelena mila</a>
+            <nav>
+                <a href="/">Domov</a>
+                <a href="/privacy">Ochrana udajov</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <h1>Zasady pouzivania cookies a ulozisk</h1>
+            <p class="last-updated">Posledna aktualizacia: 30. januar 2026</p>
+
+            <h2>1. Co su cookies a lokalne ulozisko</h2>
+            
+            <h3>Cookies</h3>
+            <p>Cookies su male textove subory, ktore webova stranka uklada vo vasom prehliadaci. 
+            Mozu byt "sessionove" (zmazu sa po zatvoreni prehliadaca) alebo "perzistentne" 
+            (zostanu ulozene dlhsie).</p>
+
+            <h3>localStorage</h3>
+            <p>localStorage je ulozisko v prehliadaci, ktore umoznuje webovym strankam ukladat data 
+            lokalne bez casoveho obmedzenia. Na rozdiel od cookies sa tieto data neodosielajú 
+            automaticky na server pri kazdom poziadavku.</p>
+
+            <div class="highlight-box">
+                <strong>Nasa webova stranka pouziva primarne localStorage</strong> na ukladanie vasich 
+                nastaveni a preferencii. Cookies pouzivame minimalne, hlavne pre analyticke nastroje 
+                (ak udelite suhlas).
+            </div>
+
+            <h2>2. Kategorie ulozisk</h2>
+            <p>Rozdelujeme uloziska do styroch kategorii:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kategoria</th>
+                        <th>Popis</th>
+                        <th>Suhlas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="category-badge cat-necessary">Nevyhnutne</span></td>
+                        <td>Potrebne pre zakladnu funkcnost stranky - prihlasenie, bezpecnost, ukladanie suhlasu</td>
+                        <td>Nie je potrebny</td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-badge cat-preferences">Preferencne</span></td>
+                        <td>Umoznuju zapamatat vase nastavenia, ako rozlozenie panelu, filtre, oblubene polozky</td>
+                        <td>Vyzadovany</td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-badge cat-analytics">Analyticke</span></td>
+                        <td>Pomahaju nam pochopit, ako navstevnici pouzivaju stranku</td>
+                        <td>Vyzadovany</td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-badge cat-marketing">Marketingove</span></td>
+                        <td>Pouzivaju sa na zobrazovanie relevantnych reklam</td>
+                        <td>Vyzadovany</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>3. Prehlad pouzivanych ulozisk</h2>
+
+            <h3>3.1 Nevyhnutne (localStorage)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazov</th>
+                        <th>Ucel</th>
+                        <th>Typ dat</th>
+                        <th>Expiracia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>jkzm_token</code></td>
+                        <td>Autentifikacny token pre prihlasenie do admin panelu</td>
+                        <td>JWT token</td>
+                        <td>7 dni</td>
+                    </tr>
+                    <tr>
+                        <td><code>jkzm_consent</code></td>
+                        <td>Ulozenie vasho rozhodnutia o cookies (verzia, cas, volby)</td>
+                        <td>JSON objekt</td>
+                        <td>1 rok</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.2 Preferencne (localStorage)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazov</th>
+                        <th>Ucel</th>
+                        <th>Typ dat</th>
+                        <th>Expiracia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>jkzm_admin_mode</code></td>
+                        <td>Prepinanie medzi rezimami admin panelu (klub/web)</td>
+                        <td>Text (club/web)</td>
+                        <td>Trvale</td>
+                    </tr>
+                    <tr>
+                        <td><code>jkzm_admin_favorites</code></td>
+                        <td>Zoznam vasich oblubenych sekcii v admin paneli</td>
+                        <td>JSON pole</td>
+                        <td>Trvale</td>
+                    </tr>
+                    <tr>
+                        <td><code>jkzm_admin_open_section</code></td>
+                        <td>Posledna otvorena sekcia v navigacii admin panelu</td>
+                        <td>Text</td>
+                        <td>Trvale</td>
+                    </tr>
+                    <tr>
+                        <td><code>jkzm_calendar_week_start</code></td>
+                        <td>Zaciatok tyzdna v kalendari (pondelok/nedela)</td>
+                        <td>Text</td>
+                        <td>Trvale</td>
+                    </tr>
+                    <tr>
+                        <td><code>jkzm_calendar_filters</code></td>
+                        <td>Ulozene filtre v treningovom kalendari (trener, typ, atd.)</td>
+                        <td>JSON objekt</td>
+                        <td>Trvale</td>
+                    </tr>
+                    <tr>
+                        <td><code>jkzm_billing_filters</code></td>
+                        <td>Ulozene filtre v sekcii platby</td>
+                        <td>JSON objekt</td>
+                        <td>Trvale</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 Analyticke (cookies)</h3>
+            <div class="warning-box">
+                <strong>Momentalne neaktivne.</strong> Analyticke cookies (napr. Google Analytics) budu 
+                aktivovane az po udeleni suhlasu a po nastaveni prislusnych ID v konfigurácii.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazov</th>
+                        <th>Poskytovatel</th>
+                        <th>Ucel</th>
+                        <th>Expiracia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>_ga</code></td>
+                        <td>Google Analytics</td>
+                        <td>Rozlisenie jedinecnych navstevnikov</td>
+                        <td>2 roky</td>
+                    </tr>
+                    <tr>
+                        <td><code>_ga_*</code></td>
+                        <td>Google Analytics</td>
+                        <td>Udrzanie stavu relacie</td>
+                        <td>2 roky</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.4 Marketingove (cookies)</h3>
+            <div class="warning-box">
+                <strong>Momentalne neaktivne.</strong> Marketingove cookies (napr. Meta Pixel) budu 
+                aktivovane az po udeleni suhlasu a po nastaveni prislusnych ID v konfigurácii.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazov</th>
+                        <th>Poskytovatel</th>
+                        <th>Ucel</th>
+                        <th>Expiracia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>_fbp</code></td>
+                        <td>Meta (Facebook)</td>
+                        <td>Identifikacia prehliadaca pre reklamne ucely</td>
+                        <td>3 mesiace</td>
+                    </tr>
+                    <tr>
+                        <td><code>_fbc</code></td>
+                        <td>Meta (Facebook)</td>
+                        <td>Sledovanie kliknuti na reklamy</td>
+                        <td>2 roky</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>4. Sprava vasich preferencii</h2>
+            <p>Kedykolvek mozete zmenit vase nastavenia cookies kliknutim na tlacidlo nizsie:</p>
+            
+            <p style="margin: 1.5rem 0;">
+                <button type="button" class="btn-settings" onclick="window.JKZMConsent && window.JKZMConsent.openSettings()">
+                    Otvorit nastavenia cookies
+                </button>
+            </p>
+
+            <p>Pripadne mozete upravit nastavenia priamo vo vasom prehliadaci:</p>
+            <ul>
+                <li><strong>Chrome:</strong> Nastavenia &gt; Sukromie a bezpecnost &gt; Cookies</li>
+                <li><strong>Firefox:</strong> Nastavenia &gt; Sukromie a bezpecnost &gt; Cookies</li>
+                <li><strong>Safari:</strong> Nastavenia &gt; Sukromie</li>
+                <li><strong>Edge:</strong> Nastavenia &gt; Cookies a povolenia stranok</li>
+            </ul>
+
+            <h2>5. Ako vymazat ulozene data</h2>
+            <p>Pre vymazanie vsetkych dat ulozenych touto strankou:</p>
+            <ol>
+                <li>Otvorte Nastroje vyvojara (F12)</li>
+                <li>Prejdite na zalozku "Application" (Chrome) alebo "Storage" (Firefox)</li>
+                <li>V sekcii "Local Storage" vyberte tuto domenu</li>
+                <li>Kliknite na "Clear" alebo vymazte jednotlive polozky</li>
+            </ol>
+
+            <h2>6. Tretie strany</h2>
+            <p>Pri pouzivani analytickych a marketingovych cookies mozu byt vase data zdielane s:</p>
+            <ul>
+                <li><strong>Google LLC</strong> - Google Analytics (analyza navstevnosti)</li>
+                <li><strong>Meta Platforms Inc.</strong> - Meta Pixel (marketing)</li>
+            </ul>
+            <p>Tieto spolocnosti maju vlastne zasady ochrany sukromia. Odporucame sa s nimi oboznamit.</p>
+
+            <h2>7. Zmeny zasad</h2>
+            <p>Tieto zasady mozu byt aktualizovane. Pri vyznamnych zmenach (napr. pridanie novych kategorii 
+            cookies) vas poziadame o novy suhlas.</p>
+
+            <h2>8. Kontakt</h2>
+            <p>V pripade otazok tykajucich sa cookies a ulozisk nas kontaktujte na: 
+            <a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Jazdecky klub Zelena mila Jaslovske Bohunice, o.z.</p>
+        <p>
+            <a href="/privacy">Ochrana udajov</a> |
+            <a href="/cookies">Cookies</a> |
+            <a href="javascript:void(0)" onclick="window.JKZMConsent && window.JKZMConsent.openSettings()">Nastavenia cookies</a>
+        </p>
+    </footer>
+
+    <script src="/consent.js"></script>
+</body>
+</html>
