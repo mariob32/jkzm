@@ -1,16 +1,16 @@
 {
-  "version": "6.21.12",
-  "build": "2026-01-31T07:00:00Z",
+  "version": "6.21.13",
+  "build": "2026-01-31T08:00:00Z",
   "features": [
-    "Fix: Trainers API - robustnejšie spracovanie stĺpcov",
-    "Debug: Lepšie logovanie API volaní v konzole",
-    "SQL migrácia pre trainers/employees tabuľky"
+    "Fix: Editácia tréningov - event delegácia, API loading, error handling",
+    "Fix: Status pole pridané do training modal",
+    "Fix: trainings-id.js API - kompletná implementácia PUT s validáciou"
   ],
   "changelog": {
+    "6.21.13": "Fix trainings edit - event delegácia + API detail loading + status pole",
     "6.21.12": "Fix trainers API 500 error + SQL migrácia",
     "6.21.11": "Fix GET API cache - pridané no-cache headers",
     "6.21.10": "Fix DELETE horses/riders - kontrola FK dependencies",
-    "6.21.9": "Cookie/GDPR Consent System + Privacy/Cookies stranky",
-    "6.21.8": "Cashdesk / Pokladňa - denný prehľad platieb"
+    "6.21.9": "Cookie/GDPR Consent System + Privacy/Cookies stranky"
   }
 }

@@ -2396,7 +2396,7 @@
     <!-- Training Modal -->
     <div class="modal" id="trainingModal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Nový tréning</h3><button class="modal-close" onclick="closeModal('trainingModal')">×</button></div>
+            <div class="modal-header"><h3 id="trainingModalTitle">Nový tréning</h3><button class="modal-close" onclick="closeModal('trainingModal')">×</button></div>
             <div class="modal-body">
                 <form id="trainingForm">
                     <input type="hidden" id="trainingId">
@@ -2415,6 +2415,10 @@
                     <div class="form-row">
                         <div class="form-group"><label>Trvanie (min)</label><input type="number" class="form-control" id="trainingDuration" value="60"></div>
                         <div class="form-group"><label>Cena (€)</label><input type="number" class="form-control" id="trainingPrice" step="0.01"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Status</label><select class="form-control" id="trainingStatus"><option value="scheduled">Naplánovaný</option><option value="completed">Dokončený</option><option value="cancelled">Zrušený</option><option value="no_show">Neprišiel</option></select></div>
+                        <div class="form-group"></div>
                     </div>
                     <div class="form-group"><label>Poznámky</label><textarea class="form-control" id="trainingNotes"></textarea></div>
                 </form>
@@ -3101,6 +3105,36 @@
         renderAll();
         loadDashboard();
         populateSelects();
+        
+        // Inicializuj event delegáciu pre trainings tabuľku
+        initTrainingsTableEvents();
+    }
+    
+    // Event delegácia pre trainings tabuľku - handlery sa nestratia po re-renderi
+    function initTrainingsTableEvents() {
+        const table = document.getElementById('trainingsTable');
+        if (!table) return;
+        
+        // Odstráň starý listener ak existuje
+        table.removeEventListener('click', handleTrainingsTableClick);
+        // Pridaj nový
+        table.addEventListener('click', handleTrainingsTableClick);
+    }
+    
+    function handleTrainingsTableClick(e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+        
+        const id = target.dataset.id;
+        if (!id) return;
+        
+        if (target.classList.contains('training-edit-btn')) {
+            e.preventDefault();
+            editTraining(id);
+        } else if (target.classList.contains('training-delete-btn')) {
+            e.preventDefault();
+            deleteTraining(id);
+        }
     }
 
     function loadDashboard() {
@@ -3267,18 +3301,26 @@
 
     function renderTrainings() {
         const typeLabels = {individual:'Individuálny',group:'Skupinový',longe:'Lonžovanie',jumping:'Skoky',dressage:'Drezúra',cross_country:'Terén',theory:'Teória',szvj_preparation:'SZVJ príprava',competition_prep:'Príprava preteky'};
-        document.getElementById('trainingsTable').innerHTML = trainings.map(t => {
-            const rider = riders.find(r => r.id === t.rider_id);
-            const horse = horses.find(h => h.id === t.horse_id);
-            const trainer = trainers.find(tr => tr.id === t.trainer_id);
-            return `<tr>
-                <td><strong>${t.date}</strong><br><small>${t.start_time}</small></td>
+        const statusLabels = {scheduled:'Naplánovaný',completed:'Dokončený',cancelled:'Zrušený',no_show:'Neprišiel'};
+        const table = document.getElementById('trainingsTable');
+        if (!table) return;
+        
+        table.innerHTML = trainings.map(t => {
+            const rider = riders.find(r => String(r.id) === String(t.rider_id));
+            const horse = horses.find(h => String(h.id) === String(t.horse_id));
+            const trainer = trainers.find(tr => String(tr.id) === String(t.trainer_id));
+            const statusClass = t.status === 'completed' ? 'success' : t.status === 'cancelled' ? 'danger' : t.status === 'no_show' ? 'warning' : 'info';
+            return `<tr data-training-id="${t.id}">
+                <td><strong>${t.date || '-'}</strong><br><small>${t.start_time || ''}</small></td>
                 <td>${rider ? `${rider.first_name} ${rider.last_name}` : '-'}</td>
                 <td>${horse?.name || '-'}</td>
                 <td>${trainer ? `${trainer.first_name} ${trainer.last_name}` : '-'}</td>
                 <td>${typeLabels[t.training_type] || t.training_type || '-'}</td>
-                <td><span class="badge badge-${t.status === 'completed' ? 'success' : t.status === 'cancelled' ? 'danger' : 'info'}">${t.status}</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="editTraining('${t.id}')">✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteTraining('${t.id}')">🗑️</button></td>
+                <td><span class="badge badge-${statusClass}">${statusLabels[t.status] || t.status || 'scheduled'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline training-edit-btn" data-id="${t.id}" title="Upraviť">✏️</button>
+                    <button class="btn btn-sm btn-danger training-delete-btn" data-id="${t.id}" title="Vymazať">🗑️</button>
+                </td>
             </tr>`;
         }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Žiadne tréningy</td></tr>';
     }
@@ -3420,8 +3462,23 @@
     function resetTrainingForm() {
         if (document.getElementById('trainingId')) document.getElementById('trainingId').value = '';
         if (document.getElementById('trainingDate')) document.getElementById('trainingDate').value = new Date().toISOString().split('T')[0];
-        if (document.getElementById('trainingStartTime')) document.getElementById('trainingStartTime').value = '';
-        if (document.getElementById('trainingModalTitle')) document.getElementById('trainingModalTitle').textContent = 'Novy trening';
+        if (document.getElementById('trainingTime')) document.getElementById('trainingTime').value = '';
+        if (document.getElementById('trainingRider')) document.getElementById('trainingRider').value = '';
+        if (document.getElementById('trainingHorse')) document.getElementById('trainingHorse').value = '';
+        if (document.getElementById('trainingTrainer')) document.getElementById('trainingTrainer').value = '';
+        if (document.getElementById('trainingType')) document.getElementById('trainingType').value = 'individual';
+        if (document.getElementById('trainingDuration')) document.getElementById('trainingDuration').value = '60';
+        if (document.getElementById('trainingPrice')) document.getElementById('trainingPrice').value = '';
+        if (document.getElementById('trainingStatus')) document.getElementById('trainingStatus').value = 'scheduled';
+        if (document.getElementById('trainingNotes')) document.getElementById('trainingNotes').value = '';
+        // Reset title
+        const titleEl = document.getElementById('trainingModalTitle');
+        if (titleEl) {
+            titleEl.textContent = 'Nový tréning';
+        } else {
+            const modalHeader = document.querySelector('#trainingModal .modal-header h3');
+            if (modalHeader) modalHeader.textContent = 'Nový tréning';
+        }
     }
     
     function resetVetForm() {
@@ -3710,49 +3767,149 @@
         const riderId = document.getElementById('trainingRider').value;
         const horseId = document.getElementById('trainingHorse').value;
         const trainerId = document.getElementById('trainingTrainer').value;
+        const dateVal = document.getElementById('trainingDate').value;
+        const timeVal = document.getElementById('trainingTime').value;
+        
+        // Validácia
+        if (!dateVal) {
+            showToast('Dátum je povinný', 'error');
+            return;
+        }
+        if (!timeVal) {
+            showToast('Čas je povinný', 'error');
+            return;
+        }
+        
         const data = {
             rider_id: riderId || null,
             horse_id: horseId || null,
             trainer_id: trainerId || null,
-            date: document.getElementById('trainingDate').value,
-            start_time: document.getElementById('trainingTime').value,
+            date: dateVal,
+            start_time: timeVal,
             training_type: document.getElementById('trainingType').value,
             duration_minutes: parseInt(document.getElementById('trainingDuration').value) || 60,
             price: document.getElementById('trainingPrice').value || null,
+            status: document.getElementById('trainingStatus')?.value || 'scheduled',
             trainer_notes: document.getElementById('trainingNotes').value
         };
-        await api(id ? `trainings/${id}` : 'trainings', id ? 'PUT' : 'POST', data);
-        closeModal('trainingModal');
-        showToast('Tréning uložený!', 'success');
-        trainings = await api('trainings');
-        renderTrainings();
-        loadDashboard();
+        
+        console.log('saveTraining - id:', id, 'data:', data);
+        
+        try {
+            let result;
+            if (id) {
+                // Edit mode - PUT na /api/trainings/:id
+                result = await api(`trainings/${id}`, 'PUT', data);
+            } else {
+                // Create mode - POST na /api/trainings
+                result = await api('trainings', 'POST', data);
+            }
+            
+            console.log('saveTraining - result:', result);
+            
+            if (result && result.error) {
+                showToast(result.error + (result.details ? ': ' + result.details : ''), 'error');
+                return; // Nezatváraj modal pri chybe
+            }
+            
+            closeModal('trainingModal');
+            showToast(id ? 'Tréning upravený!' : 'Tréning pridaný!', 'success');
+            
+            // Refresh zoznamu
+            trainings = await api('trainings');
+            renderTrainings();
+            loadDashboard();
+        } catch(e) {
+            console.error('saveTraining error:', e);
+            showToast('Chyba pri ukladaní: ' + (e.message || 'Neznáma chyba'), 'error');
+            // Nezatváraj modal pri chybe
+        }
     }
 
-    function editTraining(id) {
-        const t = trainings.find(x => x.id === id);
-        if (!t) return;
-        document.getElementById('trainingId').value = t.id;
-        document.getElementById('trainingDate').value = t.date;
-        document.getElementById('trainingTime').value = t.start_time;
-        document.getElementById('trainingRider').value = t.rider_id;
-        document.getElementById('trainingHorse').value = t.horse_id;
-        document.getElementById('trainingTrainer').value = t.trainer_id;
-        document.getElementById('trainingType').value = t.training_type || 'individual';
-        document.getElementById('trainingDuration').value = t.duration_minutes || 60;
-        document.getElementById('trainingPrice').value = t.price || '';
-        document.getElementById('trainingNotes').value = t.notes || '';
-        document.getElementById('trainingModalTitle').textContent = 'Upravit trening';
-        showModalOnly('trainingModal');
+    // Edit training - načíta detail z API a otvorí modal
+    async function editTraining(id) {
+        if (!id) {
+            showToast('Chýba ID tréningu', 'error');
+            return;
+        }
+        
+        console.log('editTraining - loading id:', id);
+        
+        try {
+            // Načítaj detail z API (zdroj pravdy)
+            const t = await api(`trainings/${id}`);
+            
+            console.log('editTraining - loaded:', t);
+            
+            if (!t || t.error) {
+                showToast(t?.error || 'Tréning sa nepodarilo načítať', 'error');
+                return;
+            }
+            
+            // Naplň selecty pred nastavením hodnôt
+            populateSelects();
+            
+            // Predvyplň formulár
+            document.getElementById('trainingId').value = t.id;
+            document.getElementById('trainingDate').value = t.date || '';
+            document.getElementById('trainingTime').value = t.start_time || '';
+            document.getElementById('trainingRider').value = t.rider_id || '';
+            document.getElementById('trainingHorse').value = t.horse_id || '';
+            document.getElementById('trainingTrainer').value = t.trainer_id || '';
+            document.getElementById('trainingType').value = t.training_type || 'individual';
+            document.getElementById('trainingDuration').value = t.duration_minutes || 60;
+            document.getElementById('trainingPrice').value = t.price || '';
+            document.getElementById('trainingNotes').value = t.trainer_notes || t.notes || '';
+            
+            // Status
+            const statusEl = document.getElementById('trainingStatus');
+            if (statusEl) {
+                statusEl.value = t.status || 'scheduled';
+            }
+            
+            // Nastav title na Edit
+            const titleEl = document.getElementById('trainingModalTitle');
+            if (titleEl) {
+                titleEl.textContent = 'Upraviť tréning';
+            } else {
+                // Ak nie je dedikovaný title element, nájdi h3 v modal header
+                const modalHeader = document.querySelector('#trainingModal .modal-header h3');
+                if (modalHeader) modalHeader.textContent = 'Upraviť tréning';
+            }
+            
+            // Otvor modal bez resetovania
+            document.getElementById('trainingModal').classList.add('active');
+            
+        } catch(e) {
+            console.error('editTraining error:', e);
+            showToast('Nepodarilo sa načítať tréning: ' + (e.message || 'Neznáma chyba'), 'error');
+        }
     }
 
     async function deleteTraining(id) {
+        if (!id) {
+            showToast('Chýba ID tréningu', 'error');
+            return;
+        }
+        
         if (!confirm('Naozaj vymazať tento tréning?')) return;
-        await api(`trainings/${id}`, 'DELETE');
-        showToast('Tréning vymazaný', 'success');
-        trainings = await api('trainings');
-        renderTrainings();
-        loadDashboard();
+        
+        try {
+            const result = await api(`trainings/${id}`, 'DELETE');
+            
+            if (result && result.error) {
+                showToast(result.error, 'error');
+                return;
+            }
+            
+            showToast('Tréning vymazaný', 'success');
+            trainings = await api('trainings');
+            renderTrainings();
+            loadDashboard();
+        } catch(e) {
+            console.error('deleteTraining error:', e);
+            showToast('Chyba pri mazaní: ' + (e.message || 'Neznáma chyba'), 'error');
+        }
     }
 
     // CRUD - Payments
