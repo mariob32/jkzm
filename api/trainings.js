@@ -20,6 +20,7 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             const { data, error } = await supabase.from('trainings')
                 .select('*, riders:rider_id (first_name, last_name), horses:horse_id (name), trainers:trainer_id (first_name, last_name)')
                 .order('date', { ascending: false });

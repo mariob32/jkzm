@@ -19,9 +19,10 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             const { data, error } = await supabase.from('horses').select('*').order('name');
             if (error) throw error;
-            return res.status(200).json(data);
+            return res.status(200).json(data || []);
         }
 
         if (req.method === 'POST') {

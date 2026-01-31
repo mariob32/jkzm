@@ -29,6 +29,7 @@ module.exports = async (req, res) => {
         // GET requires auth
         if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
         if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             const { data, error } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
             if (error) throw error;
             return res.status(200).json(data);

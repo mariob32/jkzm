@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
 
     // GET - List all vet records
     if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         const { horse_id, record_type } = req.query;
         
         let query = supabase

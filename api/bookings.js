@@ -91,6 +91,7 @@ module.exports = async (req, res) => {
 
         // GET - zoznam rezervácií (vyžaduje auth)
         if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             // Pre admin - všetky rezervácie
             if (verifyToken(req)) {
                 const { date_from, date_to, status, space_id } = req.query;

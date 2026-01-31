@@ -1,18 +1,17 @@
 {
-  "version": "6.21.10",
-  "build": "2026-01-30T14:30:00Z",
+  "version": "6.21.11",
+  "build": "2026-01-31T06:00:00Z",
   "features": [
-    "Vylepšené API - kontrola závislostí pred vymazaním koní/jazdcov",
-    "Lepšie chybové hlásenia pri CRUD operáciách",
-    "Konzistentný dizajn privacy/cookies stránok s hlavným webom",
-    "Audit logging pre riders API"
+    "Fix: Pridané Cache-Control no-cache headers do všetkých GET API",
+    "Oprava zobrazenia údajov po vytvorení",
+    "Kontrola závislostí pred vymazaním koní/jazdcov"
   ],
   "changelog": {
+    "6.21.11": "Fix GET API cache - pridané no-cache headers",
     "6.21.10": "Fix DELETE horses/riders - kontrola FK dependencies + lepšie error messages",
     "6.21.9": "Cookie/GDPR Consent System + Privacy/Cookies stranky",
     "6.21.8": "Cashdesk / Pokladňa - denný prehľad platieb",
     "6.21.7": "Calendar Attendance + Billing Workflow MVP",
-    "6.21.6": "Training Calendar UX + Filters + Quick Actions",
-    "6.21.5": "Admin Nav Accordion + Favorites"
+    "6.21.6": "Training Calendar UX + Filters + Quick Actions"
   }
 }

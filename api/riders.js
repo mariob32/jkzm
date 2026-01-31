@@ -22,6 +22,7 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             const { data, error } = await supabase.from('riders')
                 .select('*')
                 .order('last_name');

@@ -20,9 +20,10 @@ module.exports = async (req, res) => {
 
     try {
         if (req.method === 'GET') {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             const { data, error } = await supabase.from('trainers').select('*').order('last_name');
             if (error) throw error;
-            return res.status(200).json(data);
+            return res.status(200).json(data || []);
         }
         if (req.method === 'POST') {
             const { first_name, last_name, email, phone, specialization, hourly_rate, notes } = req.body;
