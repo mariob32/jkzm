@@ -1,13 +1,13 @@
 {
   "version": "6.21.12",
-  "build": "2026-01-31T06:30:00Z",
+  "build": "2026-01-31T07:00:00Z",
   "features": [
+    "Fix: Trainers API - robustnejšie spracovanie stĺpcov",
     "Debug: Lepšie logovanie API volaní v konzole",
-    "Fix: Trainers API - správne stĺpce (sjf_license_number, specializations, atď.)",
-    "Fix: Employees API - pridané employment_type"
+    "SQL migrácia pre trainers/employees tabuľky"
   ],
   "changelog": {
-    "6.21.12": "Debug logging + fix trainers/employees API fields",
+    "6.21.12": "Fix trainers API 500 error + SQL migrácia",
     "6.21.11": "Fix GET API cache - pridané no-cache headers",
     "6.21.10": "Fix DELETE horses/riders - kontrola FK dependencies",
     "6.21.9": "Cookie/GDPR Consent System + Privacy/Cookies stranky",
