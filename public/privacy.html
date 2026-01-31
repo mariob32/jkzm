@@ -3,315 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zasady ochrany osobnych udajov | JK Zelena mila</title>
-    <link rel="icon" href="/favicon.ico">
+    <title>Ochrana osobných údajov | JK Zelená míľa</title>
+    <meta name="description" content="Zásady ochrany osobných údajov Jazdeckého klubu Zelená míľa Jaslovské Bohunice">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#2d5a27">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #2d5a27;
+            --primary-light: #4a8c3f;
+            --secondary: #8b4513;
+            --accent: #d4a574;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --white: #ffffff;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.7;
-            color: #1f2937;
-            background: #f9fafb;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-        header {
-            background: #1a1a2e;
-            padding: 1rem;
-        }
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-        }
-        header a {
-            color: #fff;
-            text-decoration: none;
-        }
-        header .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        header nav a {
-            margin-left: 1.5rem;
-            opacity: 0.8;
-        }
-        header nav a:hover {
-            opacity: 1;
-        }
-        main {
-            background: #fff;
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem auto;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            color: #111827;
-        }
-        .last-updated {
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        h2 {
-            font-size: 1.3rem;
-            margin: 2rem 0 1rem 0;
-            color: #111827;
-        }
-        h3 {
-            font-size: 1.1rem;
-            margin: 1.5rem 0 0.5rem 0;
-            color: #374151;
-        }
-        p {
-            margin-bottom: 1rem;
-            color: #4b5563;
-        }
-        ul, ol {
-            margin: 0 0 1rem 1.5rem;
-            color: #4b5563;
-        }
-        li {
-            margin-bottom: 0.5rem;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-        }
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border: 1px solid #e5e7eb;
-        }
-        th {
-            background: #f3f4f6;
-            font-weight: 600;
-        }
-        a {
-            color: #10b981;
-        }
-        .highlight-box {
-            background: #f0fdf4;
-            border-left: 4px solid #10b981;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        .config-placeholder {
-            background: #fef3c7;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-        footer a {
-            color: #6b7280;
-            margin: 0 0.5rem;
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--dark); line-height: 1.6; }
+        a { color: var(--primary); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        
+        header { background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .logo img { height: 65px; }
+        nav { display: flex; gap: 2rem; }
+        nav a { color: var(--dark); font-weight: 500; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        nav a:hover, nav a.active { color: var(--primary); border-bottom-color: var(--primary); text-decoration: none; }
+        .mobile-menu { display: none; cursor: pointer; font-size: 1.5rem; background: none; border: none; }
+        
+        .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: var(--white); padding: 3rem 0; text-align: center; }
+        .hero h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .hero p { font-size: 1rem; opacity: 0.9; }
+        
+        .content { padding: 2rem 0; background: var(--light); }
+        .content-inner { max-width: 900px; margin: 0 auto; }
+        
+        .card { background: var(--white); border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card h2 { color: var(--primary); font-size: 1.25rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--light); }
+        .card h3 { color: var(--dark); font-size: 1rem; margin: 1.25rem 0 0.5rem 0; }
+        .card p { margin-bottom: 0.75rem; color: #4b5563; }
+        .card ul, .card ol { margin: 0 0 1rem 1.5rem; color: #4b5563; }
+        .card li { margin-bottom: 0.4rem; }
+        
+        .highlight-box { background: #f0fdf4; border-left: 4px solid var(--primary); padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+        .highlight-box strong { display: block; margin-bottom: 0.5rem; color: var(--dark); }
+        
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+        th, td { padding: 0.75rem; text-align: left; border: 1px solid #e5e7eb; }
+        th { background: var(--light); font-weight: 600; }
+        
+        .last-updated { text-align: center; color: var(--gray); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        
+        footer { background: var(--dark); color: var(--white); padding: 3rem 0 1.5rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .footer-col h4 { color: var(--accent); margin-bottom: 1rem; }
+        .footer-col a { display: block; color: rgba(255,255,255,0.7); padding: 0.25rem 0; }
+        .footer-col a:hover { color: var(--white); text-decoration: none; }
+        .footer-col p { color: rgba(255,255,255,0.7); }
+        .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+        .footer-bottom a { color: rgba(255,255,255,0.5); }
+        .footer-bottom a:hover { color: var(--white); text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .mobile-menu { display: block; }
+            nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--white); flex-direction: column; padding: 1rem; gap: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+            nav.active { display: flex; }
+            nav a { padding: 1rem; border-bottom: 1px solid var(--light); }
+            .hero h1 { font-size: 1.5rem; }
+            .card { padding: 1.25rem; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 0.5rem; }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/" class="logo">JK Zelena mila</a>
-            <nav>
-                <a href="/">Domov</a>
-                <a href="/cookies">Cookies</a>
-            </nav>
+            <div class="header-inner">
+                <a href="/" class="logo">
+                    <img src="/assets/logo.png" alt="Logo">
+                    <span>JK Zelená míľa</span>
+                </a>
+                <button class="mobile-menu" onclick="toggleMenu()">☰</button>
+                <nav id="mainNav">
+                    <a href="/">Domov</a>
+                    <a href="/#services">Služby</a>
+                    <a href="/#news">Novinky</a>
+                    <a href="/#gallery">Galéria</a>
+                    <a href="/o-klube.html">O klube</a>
+                    <a href="/#contact">Kontakt</a>
+                </nav>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <main>
-            <h1>Zasady ochrany osobnych udajov</h1>
-            <p class="last-updated">Posledna aktualizacia: 30. januar 2026</p>
+    <div class="hero">
+        <div class="container">
+            <h1>Ochrana osobných údajov</h1>
+            <p>Zásady spracúvania osobných údajov v súlade s GDPR</p>
+        </div>
+    </div>
 
-            <h2>1. Prevadzkovatel</h2>
-            <p>Prevadzkovatelom osobnych udajov je:</p>
-            <div class="highlight-box">
-                <strong>Jazdecky klub Zelena mila Jaslovske Bohunice, o.z.</strong><br>
-                Areal PD Jaslovske Bohunice<br>
-                Hlavna Jaslovce 124/127<br>
-                919 30 Jaslovske Bohunice<br>
-                Slovenska republika<br><br>
-                ICO: <span class="config-placeholder">53536002</span><br>
-                Email: <span class="config-placeholder">apilera@apilera.com</span><br>
-                Telefon: <span class="config-placeholder">+421 905 523 022</span>
+    <div class="content">
+        <div class="container">
+            <div class="content-inner">
+                <p class="last-updated">Posledná aktualizácia: 30. január 2026</p>
+
+                <div class="card">
+                    <h2>1. Prevádzkovateľ</h2>
+                    <div class="highlight-box">
+                        <strong>Jazdecký klub Zelená míľa Jaslovské Bohunice, o.z.</strong>
+                        Areál PD Jaslovské Bohunice<br>
+                        Hlavná Jaslovce 124/127<br>
+                        919 30 Jaslovské Bohunice<br>
+                        Slovenská republika<br><br>
+                        IČO: 53536002<br>
+                        Email: apilera@apilera.com<br>
+                        Telefón: +421 905 523 022
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>2. Aké údaje spracúvame</h2>
+                    
+                    <h3>2.1 Identifikačné údaje</h3>
+                    <ul>
+                        <li>Meno a priezvisko</li>
+                        <li>Dátum narodenia (pre kategorizáciu jazdcov)</li>
+                        <li>Adresa bydliska</li>
+                        <li>Rodné číslo (len pre registráciu SJF/FEI)</li>
+                    </ul>
+
+                    <h3>2.2 Kontaktné údaje</h3>
+                    <ul>
+                        <li>Emailová adresa</li>
+                        <li>Telefónny kontakt</li>
+                        <li>Kontakt na zákonného zástupcu (pre maloletých)</li>
+                    </ul>
+
+                    <h3>2.3 Údaje o členstve a aktivitách</h3>
+                    <ul>
+                        <li>Licenčné čísla SJF/FEI</li>
+                        <li>História tréningov a účastí na súťažiach</li>
+                        <li>Platobná história (bez údajov o platobných kartách)</li>
+                        <li>Zdravotná spôsobilosť (potvrdenie áno/nie)</li>
+                    </ul>
+
+                    <h3>2.4 Technické údaje</h3>
+                    <ul>
+                        <li>IP adresa</li>
+                        <li>Typ prehliadača a zariadenia</li>
+                        <li>Čas prístupu a navštívených stránok</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>3. Účely spracovania</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Účel</th>
+                                <th>Právny základ</th>
+                                <th>Doba uchovávania</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Správa členstva a rezervácie tréningov</td>
+                                <td>Plnenie zmluvy</td>
+                                <td>Po dobu členstva + 3 roky</td>
+                            </tr>
+                            <tr>
+                                <td>Evidencia tréningov a úhrad</td>
+                                <td>Plnenie zmluvy, zákonná povinnosť</td>
+                                <td>10 rokov (účtovné doklady)</td>
+                            </tr>
+                            <tr>
+                                <td>Registrácia v SJF/FEI</td>
+                                <td>Plnenie zmluvy, oprávnený záujem</td>
+                                <td>Po dobu registrácie + 5 rokov</td>
+                            </tr>
+                            <tr>
+                                <td>Bezpečnosť a prevencia podvodov</td>
+                                <td>Oprávnený záujem</td>
+                                <td>6 mesiacov</td>
+                            </tr>
+                            <tr>
+                                <td>Marketing a novinky (ak je súhlas)</td>
+                                <td>Súhlas</td>
+                                <td>Do odvolania súhlasu</td>
+                            </tr>
+                            <tr>
+                                <td>Analýza návštevnosti webu</td>
+                                <td>Súhlas</td>
+                                <td>26 mesiacov</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h2>4. Spracovatelia a príjemcovia údajov</h2>
+                    
+                    <h3>4.1 Spracovatelia (poskytovatelia služieb)</h3>
+                    <ul>
+                        <li><strong>Supabase Inc.</strong> - poskytovateľ databázových služieb (uloženie dát)</li>
+                        <li><strong>Vercel Inc.</strong> - poskytovateľ hostingových služieb (prevádzka webu)</li>
+                    </ul>
+
+                    <h3>4.2 Tretie strany</h3>
+                    <ul>
+                        <li><strong>Slovenská jazdecká federácia (SJF)</strong> - pre účely registrácie a licencií</li>
+                        <li><strong>FEI</strong> - pre medzinárodné registrácie (ak je relevantné)</li>
+                        <li><strong>Štátne orgány</strong> - ak to vyžaduje zákon</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>5. Prenos údajov mimo EÚ</h2>
+                    <p>Naši spracovatelia (Supabase, Vercel) môžu prenášať údaje do USA. Tento prenos je zabezpečený štandardnými zmluvnými doložkami EÚ a dodatočnými technicko-organizačnými opatreniami.</p>
+                </div>
+
+                <div class="card">
+                    <h2>6. Vaše práva</h2>
+                    <p>Podľa nariadenia GDPR máte nasledovné práva:</p>
+                    <ul>
+                        <li><strong>Právo na prístup</strong> - môžete žiadať informácie o tom, aké údaje o vás spracúvame</li>
+                        <li><strong>Právo na opravu</strong> - môžete žiadať opravu nepresných údajov</li>
+                        <li><strong>Právo na vymazanie</strong> - môžete žiadať vymazanie údajov (s výnimkami danými zákonom)</li>
+                        <li><strong>Právo na obmedzenie spracovania</strong> - môžete žiadať dočasné obmedzenie spracovania</li>
+                        <li><strong>Právo na prenositeľnosť</strong> - môžete žiadať export údajov v strojovo čitateľnom formáte</li>
+                        <li><strong>Právo namietať</strong> - môžete namietať voči spracovaniu na základe oprávneného záujmu</li>
+                        <li><strong>Právo odvolať súhlas</strong> - kedykoľvek môžete odvolať udelený súhlas</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>7. Ako uplatniť vaše práva</h2>
+                    <p>Pre uplatnenie ktoréhokoľvek z vašich práv nás kontaktujte:</p>
+                    <ul>
+                        <li>Emailom na: <a href="mailto:apilera@apilera.com">apilera@apilera.com</a></li>
+                        <li>Poštou na adresu prevádzkovateľa uvedenú vyššie</li>
+                    </ul>
+                    <p>Na vašu žiadosť odpovieme do 30 dní. V niektorých prípadoch môže byť lehota predĺžená o ďalších 60 dní, o čom vás budeme informovať.</p>
+                </div>
+
+                <div class="card">
+                    <h2>8. Právo podať sťažnosť</h2>
+                    <p>Ak sa domnievate, že spracovanie vašich údajov porušuje GDPR, máte právo podať sťažnosť dozornému orgánu:</p>
+                    <div class="highlight-box">
+                        <strong>Úrad na ochranu osobných údajov Slovenskej republiky</strong>
+                        Hraničná 12<br>
+                        820 07 Bratislava 27<br>
+                        Web: <a href="https://dataprotection.gov.sk" target="_blank">dataprotection.gov.sk</a><br>
+                        Email: statny.dozor@pdp.gov.sk
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>9. Bezpečnosť údajov</h2>
+                    <p>Prijali sme primerané technické a organizačné opatrenia na ochranu vašich údajov, vrátane:</p>
+                    <ul>
+                        <li>Šifrovanie prenosu dát (HTTPS/TLS)</li>
+                        <li>Prístup k údajom len pre oprávnené osoby</li>
+                        <li>Pravidelné zálohovanie dát</li>
+                        <li>Audit prístupov k citlivým údajom</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>10. Zmeny zásad</h2>
+                    <p>Tieto zásady môžu byť priebežne aktualizované. O významných zmenách vás budeme informovať prostredníctvom emailu alebo oznámenia na webovej stránke. Aktuálna verzia je vždy dostupná na tejto stránke.</p>
+                </div>
+
+                <div class="card">
+                    <h2>11. Kontakt</h2>
+                    <p>V prípade akýchkoľvek otázok týkajúcich sa ochrany vašich osobných údajov nás kontaktujte na emailovej adrese: <a href="mailto:apilera@apilera.com">apilera@apilera.com</a></p>
+                </div>
             </div>
-
-            <h2>2. Ake udaje spracuvame</h2>
-            <p>V ramci nasich sluzieb spracuvame nasledovne kategorie osobnych udajov:</p>
-            
-            <h3>2.1 Identifikacne udaje</h3>
-            <ul>
-                <li>Meno a priezvisko</li>
-                <li>Datum narodenia (pre kategorizaciu jazdcov)</li>
-                <li>Adresa bydliska</li>
-                <li>Rodne cislo (len pre registraciu SJF/FEI)</li>
-            </ul>
-
-            <h3>2.2 Kontaktne udaje</h3>
-            <ul>
-                <li>Emailova adresa</li>
-                <li>Telefonny kontakt</li>
-                <li>Kontakt na zakonneho zastupcu (pre mladistvych)</li>
-            </ul>
-
-            <h3>2.3 Udaje o clenstve a aktivitach</h3>
-            <ul>
-                <li>Licencne cisla SJF/FEI</li>
-                <li>Historia treningov a ucasty na sutaziach</li>
-                <li>Platobna historia (bez udajov o platobnych kartach)</li>
-                <li>Zdravotna sposobilost (potvrdenie ano/nie)</li>
-            </ul>
-
-            <h3>2.4 Technicke udaje</h3>
-            <ul>
-                <li>IP adresa</li>
-                <li>Typ prehliadaca a zariadenia</li>
-                <li>Cas pristupu a navstivenych stranok</li>
-            </ul>
-
-            <h2>3. Ucely spracovania</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ucel</th>
-                        <th>Pravny zaklad</th>
-                        <th>Doba uchovanania</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Sprava clenstva a rezervacie treningov</td>
-                        <td>Plnenie zmluvy</td>
-                        <td>Po dobu clenstva + 3 roky</td>
-                    </tr>
-                    <tr>
-                        <td>Evidencia treningov a uhrad</td>
-                        <td>Plnenie zmluvy, zakonna povinnost</td>
-                        <td>10 rokov (uctovne doklady)</td>
-                    </tr>
-                    <tr>
-                        <td>Registracia v SJF/FEI</td>
-                        <td>Plnenie zmluvy, opravneny zaujem</td>
-                        <td>Po dobu registracie + 5 rokov</td>
-                    </tr>
-                    <tr>
-                        <td>Bezpecnost a prevencia podvodov</td>
-                        <td>Opravneny zaujem</td>
-                        <td>6 mesiacov</td>
-                    </tr>
-                    <tr>
-                        <td>Marketing a novinky (ak je suhlas)</td>
-                        <td>Suhlas</td>
-                        <td>Do odvolania suhlasu</td>
-                    </tr>
-                    <tr>
-                        <td>Analyza navstevnosti webu</td>
-                        <td>Suhlas</td>
-                        <td>26 mesiacov</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2>4. Spracovateľia a prijemcovia udajov</h2>
-            <p>Vase udaje mozu byt zdielane s nasledovnymi kategoriami prijemcov:</p>
-            
-            <h3>4.1 Spracovateľia (poskytovatelia sluzieb)</h3>
-            <ul>
-                <li><strong>Supabase Inc.</strong> - poskytovatel databazovych sluzieb (ulozenie dat)</li>
-                <li><strong>Vercel Inc.</strong> - poskytovatel hostingovych sluzieb (prevadzka webu)</li>
-            </ul>
-
-            <h3>4.2 Tretie strany</h3>
-            <ul>
-                <li><strong>Slovenska jazdecka federacia (SJF)</strong> - pre ucely registracie a licencii</li>
-                <li><strong>FEI</strong> - pre medzinarodne registracie (ak je relevantne)</li>
-                <li><strong>Statne organy</strong> - ak to vyzaduje zakon</li>
-            </ul>
-
-            <h2>5. Prenos udajov mimo EU</h2>
-            <p>Nasi spracovateľia (Supabase, Vercel) mozu prenasať udaje do USA. Tento prenos je zabezpeceny 
-            standardnymi zmluvnymi dolozkami EU a dodatocnymi technicko-organizacnymi opatreniami.</p>
-
-            <h2>6. Vase prava</h2>
-            <p>Podla nariadenia GDPR mate nasledovne prava:</p>
-            <ul>
-                <li><strong>Pravo na pristup</strong> - mozete ziadat informacie o tom, ake udaje o vas spracuvame</li>
-                <li><strong>Pravo na opravu</strong> - mozete ziadat opravu nepresnych udajov</li>
-                <li><strong>Pravo na vymazanie</strong> - mozete ziadat vymazanie udajov (s vynimkami danymi zakonom)</li>
-                <li><strong>Pravo na obmedzenie spracovania</strong> - mozete ziadat docasne obmedzenie spracovania</li>
-                <li><strong>Pravo na prenositelnost</strong> - mozete ziadat export udajov v strojovo citatelnom formate</li>
-                <li><strong>Pravo namietat</strong> - mozete namietat voci spracovaniu na zaklade opravneneho zaujmu</li>
-                <li><strong>Pravo odvolat suhlas</strong> - kedykolvek mozete odvolat udeleny suhlas</li>
-            </ul>
-
-            <h2>7. Ako uplatnit vase prava</h2>
-            <p>Pre uplatnenie ktorehokolvek z vasich prav nas kontaktujte:</p>
-            <ul>
-                <li>Emailom na: <span class="config-placeholder">apilera@apilera.com</span></li>
-                <li>Postou na adresu prevadzkovatela uvedenu vyssie</li>
-            </ul>
-            <p>Na vasu ziadost odpovieme do 30 dni. V niektorych pripadoch moze byt lehota predlzena o dalsich 
-            60 dni, o com vas budeme informovat.</p>
-
-            <h2>8. Pravo podat staznost</h2>
-            <p>Ak sa domnievate, ze spracovanie vasich udajov porusuje GDPR, mate pravo podat staznost 
-            dozornemu organu:</p>
-            <div class="highlight-box">
-                <strong>Urad na ochranu osobnych udajov Slovenskej republiky</strong><br>
-                Hranicna 12<br>
-                820 07 Bratislava 27<br>
-                Web: <a href="https://dataprotection.gov.sk" target="_blank">dataprotection.gov.sk</a><br>
-                Email: statny.dozor@pdp.gov.sk
-            </div>
-
-            <h2>9. Bezpecnost udajov</h2>
-            <p>Prijali sme primerané technicke a organizacne opatrenia na ochranu vasich udajov, vratane:</p>
-            <ul>
-                <li>Sifrovanie prenosu dat (HTTPS/TLS)</li>
-                <li>Pristup k udajom len pre opravnene osoby</li>
-                <li>Pravidelne zalohovanie dat</li>
-                <li>Audit pristupov k citlivym udajom</li>
-            </ul>
-
-            <h2>10. Zmeny zasad</h2>
-            <p>Tieto zasady mozu byt priebezne aktualizovane. O vyznamnych zmenach vas budeme informovat 
-            prostrednictvom emailu alebo oznamenia na webovej stranke. Aktualna verzia je vzdy dostupna 
-            na tejto stranke.</p>
-
-            <h2>11. Kontakt</h2>
-            <p>V pripade akychkolvek otazok tykajucich sa ochrany vasich osobnych udajov nas kontaktujte 
-            na emailovej adrese: <span class="config-placeholder">apilera@apilera.com</span></p>
-        </main>
+        </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 Jazdecky klub Zelena mila Jaslovske Bohunice, o.z.</p>
-        <p>
-            <a href="/privacy">Ochrana udajov</a> |
-            <a href="/cookies">Cookies</a> |
-            <a href="javascript:void(0)" onclick="window.JKZMConsent && window.JKZMConsent.openSettings()">Nastavenia cookies</a>
-        </p>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>JK Zelená míľa</h4>
+                    <p>Profesionálny jazdecký klub so zameraním na výcvik jazdcov a športových koní.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Rýchle odkazy</h4>
+                    <a href="/">Domov</a>
+                    <a href="/#services">Služby</a>
+                    <a href="/o-klube.html">O klube / 2%</a>
+                    <a href="/#contact">Kontakt</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Kontakt</h4>
+                    <p>+421 905 523 022<br>apilera@apilera.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © 2025 JK Zelená míľa Jaslovské Bohunice. Všetky práva vyhradené. |
+                <a href="/privacy">Ochrana údajov</a> |
+                <a href="/cookies">Cookies</a> |
+                <a href="javascript:void(0)" onclick="window.JKZMConsent && window.JKZMConsent.openSettings()">Nastavenia cookies</a>
+            </div>
+        </div>
     </footer>
 
+    <script>
+        function toggleMenu() { document.getElementById('mainNav').classList.toggle('active'); }
+    </script>
     <script src="/consent.js"></script>
 </body>
 </html>
