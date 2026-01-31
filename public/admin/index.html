@@ -3474,8 +3474,11 @@
             return;
         }
         
+        console.log('saveHorse - sending:', data);
+        
         try {
             const result = await api(id ? `horses/${id}` : 'horses', id ? 'PUT' : 'POST', data);
+            console.log('saveHorse - result:', result);
             if (result && result.error) {
                 showToast(result.error, 'error');
                 return;
@@ -3483,13 +3486,16 @@
             closeModal('horseModal');
             showToast(id ? 'Kon upraveny!' : 'Kon pridany!', 'success');
             // Refresh horses
+            console.log('saveHorse - refreshing horses list...');
             const newHorses = await api('horses');
+            console.log('saveHorse - new horses:', newHorses);
             horses = Array.isArray(newHorses) ? newHorses : [];
+            console.log('saveHorse - horses array now has', horses.length, 'items');
             renderHorses();
             populateSelects();
         } catch(e) {
             console.error('saveHorse error:', e);
-            showToast('Chyba pri ukladani', 'error');
+            showToast('Chyba pri ukladani: ' + e.message, 'error');
         }
     }
 

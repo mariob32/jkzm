@@ -26,17 +26,46 @@ module.exports = async (req, res) => {
             return res.status(200).json(data || []);
         }
         if (req.method === 'POST') {
-            const { first_name, last_name, email, phone, specialization, hourly_rate, notes } = req.body;
+            const { 
+                first_name, last_name, email, phone, 
+                sjf_license_number, sjf_trainer_level,
+                specializations, employment_type, hourly_rate, bio, notes, status
+            } = req.body;
+            
+            if (!first_name || !last_name) {
+                return res.status(400).json({ error: 'Meno a priezvisko sú povinné' });
+            }
+            
             const { data, error } = await supabase.from('trainers')
-                .insert([{ first_name, last_name, email, phone, specialization, hourly_rate, notes }])
+                .insert([{ 
+                    first_name, last_name, email, phone, 
+                    sjf_license_number, sjf_trainer_level,
+                    specializations, employment_type, 
+                    hourly_rate, bio, notes,
+                    status: status || 'active'
+                }])
                 .select().single();
-            if (error) throw error;
+            if (error) {
+                console.error('Trainer insert error:', error);
+                throw error;
+            }
             return res.status(201).json(data);
         }
         if (req.method === 'PUT') {
-            const { id, first_name, last_name, email, phone, specialization, hourly_rate, notes } = req.body;
+            const { 
+                id, first_name, last_name, email, phone, 
+                sjf_license_number, sjf_trainer_level,
+                specializations, employment_type, hourly_rate, bio, notes, status
+            } = req.body;
+            
             const { data, error } = await supabase.from('trainers')
-                .update({ first_name, last_name, email, phone, specialization, hourly_rate, notes })
+                .update({ 
+                    first_name, last_name, email, phone, 
+                    sjf_license_number, sjf_trainer_level,
+                    specializations, employment_type, 
+                    hourly_rate, bio, notes, status,
+                    updated_at: new Date()
+                })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);
@@ -49,6 +78,7 @@ module.exports = async (req, res) => {
         }
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Trainers API error:', error);
+        res.status(500).json({ error: 'Server error', details: error.message });
     }
 };

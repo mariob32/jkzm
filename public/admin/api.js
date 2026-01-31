@@ -32,8 +32,19 @@ async function fetchJson(endpoint, method = 'GET', body = null) {
     }
     
     try {
+        console.log(`API ${method} ${endpoint}`, body ? body : '');
         const res = await fetch(`${API_BASE}/${endpoint}`, opts);
+        
+        // Skontroluj či odpoveď je JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text();
+            console.error(`API error - not JSON:`, text.substring(0, 500));
+            throw new Error('Server nevrátil JSON odpoveď');
+        }
+        
         const data = await res.json();
+        console.log(`API ${method} ${endpoint} response:`, res.status, data);
         
         // Ak je 401, presmeruj na login
         if (res.status === 401) {
@@ -45,6 +56,7 @@ async function fetchJson(endpoint, method = 'GET', body = null) {
         
         // Ak je error v response
         if (!res.ok && data.error) {
+            showToast(data.error + (data.details ? ': ' + data.details : ''), 'error');
             throw new Error(data.error);
         }
         

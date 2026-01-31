@@ -26,17 +26,33 @@ module.exports = async (req, res) => {
             return res.status(200).json(data || []);
         }
         if (req.method === 'POST') {
-            const { first_name, last_name, email, phone, position, hire_date, salary, notes } = req.body;
+            const { first_name, last_name, email, phone, position, employment_type, hire_date, salary, notes, status } = req.body;
+            
+            if (!first_name || !last_name) {
+                return res.status(400).json({ error: 'Meno a priezvisko sú povinné' });
+            }
+            
             const { data, error } = await supabase.from('employees')
-                .insert([{ first_name, last_name, email, phone, position, hire_date, salary, notes }])
+                .insert([{ 
+                    first_name, last_name, email, phone, position, 
+                    employment_type, hire_date, salary, notes,
+                    status: status || 'active'
+                }])
                 .select().single();
-            if (error) throw error;
+            if (error) {
+                console.error('Employee insert error:', error);
+                throw error;
+            }
             return res.status(201).json(data);
         }
         if (req.method === 'PUT') {
-            const { id, first_name, last_name, email, phone, position, hire_date, salary, notes } = req.body;
+            const { id, first_name, last_name, email, phone, position, employment_type, hire_date, salary, notes, status } = req.body;
             const { data, error } = await supabase.from('employees')
-                .update({ first_name, last_name, email, phone, position, hire_date, salary, notes })
+                .update({ 
+                    first_name, last_name, email, phone, position, 
+                    employment_type, hire_date, salary, notes, status,
+                    updated_at: new Date()
+                })
                 .eq('id', id).select().single();
             if (error) throw error;
             return res.status(200).json(data);
@@ -49,6 +65,7 @@ module.exports = async (req, res) => {
         }
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Employees API error:', error);
+        res.status(500).json({ error: 'Server error', details: error.message });
     }
 };
