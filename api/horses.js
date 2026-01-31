@@ -40,20 +40,67 @@ module.exports = async (req, res) => {
                 insurance_company, insurance_policy, insurance_valid_until, insurance_value,
                 status, photo_url, notes
             } = req.body;
-            if (!name) return res.status(400).json({ error: 'Meno je povinne' });
+            
+            if (!name || name.trim() === '') {
+                return res.status(400).json({ error: 'Meno koňa je povinné' });
+            }
+            
+            // Kontrola duplicity (voliteľné - podľa passport_number alebo life_number)
+            if (passport_number) {
+                const { data: existing } = await supabase
+                    .from('horses')
+                    .select('id, name')
+                    .eq('passport_number', passport_number)
+                    .single();
+                if (existing) {
+                    return res.status(409).json({ 
+                        error: `Kôň s číslom pasu ${passport_number} už existuje`,
+                        existing_horse: existing.name
+                    });
+                }
+            }
+            
             const { data, error } = await supabase.from('horses')
                 .insert([{ 
-                    name, stable_name, breed, color, sex, birth_date, country_of_birth,
-                    passport_number, life_number, microchip,
+                    name: name.trim(), 
+                    stable_name: stable_name?.trim() || null, 
+                    breed, color, sex, 
+                    birth_date: birth_date || null, 
+                    country_of_birth,
+                    passport_number: passport_number?.trim() || null, 
+                    life_number: life_number?.trim() || null, 
+                    microchip: microchip?.trim() || null,
                     fei_id, fei_passport_number, fei_passport_expiry, fei_registered,
                     sjf_license_number, sjf_license_valid_until, sjf_registration_date,
                     owner_name, owner_contact, owner_address,
-                    height_cm, weight_kg, level, disciplines,
+                    height_cm: height_cm || null, 
+                    weight_kg: weight_kg || null, 
+                    level, disciplines,
                     insurance_company, insurance_policy, insurance_valid_until, insurance_value,
-                    status: status || 'active', photo_url, notes 
+                    status: status || 'active', 
+                    photo_url, 
+                    notes 
                 }])
                 .select().single();
-            if (error) throw error;
+            
+            if (error) {
+                console.error('Horse insert error:', error);
+                // Duplicitný záznam
+                if (error.code === '23505') {
+                    return res.status(409).json({ 
+                        error: 'Kôň s týmito údajmi už existuje',
+                        details: error.message
+                    });
+                }
+                // Neplatné dáta
+                if (error.code === '22P02' || error.code === '23502') {
+                    return res.status(400).json({ 
+                        error: 'Neplatné údaje',
+                        details: error.message
+                    });
+                }
+                throw error;
+            }
             
             await logAudit(supabase, {
                 action: 'create',

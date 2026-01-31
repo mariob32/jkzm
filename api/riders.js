@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
+const { logAudit, getRequestInfo } = require('./utils/audit');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const JWT_SECRET = process.env.JWT_SECRET || 'jkzm-secret-2025';
@@ -16,7 +17,8 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    if (!verifyToken(req)) return res.status(401).json({ error: 'Neautorizovaný' });
+    const user = verifyToken(req);
+    if (!user) return res.status(401).json({ error: 'Neautorizovaný' });
 
     try {
         if (req.method === 'GET') {
@@ -28,6 +30,8 @@ module.exports = async (req, res) => {
         }
 
         if (req.method === 'POST') {
+            const { ip, user_agent } = getRequestInfo(req);
+            
             const { 
                 first_name, last_name, birth_date, gender, nationality,
                 email, phone, address,
@@ -42,12 +46,42 @@ module.exports = async (req, res) => {
                 emergency_contact_name, emergency_contact_phone,
                 status, photo_url, notes
             } = req.body;
-            if (!first_name || !last_name) return res.status(400).json({ error: 'Meno a priezvisko povinné' });
+            
+            if (!first_name || !first_name.trim()) {
+                return res.status(400).json({ error: 'Meno je povinné' });
+            }
+            if (!last_name || !last_name.trim()) {
+                return res.status(400).json({ error: 'Priezvisko je povinné' });
+            }
+            
+            // Kontrola duplicity (voliteľné - podľa mena a dátumu narodenia)
+            if (birth_date) {
+                const { data: existing } = await supabase
+                    .from('riders')
+                    .select('id, first_name, last_name')
+                    .eq('first_name', first_name.trim())
+                    .eq('last_name', last_name.trim())
+                    .eq('birth_date', birth_date)
+                    .single();
+                if (existing) {
+                    return res.status(409).json({ 
+                        error: `Jazdec ${first_name} ${last_name} s dátumom narodenia ${birth_date} už existuje`,
+                        existing_id: existing.id
+                    });
+                }
+            }
+            
             const { data, error } = await supabase.from('riders')
                 .insert([{ 
-                    first_name, last_name, birth_date, gender, nationality,
-                    email, phone, address,
-                    sjf_license_number, sjf_license_type, sjf_license_valid_until,
+                    first_name: first_name.trim(), 
+                    last_name: last_name.trim(), 
+                    birth_date: birth_date || null, 
+                    gender, nationality,
+                    email: email?.trim() || null, 
+                    phone: phone?.trim() || null, 
+                    address,
+                    sjf_license_number: sjf_license_number?.trim() || null, 
+                    sjf_license_type, sjf_license_valid_until,
                     szvj_date, szvj_certificate_number,
                     fei_id, fei_registered, fei_license_valid_until,
                     category, level: level || 'beginner', disciplines,
@@ -59,13 +93,42 @@ module.exports = async (req, res) => {
                     status: status || 'active', photo_url, notes
                 }])
                 .select().single();
-            if (error) throw error;
+            
+            if (error) {
+                console.error('Rider insert error:', error);
+                if (error.code === '23505') {
+                    return res.status(409).json({ 
+                        error: 'Jazdec s týmito údajmi už existuje',
+                        details: error.message
+                    });
+                }
+                if (error.code === '22P02' || error.code === '23502') {
+                    return res.status(400).json({ 
+                        error: 'Neplatné údaje',
+                        details: error.message
+                    });
+                }
+                throw error;
+            }
+            
+            await logAudit(supabase, {
+                action: 'create',
+                entity_type: 'rider',
+                entity_id: data.id,
+                actor_id: user.id || null,
+                actor_name: user.email || user.name || 'admin',
+                ip,
+                user_agent,
+                before_data: null,
+                after_data: data
+            });
+            
             return res.status(201).json(data);
         }
 
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
         console.error('Riders error:', error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error', details: error.message });
     }
 };

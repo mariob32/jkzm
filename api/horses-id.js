@@ -130,8 +130,69 @@ module.exports = async (req, res) => {
 
         if (req.method === 'DELETE') {
             const { data: before } = await supabase.from('horses').select('*').eq('id', id).single();
+            if (!before) return res.status(404).json({ error: 'Kôň nenájdený' });
+            
+            // Kontrola závislostí pred vymazaním
+            const dependencies = [];
+            
+            // Kontrola training_bookings (RESTRICT)
+            const { count: bookingsCount } = await supabase
+                .from('training_bookings')
+                .select('*', { count: 'exact', head: true })
+                .eq('horse_id', id);
+            if (bookingsCount > 0) dependencies.push(`${bookingsCount} rezervácií tréningov`);
+            
+            // Kontrola billing_charges
+            const { count: chargesCount } = await supabase
+                .from('billing_charges')
+                .select('*', { count: 'exact', head: true })
+                .eq('horse_id', id);
+            if (chargesCount > 0) dependencies.push(`${chargesCount} platobných záznamov`);
+            
+            // Kontrola health_events
+            const { count: healthCount } = await supabase
+                .from('health_events')
+                .select('*', { count: 'exact', head: true })
+                .eq('horse_id', id);
+            if (healthCount > 0) dependencies.push(`${healthCount} zdravotných záznamov`);
+            
+            // Kontrola stable_log
+            const { count: stableCount } = await supabase
+                .from('stable_log')
+                .select('*', { count: 'exact', head: true })
+                .eq('horse_id', id);
+            if (stableCount > 0) dependencies.push(`${stableCount} záznamov v denníku`);
+            
+            // Kontrola trainings
+            const { count: trainingsCount } = await supabase
+                .from('trainings')
+                .select('*', { count: 'exact', head: true })
+                .eq('horse_id', id);
+            if (trainingsCount > 0) dependencies.push(`${trainingsCount} tréningov`);
+            
+            // Ak existujú závislosti s RESTRICT, nemôžeme vymazať
+            if (bookingsCount > 0) {
+                return res.status(409).json({ 
+                    error: 'Kôň má aktívne rezervácie tréningov a nemôže byť vymazaný.',
+                    details: `Najprv zrušte alebo vymažte: ${dependencies.join(', ')}`,
+                    dependencies,
+                    suggestion: 'Namiesto vymazania môžete koňa deaktivovať (status: inactive)'
+                });
+            }
+            
+            // Pokus o vymazanie
             const { error } = await supabase.from('horses').delete().eq('id', id);
-            if (error) throw error;
+            if (error) {
+                // FK constraint error
+                if (error.code === '23503') {
+                    return res.status(409).json({ 
+                        error: 'Kôň má súvisiace záznamy a nemôže byť vymazaný.',
+                        details: dependencies.length > 0 ? `Súvisiace: ${dependencies.join(', ')}` : error.message,
+                        suggestion: 'Namiesto vymazania môžete koňa deaktivovať (status: inactive)'
+                    });
+                }
+                throw error;
+            }
             
             await logAudit(supabase, {
                 action: 'delete',
@@ -145,7 +206,7 @@ module.exports = async (req, res) => {
                 after_data: null
             });
             
-            return res.status(200).json({ message: 'Deleted' });
+            return res.status(200).json({ message: 'Kôň bol vymazaný' });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });
