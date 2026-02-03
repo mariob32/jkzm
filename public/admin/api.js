@@ -1,7 +1,11 @@
-// ===== JKZM Admin API Helper =====
+// ===== JKZM Admin API Helper v6.21.14 =====
 // api.js - základné funkcie pre API volania
 
 const API_BASE = '/api';
+
+// Loading state management
+let isApiLoading = false;
+const loadingCallbacks = [];
 
 function getToken() {
     return localStorage.getItem('jkzm_token');
@@ -22,6 +26,47 @@ function getHeaders() {
     return headers;
 }
 
+/**
+ * Nastaví loading stav a notifikuje subscribery
+ */
+function setLoadingState(loading) {
+    isApiLoading = loading;
+    loadingCallbacks.forEach(cb => cb(loading));
+    
+    // Automaticky disable/enable save tlačidlá v modaloch
+    document.querySelectorAll('.modal.active .btn-primary').forEach(btn => {
+        if (loading) {
+            btn.dataset.originalText = btn.textContent;
+            btn.textContent = 'Ukladám...';
+            btn.disabled = true;
+        } else {
+            if (btn.dataset.originalText) {
+                btn.textContent = btn.dataset.originalText;
+                delete btn.dataset.originalText;
+            }
+            btn.disabled = false;
+        }
+    });
+}
+
+/**
+ * Pridaj callback pre loading state zmeny
+ */
+function onLoadingChange(callback) {
+    loadingCallbacks.push(callback);
+    return () => {
+        const idx = loadingCallbacks.indexOf(callback);
+        if (idx > -1) loadingCallbacks.splice(idx, 1);
+    };
+}
+
+/**
+ * Skontroluj či API práve beží
+ */
+function isLoading() {
+    return isApiLoading;
+}
+
 async function fetchJson(endpoint, method = 'GET', body = null) {
     const opts = {
         method,
@@ -30,6 +75,10 @@ async function fetchJson(endpoint, method = 'GET', body = null) {
     if (body && method !== 'GET') {
         opts.body = JSON.stringify(body);
     }
+    
+    // Nastav loading pre non-GET requesty
+    const isModifying = method !== 'GET';
+    if (isModifying) setLoadingState(true);
     
     try {
         console.log(`API ${method} ${endpoint}`, body ? body : '');
@@ -56,14 +105,24 @@ async function fetchJson(endpoint, method = 'GET', body = null) {
         
         // Ak je error v response
         if (!res.ok && data.error) {
-            showToast(data.error + (data.details ? ': ' + data.details : ''), 'error');
-            throw new Error(data.error);
+            const errorMsg = data.error + (data.details ? ': ' + data.details : '');
+            showToast(errorMsg, 'error');
+            throw new Error(errorMsg);
         }
         
         return data;
     } catch (error) {
         console.error(`API error [${method} ${endpoint}]:`, error);
+        // Zobraz chybu ak ešte nebola zobrazená
+        if (error.message && !error.message.includes('Unauthorized')) {
+            // showToast sa volá už vyššie, ale pre network errors:
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                showToast('Chyba siete - skontrolujte pripojenie', 'error');
+            }
+        }
         throw error;
+    } finally {
+        if (isModifying) setLoadingState(false);
     }
 }
 
@@ -91,10 +150,13 @@ async function apiDelete(endpoint) {
 // Toast notification
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
-    if (!toast) return;
+    if (!toast) {
+        console.log(`Toast [${type}]:`, message);
+        return;
+    }
     toast.textContent = message;
     toast.className = 'toast show ' + type;
-    setTimeout(() => { toast.className = 'toast'; }, 3000);
+    setTimeout(() => { toast.className = 'toast'; }, 4000);
 }
 
 // Modal helpers
@@ -128,4 +190,6 @@ if (typeof window !== 'undefined') {
     window.showToast = showToast;
     window.openModal = openModal;
     window.closeModal = closeModal;
+    window.isLoading = isLoading;
+    window.onLoadingChange = onLoadingChange;
 }

@@ -1,0 +1,15 @@
+# robots.txt for JK Zelená míľa
+# https://jkzm.sk
+
+User-agent: *
+Allow: /
+
+# Blokovať admin sekciu
+Disallow: /admin
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://jkzm.sk/sitemap.xml
+
+# Crawl-delay (voliteľné)
+Crawl-delay: 1

@@ -5,8 +5,18 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/robots.txt", "dest": "/public/robots.txt" },
+    { "src": "/sitemap.xml", "dest": "/public/sitemap.xml" },
+    
     { "src": "/privacy", "dest": "/public/privacy.html" },
     { "src": "/cookies", "dest": "/public/cookies.html" },
+    { "src": "/o-klube", "dest": "/public/o-klube.html" },
+    { "src": "/rezervacia", "dest": "/public/rezervacia.html" },
+    { "src": "/clanok", "dest": "/public/clanok.html" },
+    { "src": "/404", "dest": "/public/404.html" },
+    
+    { "src": "/partials/(.*)", "dest": "/public/partials/$1" },
+    { "src": "/layout.js", "dest": "/public/layout.js" },
     
     { "src": "/api/auth-login", "dest": "/api/auth-login.js" },
     { "src": "/api/dashboard-stats", "dest": "/api/dashboard-stats.js" },
