@@ -1,15 +1,19 @@
 {
-  "version": "6.21.15",
-  "build": "2026-02-03T10:15:00Z",
+  "version": "6.21.14",
+  "build": "2026-01-31T19:00:00Z",
   "features": [
-    "Fix: Jednotný footer na /rezervacia stránke",
-    "Fix: 404 stránka - cleanUrls v vercel.json", 
-    "Fix: Admin Arény - MAX pole zväčšené (65px)"
+    "SEO: Canonical URL, OG tagy na všetkých public stránkach",
+    "Routes: Čisté URL (/o-klube, /rezervacia, /privacy, /cookies)",
+    "SEO: robots.txt a sitemap.xml",
+    "404: Vlastná chybová stránka",
+    "Admin: Loading state management, auto-disable tlačidiel pri ukladaní",
+    "Layout: Partials systém pre budúce použitie"
   ],
   "changelog": {
-    "6.21.15": "Fix footer na rezervacia, 404 handling, arény MAX pole",
     "6.21.14": "Professional web consistency - SEO, clean URLs, admin UX",
     "6.21.13": "Fix trainings edit - event delegácia + API detail loading",
-    "6.21.12": "Fix trainers API 500 error + SQL migrácia"
+    "6.21.12": "Fix trainers API 500 error + SQL migrácia",
+    "6.21.11": "Fix GET API cache - no-cache headers",
+    "6.21.10": "Fix DELETE horses/riders - FK dependency checks"
   }
 }
