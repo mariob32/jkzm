@@ -58,10 +58,8 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ error: 'Dátum je povinný', hint: 'Vyplňte pole date' });
             }
             
-            // Priprav update objekt - len poskytnuté polia
-            const updateData = {
-                updated_at: new Date().toISOString()
-            };
+            // Priprav update objekt - len poskytnuté polia (BEZ updated_at - stĺpec neexistuje)
+            const updateData = {};
             
             // Mapovanie polí z frontendu
             if (body.rider_id !== undefined) updateData.rider_id = body.rider_id || null;
@@ -99,7 +97,7 @@ module.exports = async (req, res) => {
 
         // PATCH - čiastočná aktualizácia (napr. len status)
         if (req.method === 'PATCH') {
-            const updateData = { updated_at: new Date().toISOString() };
+            const updateData = {};
             
             // Pridaj len poskytnuté polia
             if (req.body.status !== undefined) updateData.status = req.body.status;
