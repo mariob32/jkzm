@@ -283,14 +283,14 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        footer {
-            background: var(--dark);
-            color: var(--white);
-            padding: 2rem;
-            text-align: center;
-            margin-top: 3rem;
-        }
-        footer a { color: var(--accent); }
+        footer { background: var(--dark); color: var(--white); padding: 3rem 0 1.5rem; margin-top: 3rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .footer-col h4 { color: var(--accent); margin-bottom: 1rem; }
+        .footer-col a { display: block; color: rgba(255,255,255,0.7); padding: 0.25rem 0; text-decoration: none; }
+        .footer-col a:hover { color: var(--white); }
+        .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+        .footer-bottom a { color: rgba(255,255,255,0.5); margin: 0 0.5rem; }
+        .footer-bottom a:hover { color: var(--white); }
         
         .no-slots {
             text-align: center;
@@ -441,8 +441,34 @@
     </div>
 
     <footer>
-        <p>© 2025 Jazdecký klub Zelená míľa Jaslovské Bohunice</p>
-        <p><a href="/">Späť na hlavnú stránku</a></p>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>JK Zelená míľa</h4>
+                    <p style="color:rgba(255,255,255,0.7)">Profesionálny jazdecký klub so zameraním na výcvik jazdcov a športových koní.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Rýchle odkazy</h4>
+                    <a href="/">Domov</a>
+                    <a href="/o-klube">O klube / 2%</a>
+                    <a href="/#services">Služby</a>
+                    <a href="/#contact">Kontakt</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Kontakt</h4>
+                    <p style="color:rgba(255,255,255,0.7)">
+                        JK Zelená míľa<br>
+                        Jaslovské Bohunice
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © 2025 JK Zelená míľa Jaslovské Bohunice. Všetky práva vyhradené. | 
+                <a href="/privacy">Ochrana údajov</a> | 
+                <a href="/cookies">Cookies</a> | 
+                <a href="javascript:void(0)" onclick="window.JKZMConsent && window.JKZMConsent.openSettings()">Nastavenia cookies</a>
+            </div>
+        </div>
     </footer>
 
     <script>
